@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "javadocs": {
+      "type": "http",
+      "url": "https://www.javadocs.dev/mcp"
+    },
+    "agentscope-docs": {
+      "command": "uvx",
+      "args": [
+        "--from", "mcpdoc", "mcpdoc",
+        "--urls", "AgentScopeJava:https://java.agentscope.io/llms.txt"
+      ]
+    }
+  }
+}

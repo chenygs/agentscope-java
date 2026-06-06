@@ -49,7 +49,7 @@ docs/_build
 
 
 # vibe coding
-.claude
+#.claude
 openspec
 AGENTS.md
 CLAUDE.md
