@@ -1,0 +1,222 @@
+{
+  "title": "2026年高考语文全景汇总",
+  "style": "academic-blue",
+  "template_id": "exam-analysis-2026",
+  "outputFile": "2026年高考语文汇总分析.pptx",
+  "theme": {
+    "colors": {
+      "background": "0a1628",
+      "surface": "152238",
+      "primary": "2e7daf",
+      "secondary": "4fc3f7",
+      "accent": "f9a825",
+      "text": "f0f4f8",
+      "textSecondary": "aab9d6",
+      "textMuted": "6b7fa8",
+      "border": "1e3a5f",
+      "success": "4caf50",
+      "warning": "ff9800",
+      "error": "ef5350"
+    },
+    "fonts": {
+      "title": { "family": "Microsoft YaHei", "size": 36, "color": "f0f4f8" },
+      "body": { "family": "Microsoft YaHei", "size": 14, "color": "f0f4f8" }
+    }
+  },
+  "slides": [
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "image", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "path": "https://cdn.pixabay.com/photo/2015/10/29/09/46/books-1012088_150.jpg", "opacity": 0.08 } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 1.2, "y": 1.4, "w": 7.6, "h": 3, "fill": { "color": "surface", "transparency": 15 }, "rectRadius": 0.18, "line": { "color": "primary", "width": 1.5 } } },
+        { "method": "text", "text": "📚 2026年高考语文", "options": { "x": 1.4, "y": 1.6, "w": 7.2, "h": 1, "fontSize": 40, "fontFace": "Microsoft YaHei", "bold": true, "color": "text", "align": "center" } },
+        { "method": "text", "text": "命题趋势 · 考点梳理 · 备考策略", "options": { "x": 1.4, "y": 2.6, "w": 7.2, "h": 0.6, "fontSize": 20, "fontFace": "Microsoft YaHei", "color": "secondary", "align": "center" } },
+        { "method": "text", "text": "2026年6月 丨 高考命题研究汇编", "options": { "x": 1.4, "y": 3.3, "w": 7.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 4.2, "w": 3, "h": 0.04, "fill": { "color": "accent" } } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "目  录", "options": { "x": 0.8, "y": 0.3, "w": 4, "h": 0.7, "fontSize": 28, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 1.1, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "01   2026年高考语文全景概览", "options": { "x": 1.2, "y": 1.15, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 1.75, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "02   命题六大巨变 —— 关键词解析", "options": { "x": 1.2, "y": 1.8, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 2.4, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "03   考试板块与分值分布 ▶ 图表", "options": { "x": 1.2, "y": 2.45, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.05, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "04   三大文化内容比重 ▶ 饼图", "options": { "x": 1.2, "y": 3.1, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.7, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "05   2026作文命题特点与对比", "options": { "x": 1.2, "y": 3.75, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 4.35, "w": 8.4, "h": 0.5, "fill": { "color": "surface" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "06   精准备考策略与建议", "options": { "x": 1.2, "y": 4.4, "w": 7.6, "h": 0.4, "fontSize": 16, "color": "text", "bold": true } },
+        { "method": "text", "text": "1", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "01  2026年高考语文全景概览", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.0, "w": 8.8, "h": 3.8, "fill": { "color": "surface" }, "rectRadius": 0.12, "line": { "color": "border", "width": 0.5 } } },
+        { "method": "text", "text": "📅 考试时间：2026年6月7日", "options": { "x": 0.9, "y": 1.2, "w": 8.2, "h": 0.45, "fontSize": 15, "color": "text", "bold": true, "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "📐 试卷结构：全国I卷 · 全国II卷 · 北京卷 · 天津卷 · 上海卷", "options": { "x": 0.9, "y": 1.7, "w": 8.2, "h": 0.45, "fontSize": 14, "color": "text", "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "🎯 核心方向：立德树人 · 学科素养 · 教考衔接", "options": { "x": 0.9, "y": 2.2, "w": 8.2, "h": 0.45, "fontSize": 14, "color": "text", "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "⚡ 命题关键词：价值引领 · 情境化 · 思辨性 · 多模态", "options": { "x": 0.9, "y": 2.7, "w": 8.2, "h": 0.45, "fontSize": 14, "color": "text", "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "📊 四大板块：语言运用 + 现代文阅读 + 古诗词 + 写作", "options": { "x": 0.9, "y": 3.2, "w": 8.2, "h": 0.45, "fontSize": 14, "color": "text", "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "🏆 作文变革：小切口观照大时代 · 辩证思维 · 现实生活", "options": { "x": 0.9, "y": 3.7, "w": 8.2, "h": 0.45, "fontSize": 14, "color": "text", "bullet": { "type": "bullet" } } },
+        { "method": "text", "text": "2", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "02  命题六大巨变 —— 关键词", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "text", "text": "从考知识→考素养 · 情境化 · 教考衔接 · 读写一体 · 多模态 · 批判创新", "options": { "x": 0.8, "y": 0.75, "w": 8.4, "h": 0.4, "fontSize": 11, "color": "secondary" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.2, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "🔑 从\"考知识\"到\"考素养\"", "options": { "x": 0.8, "y": 1.3, "w": 2.2, "h": 0.9, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 1.2, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "🎯 全面推行\"情境化命题\"", "options": { "x": 3.7, "y": 1.3, "w": 2.2, "h": 0.9, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 6.4, "y": 1.2, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "📖 \"教考衔接\"深度落地", "options": { "x": 6.6, "y": 1.3, "w": 2.2, "h": 0.9, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 2.6, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "📝 题型结构大重组\n读写一体", "options": { "x": 0.8, "y": 2.7, "w": 2.2, "h": 1, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 2.6, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "📚 多模态复合文本\n(单篇→多篇)", "options": { "x": 3.7, "y": 2.7, "w": 2.2, "h": 1, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 6.4, "y": 2.6, "w": 2.6, "h": 1.2, "fill": { "color": "1a3f5c" }, "rectRadius": 0.12 } },
+        { "method": "text", "text": "🧠 从理解记忆\n走向批判创新", "options": { "x": 6.6, "y": 2.7, "w": 2.2, "h": 1, "fontSize": 13, "fontFace": "Microsoft YaHei", "bold": true, "color": "secondary", "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 4.1, "w": 8.8, "h": 1.1, "fill": { "color": "0d2740" }, "rectRadius": 0.1, "line": { "color": "primary", "width": 0.8 } } },
+        { "method": "text", "text": "💡 核心理念：从\"解题\"到\"解决问题\" — 考查思维品质与语言素养的深度融合", "options": { "x": 0.9, "y": 4.2, "w": 8.2, "h": 0.8, "fontSize": 15, "color": "accent", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "text", "text": "3", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "03  考试板块与分值分布", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "chart", "chartType": "bar", "chartData": [
+          { "name": "分值", "labels": ["语言知识运用", "现代文阅读", "古诗词鉴赏", "写作"], "values": [28, 35, 22, 65] }
+        ], "options": {
+          "x": 0.6, "y": 1.0, "w": 8.8, "h": 4.0,
+          "showLegend": false, "chartColors": ["4fc3f7"],
+          "catAxisLabelColor": "aab9d6", "catAxisLabelSize": 13,
+          "valAxisLabelColor": "6b7fa8", "showGridLines": true,
+          "gridLineColor": "1e3a5f",
+          "showValue": true, "dataLabelFormatCode": "#,##0\"分\"",
+          "dataLabelColor": "f0f4f8", "dataLabelSize": 14
+        } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 7.0, "y": 4.4, "w": 2.6, "h": 0.6, "fill": { "color": "1a3f5c" }, "rectRadius": 0.1 } },
+        { "method": "text", "text": "📊 总分：150分", "options": { "x": 7.0, "y": 4.4, "w": 2.6, "h": 0.6, "fontSize": 16, "color": "accent", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "text", "text": "4", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "04  三大文化内容比重", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "chart", "chartType": "pie", "chartData": [
+          { "name": "文化内容占比", "labels": ["中华优秀传统文化", "社会主义先进文化", "革命文化"], "values": [45, 32, 23] }
+        ], "options": {
+          "x": 0.6, "y": 1.0, "w": 5.5, "h": 4.0,
+          "showLegend": true, "chartColors": ["2e7daf", "4fc3f7", "f9a825"],
+          "showSerLabel": true, "showValue": true, "dataLabelFormatCode": "0\"%\"",
+          "dataLabelColor": "f0f4f8", "dataLabelSize": 13
+        } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 6.5, "y": 1.2, "w": 3.0, "h": 3.5, "fill": { "color": "surface" }, "rectRadius": 0.12, "line": { "color": "border", "width": 0.5 } } },
+        { "method": "text", "text": "📌 命题载体", "options": { "x": 6.8, "y": 1.4, "w": 2.5, "h": 0.4, "fontSize": 14, "color": "accent", "bold": true, "align": "center" } },
+        { "method": "text", "text": "• 经典诗文默写\n• 文言文阅读\n• 传统文化常识\n• 诗词鉴赏", "options": { "x": 6.8, "y": 1.9, "w": 2.5, "h": 1.2, "fontSize": 12, "color": "text" } },
+        { "method": "text", "text": "• 科技前沿话题\n• 时代热点素材\n• 新词语新表达\n• 时代精神风貌", "options": { "x": 6.8, "y": 2.7, "w": 2.5, "h": 1.2, "fontSize": 12, "color": "text" } },
+        { "method": "text", "text": "• 红色经典阅读\n• 革命精神传承\n• 理想信念主题", "options": { "x": 6.8, "y": 3.7, "w": 2.5, "h": 0.8, "fontSize": 12, "color": "text" } },
+        { "method": "text", "text": "5", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "05  2026作文命题特点与对比", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "table", "rows": [
+          [{ "text": "试卷", "options": { "bold": true, "align": "center", "color": "f0f4f8", "fill": { "color": "2e7daf" } } }, { "text": "作文题·关键词", "options": { "bold": true, "align": "center", "color": "f0f4f8", "fill": { "color": "2e7daf" } } }, { "text": "命题特点", "options": { "bold": true, "align": "center", "color": "f0f4f8", "fill": { "color": "2e7daf" } } }],
+          [{ "text": "全国I卷", "options": { "bold": true, "color": "secondary" } }, { "text": "词语之\"变\"映射成长", "options": { "color": "text" } }, { "text": "小切口观照大时代", "options": { "color": "text" } }],
+          [{ "text": "全国II卷", "options": { "bold": true, "color": "secondary" } }, { "text": "体源之\"不变\"思考根基", "options": { "color": "text" } }, { "text": "辩证思维·创新发展", "options": { "color": "text" } }],
+          [{ "text": "北京卷", "options": { "bold": true, "color": "secondary" } }, { "text": "\"含英咀华\"品味精华", "options": { "color": "text" } }, { "text": "侧重思维考查", "options": { "color": "text" } }],
+          [{ "text": "上海卷", "options": { "bold": true, "color": "secondary" } }, { "text": "科技与想象的辩证关系", "options": { "color": "text" } }, { "text": "审视科技现实巨变", "options": { "color": "text" } }],
+          [{ "text": "天津卷", "options": { "bold": true, "color": "secondary" } }, { "text": "词语理解·时代变迁", "options": { "color": "text" } }, { "text": "语言文字运用敏感性", "options": { "color": "text" } }]
+        ], "options": {
+          "x": 0.6, "y": 1.0, "w": 8.8, "h": 3.8,
+          "border": { "type": "solid", "color": "1e3a5f", "pt": 1 },
+          "colW": [1.6, 3.6, 3.6],
+          "rowH": [0.5, 0.55, 0.55, 0.55, 0.55, 0.55]
+        } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 4.5, "w": 8.8, "h": 0.7, "fill": { "color": "0d2740" }, "rectRadius": 0.1, "line": { "color": "primary", "width": 0.5 } } },
+        { "method": "text", "text": "🏆 作文总趋势：以语文的方式，小切口联通大视野，关注时代与生活", "options": { "x": 0.8, "y": 4.55, "w": 8.4, "h": 0.6, "fontSize": 13, "color": "accent", "align": "center", "valign": "middle" } },
+        { "method": "text", "text": "6", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "06  精准备考策略与建议", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.0, "w": 4.1, "h": 1.6, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "2e7daf", "width": 0.8 } } },
+        { "method": "text", "text": "📖 聚焦文本整体理解\n放弃孤立字词背诵\n培养逻辑分析能力", "options": { "x": 0.8, "y": 1.1, "w": 3.7, "h": 1.4, "fontSize": 13, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 5.0, "y": 1.0, "w": 4.4, "h": 1.6, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "4fc3f7", "width": 0.8 } } },
+        { "method": "text", "text": "🧠 训练思辨能力\n学会\"是什么—为什么—怎么办\"\n避免单一观点论证", "options": { "x": 5.2, "y": 1.1, "w": 4.0, "h": 1.4, "fontSize": 13, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 2.8, "w": 4.1, "h": 1.6, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "f9a825", "width": 0.8 } } },
+        { "method": "text", "text": "🌐 积累时代热点素材\n传统文化·科技前沿\n现实案例·个人经历", "options": { "x": 0.8, "y": 2.9, "w": 3.7, "h": 1.4, "fontSize": 13, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 5.0, "y": 2.8, "w": 4.4, "h": 1.6, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "4caf50", "width": 0.8 } } },
+        { "method": "text", "text": "📚 教考衔接·回归教材\n统编教材深度关联\n多读书·读好书", "options": { "x": 5.2, "y": 2.9, "w": 4.0, "h": 1.4, "fontSize": 13, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 4.6, "w": 8.8, "h": 0.5, "fill": { "color": "0d2740" }, "rectRadius": 0.1 } },
+        { "method": "text", "text": "🎯 总结：从\"解题\"到\"解决问题\"，以语言建构走向思维逻辑", "options": { "x": 0.8, "y": 4.6, "w": 8.4, "h": 0.5, "fontSize": 14, "color": "accent", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "text", "text": "7", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "📊 2026高考语文 · 关键数据一览", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.6, "fontSize": 24, "fontFace": "Microsoft YaHei", "bold": true, "color": "text" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "2e7daf", "width": 1 } } },
+        { "method": "text", "text": "总分", "options": { "x": 0.8, "y": 1.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "150分", "options": { "x": 0.8, "y": 1.5, "w": 2.2, "h": 1, "fontSize": 28, "color": "secondary", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 1.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "4fc3f7", "width": 1 } } },
+        { "method": "text", "text": "考试时间", "options": { "x": 3.7, "y": 1.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "6月7日", "options": { "x": 3.7, "y": 1.5, "w": 2.2, "h": 1, "fontSize": 28, "color": "secondary", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 6.4, "y": 1.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "f9a825", "width": 1 } } },
+        { "method": "text", "text": "作文分值", "options": { "x": 6.6, "y": 1.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "65分", "options": { "x": 6.6, "y": 1.5, "w": 2.2, "h": 1, "fontSize": 28, "color": "accent", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 3.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "4caf50", "width": 1 } } },
+        { "method": "text", "text": "试卷套数", "options": { "x": 0.8, "y": 3.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "5套", "options": { "x": 0.8, "y": 3.5, "w": 2.2, "h": 1, "fontSize": 28, "color": "success", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 3.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "ff9800", "width": 1 } } },
+        { "method": "text", "text": "六大变革", "options": { "x": 3.7, "y": 3.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "6大", "options": { "x": 3.7, "y": 3.5, "w": 2.2, "h": 1, "fontSize": 28, "color": "warning", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 6.4, "y": 3.0, "w": 2.6, "h": 1.8, "fill": { "color": "152238" }, "rectRadius": 0.12, "line": { "color": "ef5350", "width": 1 } } },
+        { "method": "text", "text": "作文字数", "options": { "x": 6.6, "y": 3.1, "w": 2.2, "h": 0.5, "fontSize": 14, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "≥800字", "options": { "x": 6.6, "y": 3.5, "w": 2.2, "h": 1, "fontSize": 26, "color": "error", "bold": true, "align": "center", "valign": "middle" } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 5.0, "w": 8.8, "h": 0.4, "fill": { "color": "0d2740" }, "rectRadius": 0.08 } },
+        { "method": "text", "text": "📌 数据来源：教育部教育考试院 · 2026年高考命题专家组", "options": { "x": 0.8, "y": 5.0, "w": 8.4, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } },
+        { "method": "text", "text": "8", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    },
+    {
+      "elements": [
+        { "method": "bg", "options": { "fill": { "color": "background" } } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "primary" } } },
+        { "method": "image", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "path": "https://cdn.pixabay.com/photo/2014/06/03/19/38/board-361516_150.jpg", "opacity": 0.06 } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 1.5, "y": 1.5, "w": 7, "h": 2.8, "fill": { "color": "surface", "transparency": 20 }, "rectRadius": 0.2, "line": { "color": "primary", "width": 1 } } },
+        { "method": "text", "text": "🙏 感谢阅读", "options": { "x": 1.8, "y": 1.8, "w": 6.4, "h": 1, "fontSize": 36, "bold": true, "color": "text", "align": "center" } },
+        { "method": "text", "text": "2026年高考语文 · 命题趋势与备考策略", "options": { "x": 1.8, "y": 2.7, "w": 6.4, "h": 0.5, "fontSize": 16, "color": "secondary", "align": "center" } },
+        { "method": "text", "text": "以语文的方式，联通时代与未来", "options": { "x": 1.8, "y": 3.3, "w": 6.4, "h": 0.5, "fontSize": 14, "color": "accent", "align": "center", "bold": true } },
+        { "method": "shape", "shapeType": "rect", "options": { "x": 3.5, "y": 4.0, "w": 3, "h": 0.04, "fill": { "color": "primary" } } },
+        { "method": "text", "text": "9", "options": { "x": 9.2, "y": 5.1, "w": 0.5, "h": 0.4, "fontSize": 10, "color": "textMuted", "align": "center" } }
+      ]
+    }
+  ]
+}

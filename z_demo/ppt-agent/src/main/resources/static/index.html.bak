@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PPT Agent — AI 演示文稿助手</title>
+    <style>
+        :root {
+            --bg-app: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-hover: #334155;
+            --bg-user-bubble: #1e3a5f;
+            --bg-assistant-bubble: #1e293b;
+            --bg-reasoning: #1a2332;
+            --bg-tool: #2a2318;
+            --bg-error: #2a1a1a;
+            --bg-input: #1e293b;
+            --bg-header-gradient: linear-gradient(135deg, #1e40af, #3b82f6);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --text-on-header: #ffffff;
+            --text-user: #f1f5f9;
+            --accent: #3b82f6;
+            --accent-light: #1e3a5f;
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #818cf8;
+            --border: #334155;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --header-h: 64px;
+            --max-w: 900px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica,
+                Arial, sans-serif;
+            background: var(--bg-app);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            max-width: var(--max-w);
+            margin: 0 auto;
+            background: var(--bg-surface);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        @media (min-width: 940px) {
+            body { padding: 20px; }
+            .app { height: calc(100vh - 40px); border-radius: var(--radius-lg); }
+        }
+
+        .header {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: var(--header-h);
+            background: var(--bg-header-gradient);
+            color: var(--text-on-header);
+            position: relative;
+            z-index: 10;
+        }
+        @media (min-width: 940px) { .header { border-radius: var(--radius-lg) var(--radius-lg) 0 0; } }
+
+        .header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .header-logo {
+            width: 34px; height: 34px;
+            background: rgba(255,255,255,0.2);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 16px; flex-shrink: 0;
+        }
+        .header-title { font-size: 16px; font-weight: 600; white-space: nowrap; }
+        .header-subtitle { display: none; font-size: 12px; opacity: 0.8; }
+        @media (min-width: 500px) {
+            .header-subtitle { display: inline; }
+            .header-title-group { display: flex; align-items: baseline; gap: 8px; }
+        }
+        .header-status { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.85; }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent-green); transition: background 0.3s;
+        }
+        .status-dot.running { background: var(--accent-orange); animation: pulse 1.5s ease-in-out infinite; }
+        .status-dot.error { background: var(--accent-red); }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+
+        .messages-area {
+            flex: 1; overflow-y: auto; overflow-x: hidden;
+            padding: 16px 12px; scroll-behavior: smooth;
+        }
+        @media (min-width: 600px) { .messages-area { padding: 20px 24px; } }
+        .messages-area::-webkit-scrollbar { width: 6px; }
+        .messages-area::-webkit-scrollbar-track { background: transparent; }
+        .messages-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .message { display: flex; margin-bottom: 16px; animation: msgIn 0.25s ease-out; }
+        @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .message.user { justify-content: flex-end; }
+        .message.assistant, .message.reasoning, .message.tool, .message.error { justify-content: flex-start; }
+
+        .message-bubble {
+            max-width: 88%; padding: 10px 14px; border-radius: var(--radius-md);
+            word-break: break-word; line-height: 1.6; font-size: 14px;
+        }
+        @media (min-width: 600px) { .message-bubble { max-width: 78%; padding: 12px 18px; font-size: 15px; } }
+
+        .message.user .message-bubble {
+            background: var(--bg-user-bubble); color: var(--text-user);
+            border-bottom-right-radius: 4px; box-shadow: var(--shadow-sm);
+        }
+        .message.assistant .message-bubble {
+            background: var(--bg-assistant-bubble); border: 1px solid var(--border);
+            border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm);
+        }
+        .message.reasoning .message-bubble {
+            background: var(--bg-reasoning); border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-purple); border-radius: var(--radius-sm);
+            font-size: 13px; font-style: italic; opacity: 0.85;
+        }
+        .message.tool .message-bubble {
+            background: var(--bg-tool); border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-orange); border-radius: var(--radius-sm);
+            font-size: 13px; font-family: monospace;
+        }
+        .message.error .message-bubble {
+            background: var(--bg-error); border: 1px solid var(--accent-red);
+            border-left: 3px solid var(--accent-red); color: var(--accent-red);
+        }
+
+        .message-role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; color: var(--text-muted); }
+        .message-content { white-space: pre-wrap; }
+        .typing-indicator { display: flex; gap: 4px; padding: 16px 12px; align-items: center; }
+        .typing-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: typingBounce 1.4s ease-in-out infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-8px);opacity:1} }
+
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; text-align: center; padding: 40px 20px; color: var(--text-muted);
+        }
+        .empty-state-icon {
+            width: 80px; height: 80px;
+            background: var(--accent-light); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; margin-bottom: 16px;
+        }
+        .empty-state h2 { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .empty-state p { font-size: 14px; max-width: 340px; color: var(--text-secondary); }
+        .empty-state .hint { font-size: 13px; margin-top: 20px; color: var(--text-muted); }
+        .empty-state .hint-item { margin: 4px 0; }
+
+        .input-area {
+            flex-shrink: 0; display: flex; gap: 8px;
+            padding: 12px 12px 16px; border-top: 1px solid var(--border);
+            background: var(--bg-surface); align-items: flex-end;
+        }
+        @media (min-width: 600px) { .input-area { padding: 16px 24px 20px; gap: 12px; } }
+
+        .input-wrapper {
+            flex: 1; display: flex; align-items: flex-end;
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+        }
+        .input-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+        #input {
+            flex: 1; padding: 10px 14px; border: none; background: transparent;
+            color: var(--text-primary); font-family: inherit; font-size: 14px;
+            line-height: 1.5; resize: none; outline: none;
+            max-height: 120px; min-height: 24px;
+        }
+        @media (min-width: 600px) { #input { font-size: 15px; padding: 12px 16px; } }
+        #input::placeholder { color: var(--text-muted); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 20px; border: none; border-radius: var(--radius-md);
+            font-family: inherit; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+            flex-shrink: 0; height: 44px;
+        }
+        .btn:active { transform: scale(0.96); }
+        #send-btn { background: var(--accent); color: white; }
+        #send-btn:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(59,130,246,0.3); filter: brightness(1.08); }
+        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #stop-btn { background: var(--accent-red); color: white; }
+        #stop-btn:hover { box-shadow: 0 4px 12px rgba(239,68,68,0.3); filter: brightness(1.08); }
+
+        .new-chat-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 6px 12px; background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25); border-radius: var(--radius-sm);
+            color: var(--text-on-header); font-family: inherit; font-size: 12px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .new-chat-btn:hover { background: rgba(255,255,255,0.25); }
+
+        .hidden { display: none !important; }
+        .message-content code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-logo">📊</div>
+                <div class="header-title-group">
+                    <span class="header-title">PPT Agent</span>
+                    <span class="header-subtitle">AI 演示文稿助手</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="new-chat-btn" id="new-chat-btn" title="新对话">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    新对话
+                </button>
+                <div class="header-status">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span id="status-text">就绪</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="messages-area" id="messages">
+            <div class="empty-state" id="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <h2>PPT Agent</h2>
+                <p>AI 驱动的演示文稿创作助手。告诉我主题，我帮你生成专业 PPT。</p>
+                <div class="hint">
+                    <div class="hint-item">💡 试试说: "帮我做一份 2026 AI 趋势的 PPT，科技风"</div>
+                    <div class="hint-item">💡 试试说: "给我们的季度汇报做个商务风格的 PPT"</div>
+                    <div class="hint-item">💡 试试说: "做一个产品发布的创意风格 PPT"</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea
+                    id="input"
+                    rows="1"
+                    placeholder="输入你的 PPT 需求..."
+                    autocomplete="off"
+                    enterkeyhint="send"
+                ></textarea>
+            </div>
+            <button class="btn" id="send-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                发送
+            </button>
+            <button class="btn" id="stop-btn" style="display:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                停止
+            </button>
+        </div>
+    </div>
+
+    <script src="/js/agui-client.js"></script>
+    <script>
+        const client = new AguiClient('/agui/run');
+        const input = document.getElementById('input');
+        const sendBtn = document.getElementById('send-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const messages = document.getElementById('messages');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const emptyState = document.getElementById('empty-state');
+        const newChatBtn = document.getElementById('new-chat-btn');
+
+        let threadId = 'thread-' + Date.now();
+        let messageHistory = [];
+        let isRunning = false;
+        let currentAssistantDiv = null;
+        let currentReasoningDiv = null;
+        let reasoningContent = '';
+
+        function setStatus(state, text) {
+            statusDot.className = 'status-dot';
+            if (state === 'running') statusDot.classList.add('running');
+            else if (state === 'error') statusDot.classList.add('error');
+            statusText.textContent = text;
+        }
+
+        function autoResize() {
+            input.style.height = 'auto';
+            const maxH = parseInt(getComputedStyle(input).maxHeight, 10);
+            input.style.height = Math.min(input.scrollHeight, maxH) + 'px';
+        }
+        input.addEventListener('input', autoResize);
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function scrollToBottom() {
+            requestAnimationFrame(() => { messages.scrollTop = messages.scrollHeight; });
+        }
+
+        function createBubble(role, content) {
+            const labels = { user: '你', assistant: '助手', reasoning: '推理', tool: '工具', error: '错误' };
+            const div = document.createElement('div');
+            div.className = 'message ' + role;
+            div.innerHTML = '<div class="message-bubble"><div class="message-role">' + (labels[role] || role) + '</div><div class="message-content">' + escapeHtml(content) + '</div></div>';
+            return div;
+        }
+
+        function appendMessage(role, content, append) {
+            if (emptyState && !emptyState.classList.contains('hidden')) {
+                emptyState.classList.add('hidden');
+            }
+            if (append && role === 'assistant' && currentAssistantDiv) {
+                const el = currentAssistantDiv.querySelector('.message-content');
+                el.textContent += content;
+                scrollToBottom();
+                return;
+            }
+            if (append && role === 'reasoning' && currentReasoningDiv) {
+                const el = currentReasoningDiv.querySelector('.message-content');
+                el.textContent += content;
+                scrollToBottom();
+                return;
+            }
+            const bubble = createBubble(role, content);
+            messages.appendChild(bubble);
+            scrollToBottom();
+            if (role === 'assistant') currentAssistantDiv = bubble;
+            else if (role === 'reasoning') currentReasoningDiv = bubble;
+        }
+
+        function showTypingIndicator() {
+            hideTypingIndicator();
+            const div = document.createElement('div');
+            div.id = 'typing';
+            div.className = 'message';
+            div.innerHTML = '<div class="message-bubble" style="background:transparent;border:none;padding:4px 0;"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+            messages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const el = document.getElementById('typing');
+            if (el) el.remove();
+        }
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text || isRunning) return;
+
+            input.value = '';
+            autoResize();
+            isRunning = true;
+            sendBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-flex';
+            setStatus('running', '生成中...');
+
+            appendMessage('user', text);
+            messageHistory.push({ id: 'msg-' + Date.now(), role: 'user', content: text });
+
+            showTypingIndicator();
+            let assistantContent = '';
+            let currentMessageId = null;
+
+            try {
+                await client.run({
+                    threadId: threadId,
+                    runId: 'run-' + Date.now(),
+                    messages: messageHistory
+                }, {
+                    onRunStarted: () => {
+                        currentAssistantDiv = null;
+                        currentReasoningDiv = null;
+                        reasoningContent = '';
+                    },
+                    onReasoningMessageStart: (messageId, role) => {
+                        hideTypingIndicator();
+                        reasoningContent = '';
+                        currentReasoningDiv = null;
+                    },
+                    onReasoningContent: (delta) => {
+                        if (reasoningContent === '') appendMessage('reasoning', delta);
+                        else appendMessage('reasoning', delta, true);
+                        reasoningContent += delta;
+                    },
+                    onReasoningMessageEnd: () => {
+                        currentReasoningDiv = null;
+                        reasoningContent = '';
+                    },
+                    onTextMessageStart: (messageId) => {
+                        hideTypingIndicator();
+                        currentMessageId = messageId;
+                        assistantContent = '';
+                        currentAssistantDiv = null;
+                    },
+                    onTextContent: (delta) => {
+                        if (assistantContent === '') appendMessage('assistant', delta);
+                        else appendMessage('assistant', delta, true);
+                        assistantContent += delta;
+                    },
+                    onTextMessageEnd: (messageId) => {
+                        if (assistantContent) {
+                            messageHistory.push({ id: messageId, role: 'assistant', content: assistantContent });
+                        }
+                        currentAssistantDiv = null;
+                    },
+                    onToolCallStart: (toolCallId, toolName) => {
+                        hideTypingIndicator();
+                        currentAssistantDiv = null;
+                        appendMessage('tool', '🔧 执行: ' + toolName);
+                    },
+                    onError: (error) => {
+                        hideTypingIndicator();
+                        appendMessage('error', '错误: ' + error);
+                    },
+                    onRunFinished: () => {
+                        hideTypingIndicator();
+                        setStatus('就绪', '就绪');
+                    }
+                });
+            } catch (error) {
+                hideTypingIndicator();
+                if (error.name === 'AbortError') {
+                    if (assistantContent) {
+                        messageHistory.push({ id: currentMessageId || 'msg-stopped-' + Date.now(), role: 'assistant', content: assistantContent + ' [已停止]' });
+                    }
+                    setStatus('就绪', '已停止');
+                } else {
+                    appendMessage('error', '错误: ' + error.message);
+                    setStatus('error', '错误');
+                }
+            } finally {
+                isRunning = false;
+                sendBtn.style.display = 'inline-flex';
+                stopBtn.style.display = 'none';
+                hideTypingIndicator();
+                currentAssistantDiv = null;
+                currentReasoningDiv = null;
+                reasoningContent = '';
+                if (statusText.textContent === '生成中...') setStatus('就绪', '就绪');
+            }
+        }
+
+        function stopGeneration() {
+            if (isRunning) { setStatus('停止中', '停止中...'); client.abort(); }
+        }
+
+        function newChat() {
+            if (isRunning) client.abort();
+            threadId = 'thread-' + Date.now();
+            messageHistory = [];
+            messages.querySelectorAll('.message').forEach(el => el.remove());
+            emptyState.classList.remove('hidden');
+            setStatus('就绪', '就绪');
+            input.focus();
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+        sendBtn.addEventListener('click', sendMessage);
+        stopBtn.addEventListener('click', stopGeneration);
+        newChatBtn.addEventListener('click', newChat);
+        input.focus();
+    </script>
+</body>
+</html>

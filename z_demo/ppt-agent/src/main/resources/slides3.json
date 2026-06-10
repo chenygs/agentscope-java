@@ -1,0 +1,255 @@
+
+```slides.json
+{
+"title": "2026高考英语作文全攻略",
+"template_id": "minimal-business-summary",
+"outputFile": "2026-Gaokao-English-Writing.pptx",
+"theme": {
+"colors": {
+"background": "FFFFFF",
+"surface": "E7E6E6",
+"primary": "485275",
+"secondary": "44546A",
+"accent": "5B7FA5",
+"text": "1A1A2E",
+"textSecondary": "44546A",
+"textMuted": "7A7A7A",
+"border": "D0D0D0",
+"success": "2E7D32",
+"warning": "ED6C02",
+"error": "D32F2F"
+},
+"fonts": {
+"title": { "family": "微软雅黑", "size": 36, "color": "1A1A2E" },
+"subtitle": { "family": "Arial", "size": 20, "color": "44546A" },
+"body": { "family": "微软雅黑", "size": 14, "color": "1A1A2E" },
+"caption": { "family": "Arial", "size": 12, "color": "7A7A7A" }
+}
+},
+"slides": [
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 0.6, "w": 5.2, "h": 4.0, "fill": { "color": "FFFFFF" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "Gaokao English Writing 2026", "options": { "x": 0.9, "y": 1.0, "w": 5.0, "h": 0.7, "fontSize": 20, "fontFace": "Arial", "bold": false, "color": "44546A", "align": "left", "italic": true } },
+{ "method": "text", "text": "2026高考英语作文全攻略", "options": { "x": 0.9, "y": 1.8, "w": 5.0, "h": 1.0, "fontSize": 36, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E", "align": "left" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.9, "y": 3.0, "w": 2.2, "h": 0.06, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "题型解析 · 写作技巧 · 真题实战 · 备考策略", "options": { "x": 0.9, "y": 3.3, "w": 5.0, "h": 0.5, "fontSize": 14, "fontFace": "微软雅黑", "color": "7A7A7A", "align": "left" } },
+{ "method": "image", "options": { "x": 6.0, "y": 0.6, "w": 3.6, "h": 4.4, "path": "https://pixabay.com/get/gebf35616ea35ad86f83b0befad1cdfca73d791470d080c8fa9448103b0e701f682efa0918854ba0dfc1783a3f3dd4b4cfb6033f0233ac173edcd33caa5a2f482_1280.jpg", "sizing": { "type": "cover", "w": 3.6, "h": 4.4 } } },
+{ "method": "text", "text": "1", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "目录", "options": { "x": 0.8, "y": 0.4, "w": 4, "h": 0.7, "fontSize": 36, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Contents", "options": { "x": 0.8, "y": 1.0, "w": 4, "h": 0.4, "fontSize": 16, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 1.5, "w": 4.0, "h": 3.4, "fill": { "color": "E7E6E6", "transparency": 40 }, "rectRadius": 0.1 } },
+{ "method": "text", "text": "01", "options": { "x": 1.0, "y": 1.7, "w": 1.0, "h": 0.7, "fontSize": 32, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "题型概览", "options": { "x": 2.2, "y": 1.7, "w": 2.4, "h": 0.4, "fontSize": 22, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Question Types", "options": { "x": 2.2, "y": 2.1, "w": 2.4, "h": 0.3, "fontSize": 14, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "text", "text": "02", "options": { "x": 1.0, "y": 2.6, "w": 1.0, "h": 0.7, "fontSize": 32, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "应用文写作", "options": { "x": 2.2, "y": 2.6, "w": 2.4, "h": 0.4, "fontSize": 22, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Practical Writing", "options": { "x": 2.2, "y": 3.0, "w": 2.4, "h": 0.3, "fontSize": 14, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "text", "text": "03", "options": { "x": 1.0, "y": 3.5, "w": 1.0, "h": 0.7, "fontSize": 32, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "读后续写", "options": { "x": 2.2, "y": 3.5, "w": 2.4, "h": 0.4, "fontSize": 22, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Continue Writing", "options": { "x": 2.2, "y": 3.9, "w": 2.4, "h": 0.3, "fontSize": 14, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 1.5, "w": 4.0, "h": 3.4, "fill": { "color": "E7E6E6", "transparency": 40 }, "rectRadius": 0.1 } },
+{ "method": "text", "text": "04", "options": { "x": 5.4, "y": 1.7, "w": 1.0, "h": 0.7, "fontSize": 32, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "高分策略", "options": { "x": 6.6, "y": 1.7, "w": 2.4, "h": 0.4, "fontSize": 22, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Scoring Tips", "options": { "x": 6.6, "y": 2.1, "w": 2.4, "h": 0.3, "fontSize": 14, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "text", "text": "2", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "fill": { "color": "E7E6E6", "transparency": 70 } } },
+{ "method": "text", "text": "01", "options": { "x": 0.8, "y": 0.8, "w": 2.0, "h": 1.2, "fontSize": 72, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "题型概览", "options": { "x": 0.8, "y": 2.2, "w": 8, "h": 0.8, "fontSize": 40, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Question Types Overview", "options": { "x": 0.8, "y": 3.0, "w": 8, "h": 0.5, "fontSize": 20, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.7, "w": 2.0, "h": 0.06, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "3", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "01. 题型概览  Question Types", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "高考英语作文总览", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 1.4, "w": 8.4, "h": 3.6, "fill": { "color": "E7E6E6", "transparency": 40 }, "rectRadius": 0.12 } },
+{ "method": "text", "text": "两大题型 · 分值占比", "options": { "x": 1.0, "y": 1.6, "w": 4, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 1.0, "y": 2.2, "w": 3.8, "h": 1.8, "fill": { "color": "FFFFFF" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "✉️ 应用文", "options": { "x": 1.2, "y": 2.3, "w": 3.4, "h": 0.4, "fontSize": 20, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "15分 | 书信·通知·演讲稿", "options": { "x": 1.2, "y": 2.8, "w": 3.4, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "8-12句 · 100词左右", "options": { "x": 1.2, "y": 3.2, "w": 3.4, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "7A7A7A" } },
+{ "method": "text", "text": "重点：要点完整、语言得体", "options": { "x": 1.2, "y": 3.6, "w": 3.4, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "485275" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 2.2, "w": 3.8, "h": 1.8, "fill": { "color": "FFFFFF" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "📖 读后续写", "options": { "x": 5.4, "y": 2.3, "w": 3.4, "h": 0.4, "fontSize": 20, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "25分 | 阅读·构思·续写", "options": { "x": 5.4, "y": 2.8, "w": 3.4, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "150词左右 · 2段续写", "options": { "x": 5.4, "y": 3.2, "w": 3.4, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "7A7A7A" } },
+{ "method": "text", "text": "重点：情节合理、语言地道", "options": { "x": 5.4, "y": 3.6, "w": 3.4, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "485275" } },
+{ "method": "text", "text": "2026北京卷真题", "options": { "x": 1.0, "y": 4.2, "w": 4, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "假设你是红星中学高三学生李华，学校上月开展了\"当运动遇见AI\"(When Sports Meet AI)主题活动，外国好友Jim发邮件询问。请回复邮件介绍活动并谈谈收获。", "options": { "x": 1.0, "y": 4.5, "w": 8.0, "h": 0.9, "fontSize": 11, "fontFace": "微软雅黑", "color": "44546A", "valign": "top", "wrap": true } },
+{ "method": "text", "text": "4", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "02. 应用文写作  Practical Writing", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "应用文写作框架", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.5, "w": 4.2, "h": 3.6, "fill": { "color": "E7E6E6", "transparency": 30 }, "rectRadius": 0.12 } },
+{ "method": "text", "text": "书信写作结构", "options": { "x": 0.8, "y": 1.6, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "① 称呼（Dear ... ,）", "options": { "x": 0.8, "y": 2.1, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "② 开头（写信目的）", "options": { "x": 0.8, "y": 2.5, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "③ 正文（要点展开）", "options": { "x": 0.8, "y": 2.9, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "④ 结尾（期待回复）", "options": { "x": 0.8, "y": 3.3, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "⑤ 落款（Yours, Li Hua）", "options": { "x": 0.8, "y": 3.7, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "image", "options": { "x": 5.2, "y": 1.5, "w": 4.2, "h": 1.8, "path": "https://pixabay.com/get/g140f2f04979e53831e1506bfd20aadffcf7073efd145236d594209dd0eda905701dc047c21c9e97ff4aec51df5a26c7043ab5d8d2aa5a6722094c66ef1c44fe1_1280.png", "sizing": { "type": "cover", "w": 4.2, "h": 1.8 } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 3.5, "w": 4.2, "h": 1.6, "fill": { "color": "485275" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "💡 万能句型", "options": { "x": 5.4, "y": 3.6, "w": 3.8, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF" } },
+{ "method": "text", "text": "I'm writing to share with you...", "options": { "x": 5.4, "y": 4.0, "w": 3.8, "h": 0.3, "fontSize": 11, "fontFace": "Arial", "color": "FFFFFF", "italic": true } },
+{ "method": "text", "text": "It was an eye-opening experience...", "options": { "x": 5.4, "y": 4.3, "w": 3.8, "h": 0.3, "fontSize": 11, "fontFace": "Arial", "color": "FFFFFF", "italic": true } },
+{ "method": "text", "text": "I would appreciate it if you could...", "options": { "x": 5.4, "y": 4.6, "w": 3.8, "h": 0.3, "fontSize": 11, "fontFace": "Arial", "color": "FFFFFF", "italic": true } },
+{ "method": "text", "text": "5", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "02. 应用文写作  Practical Writing", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "2026北京卷·真题实战", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.5, "w": 8.8, "h": 3.8, "fill": { "color": "FFFFFF" }, "rectRadius": 0.12, "line": { "color": "D0D0D0", "width": 1 } } },
+{ "method": "text", "text": "📝 真题回放", "options": { "x": 0.9, "y": 1.7, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "假设你是红星中学高三学生李华。学校上月开展了\"当运动遇见AI\"（When Sports Meet AI）主题活动，你的外国好友Jim对此很感兴趣，发邮件询问。请你回复邮件，内容包括：1. 介绍活动的基本情况；2. 谈谈你的收获。", "options": { "x": 0.9, "y": 2.2, "w": 8.2, "h": 0.9, "fontSize": 12, "fontFace": "微软雅黑", "color": "44546A", "valign": "top", "wrap": true } },
+{ "method": "text", "text": "🎯 审题要点", "options": { "x": 0.9, "y": 3.2, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "✓ 回复邮件（非主动写信）", "options": { "x": 0.9, "y": 3.7, "w": 4.0, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "✓ 两个要点：活动介绍 + 个人收获", "options": { "x": 0.9, "y": 4.1, "w": 4.0, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "✓ 注意书信语气亲切自然", "options": { "x": 0.9, "y": 4.5, "w": 4.0, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "✍ 写作思路", "options": { "x": 5.3, "y": 3.2, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "开头：收到询问，表示开心", "options": { "x": 5.3, "y": 3.7, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E" } },
+{ "method": "text", "text": "中段①：AI技术辅助运动训练", "options": { "x": 5.3, "y": 4.1, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E" } },
+{ "method": "text", "text": "中段②：个人感悟与收获", "options": { "x": 5.3, "y": 4.5, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E" } },
+{ "method": "text", "text": "6", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "fill": { "color": "E7E6E6", "transparency": 70 } } },
+{ "method": "text", "text": "02", "options": { "x": 0.8, "y": 0.8, "w": 2.0, "h": 1.2, "fontSize": 72, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "读后续写", "options": { "x": 0.8, "y": 2.2, "w": 8, "h": 0.8, "fontSize": 40, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Continue Writing", "options": { "x": 0.8, "y": 3.0, "w": 8, "h": 0.5, "fontSize": 20, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.7, "w": 2.0, "h": 0.06, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "7", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "03. 读后续写  Continue Writing", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "读后续写·题型解析", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.5, "w": 4.2, "h": 3.8, "fill": { "color": "E7E6E6", "transparency": 30 }, "rectRadius": 0.12 } },
+{ "method": "text", "text": "📌 题型特点", "options": { "x": 0.8, "y": 1.6, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "提供一篇350词以内短文", "options": { "x": 0.8, "y": 2.1, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "根据内容和段落开头语续写", "options": { "x": 0.8, "y": 2.5, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "完成约150词的两段续写", "options": { "x": 0.8, "y": 2.9, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "考查阅读理解+逻辑推理+语言表达", "options": { "x": 0.8, "y": 3.3, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "故事型为主，体现正能量", "options": { "x": 0.8, "y": 3.7, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 1.5, "w": 4.2, "h": 3.8, "fill": { "color": "FFFFFF" }, "rectRadius": 0.12, "line": { "color": "D0D0D0", "width": 1 } } },
+{ "method": "text", "text": "🏆 评分标准（25分）", "options": { "x": 5.4, "y": 1.6, "w": 3.8, "h": 0.4, "fontSize": 18, "fontFace": "微软雅黑", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "第五档 21-25分", "options": { "x": 5.4, "y": 2.1, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "bold": true, "color": "2E7D32" } },
+{ "method": "text", "text": "与所给短文融洽度高，情节合理", "options": { "x": 5.8, "y": 2.5, "w": 3.4, "h": 0.3, "fontSize": 12, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "语法词汇丰富准确，语篇连贯", "options": { "x": 5.8, "y": 2.9, "w": 3.4, "h": 0.3, "fontSize": 12, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "第四档 16-20分", "options": { "x": 5.4, "y": 3.3, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "情节基本合理，语言运用良好", "options": { "x": 5.8, "y": 3.7, "w": 3.4, "h": 0.3, "fontSize": 12, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "第三档 11-15分", "options": { "x": 5.4, "y": 4.1, "w": 3.8, "h": 0.3, "fontSize": 13, "fontFace": "微软雅黑", "bold": true, "color": "ED6C02" } },
+{ "method": "text", "text": "情节基本完整，语言错误较多", "options": { "x": 5.8, "y": 4.5, "w": 3.4, "h": 0.3, "fontSize": 12, "fontFace": "微软雅黑", "color": "44546A" } },
+{ "method": "text", "text": "8", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "03. 读后续写  Continue Writing", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "读后续写·五步写作法", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.6, "y": 1.5, "w": 8.8, "h": 3.8, "fill": { "color": "E7E6E6", "transparency": 40 }, "rectRadius": 0.12 } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 1.7, "w": 1.6, "h": 1.4, "fill": { "color": "485275" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "Step 1", "options": { "x": 0.8, "y": 1.8, "w": 1.6, "h": 0.3, "fontSize": 12, "fontFace": "Arial", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "读懂原文", "options": { "x": 0.8, "y": 2.1, "w": 1.6, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "5W1H梳理情节\n把握人物·情感·冲突", "options": { "x": 2.6, "y": 1.7, "w": 1.8, "h": 1.4, "fontSize": 11, "fontFace": "微软雅黑", "color": "44546A", "valign": "middle", "wrap": true } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 4.6, "y": 1.7, "w": 1.6, "h": 1.4, "fill": { "color": "5B7FA5" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "Step 2", "options": { "x": 4.6, "y": 1.8, "w": 1.6, "h": 0.3, "fontSize": 12, "fontFace": "Arial", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "构思情节", "options": { "x": 4.6, "y": 2.1, "w": 1.6, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "围绕原文基调\n设计起承转合", "options": { "x": 6.4, "y": 1.7, "w": 1.8, "h": 1.4, "fontSize": 11, "fontFace": "微软雅黑", "color": "44546A", "valign": "middle", "wrap": true } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.3, "w": 1.6, "h": 1.4, "fill": { "color": "485275" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "Step 3", "options": { "x": 0.8, "y": 3.4, "w": 1.6, "h": 0.3, "fontSize": 12, "fontFace": "Arial", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "遣词造句", "options": { "x": 0.8, "y": 3.7, "w": 1.6, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "动作·环境·心理描写\n长短句结合", "options": { "x": 2.6, "y": 3.3, "w": 1.8, "h": 1.4, "fontSize": 11, "fontFace": "微软雅黑", "color": "44546A", "valign": "middle", "wrap": true } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 4.6, "y": 3.3, "w": 1.6, "h": 1.4, "fill": { "color": "5B7FA5" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "Step 4", "options": { "x": 4.6, "y": 3.4, "w": 1.6, "h": 0.3, "fontSize": 12, "fontFace": "Arial", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "段首衔接", "options": { "x": 4.6, "y": 3.7, "w": 1.6, "h": 0.4, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF", "align": "center" } },
+{ "method": "text", "text": "与给定首句自然衔接\n使用过渡词", "options": { "x": 6.4, "y": 3.3, "w": 1.8, "h": 1.4, "fontSize": 11, "fontFace": "微软雅黑", "color": "44546A", "valign": "middle", "wrap": true } },
+{ "method": "text", "text": "Step 5", "options": { "x": 8.4, "y": 2.1, "w": 0.8, "h": 0.4, "fontSize": 13, "fontFace": "Arial", "bold": true, "color": "485275", "align": "center" } },
+{ "method": "text", "text": "检查润色", "options": { "x": 8.4, "y": 2.6, "w": 0.8, "h": 0.5, "fontSize": 14, "fontFace": "微软雅黑", "bold": true, "color": "485275", "align": "center" } },
+{ "method": "text", "text": "9", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "fill": { "color": "E7E6E6", "transparency": 70 } } },
+{ "method": "text", "text": "03", "options": { "x": 0.8, "y": 0.8, "w": 2.0, "h": 1.2, "fontSize": 72, "fontFace": "Arial", "bold": true, "color": "485275" } },
+{ "method": "text", "text": "高分策略", "options": { "x": 0.8, "y": 2.2, "w": 8, "h": 0.8, "fontSize": 40, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "text", "text": "Scoring Tips", "options": { "x": 0.8, "y": 3.0, "w": 8, "h": 0.5, "fontSize": 20, "fontFace": "Arial", "color": "44546A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0.8, "y": 3.7, "w": 2.0, "h": 0.06, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "10", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "04. 高分策略  Scoring Tips", "options": { "x": 0.8, "y": 0.2, "w": 8.4, "h": 0.5, "fontSize": 14, "fontFace": "Arial", "color": "7A7A7A" } },
+{ "method": "text", "text": "考前冲刺与备考建议", "options": { "x": 0.8, "y": 0.7, "w": 8, "h": 0.6, "fontSize": 28, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E" } },
+{ "method": "image", "options": { "x": 0.6, "y": 1.5, "w": 4.2, "h": 3.8, "path": "https://pixabay.com/get/g84e4a4f4fd396a3457c2b66357f689241bae8a9dbb9d5fb290d37b4caddf37b0ed8d8e258983f5183d9e938138de04eb63070a2c6e0644824b1a787cb6e0a6b6_1280.jpg", "sizing": { "type": "cover", "w": 4.2, "h": 3.8 } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 1.5, "w": 4.2, "h": 0.8, "fill": { "color": "485275" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "📅 最后60天冲刺计划", "options": { "x": 5.4, "y": 1.6, "w": 3.8, "h": 0.6, "fontSize": 16, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 2.5, "w": 4.2, "h": 0.8, "fill": { "color": "E7E6E6", "transparency": 20 }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "每日一篇读后续写练习", "options": { "x": 5.4, "y": 2.6, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "限时25分钟完成，模拟考场节奏", "options": { "x": 5.8, "y": 3.0, "w": 3.4, "h": 0.3, "fontSize": 11, "fontFace": "微软雅黑", "color": "7A7A7A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 3.5, "w": 4.2, "h": 0.8, "fill": { "color": "E7E6E6", "transparency": 20 }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "应用文分类强化", "options": { "x": 5.4, "y": 3.6, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "color": "1A1A2E", "bullet": { "type": "bullet" } } },
+{ "method": "text", "text": "书信·通知·演讲稿·报道 各练2篇", "options": { "x": 5.8, "y": 4.0, "w": 3.4, "h": 0.3, "fontSize": 11, "fontFace": "微软雅黑", "color": "7A7A7A" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 5.2, "y": 4.5, "w": 4.2, "h": 0.8, "fill": { "color": "5B7FA5" }, "rectRadius": 0.08 } },
+{ "method": "text", "text": "💡 考场黄金法则", "options": { "x": 5.4, "y": 4.5, "w": 3.8, "h": 0.3, "fontSize": 14, "fontFace": "微软雅黑", "bold": true, "color": "FFFFFF" } },
+{ "method": "text", "text": "审题圈要点 | 列提纲 | 写草稿 | 检查修改", "options": { "x": 5.4, "y": 4.9, "w": 3.8, "h": 0.3, "fontSize": 11, "fontFace": "微软雅黑", "color": "FFFFFF" } },
+{ "method": "text", "text": "11", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+},
+{
+"elements": [
+{ "method": "bg", "options": { "fill": { "color": "FFFFFF" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 0.08, "fill": { "color": "485275" } } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 0, "y": 0, "w": 10, "h": 5.625, "fill": { "color": "E7E6E6", "transparency": 70 } } },
+{ "method": "text", "text": "Thank You", "options": { "x": 1, "y": 1.2, "w": 8, "h": 0.8, "fontSize": 48, "fontFace": "Arial", "bold": true, "color": "485275", "align": "center" } },
+{ "method": "text", "text": "祝同学们金榜题名，圆梦高考！", "options": { "x": 1, "y": 2.2, "w": 8, "h": 0.6, "fontSize": 24, "fontFace": "微软雅黑", "bold": true, "color": "1A1A2E", "align": "center" } },
+{ "method": "shape", "shapeType": "rect", "options": { "x": 4.2, "y": 3.0, "w": 1.6, "h": 0.06, "fill": { "color": "485275" } } },
+{ "method": "text", "text": "Wish you all the best in the Gaokao!", "options": { "x": 1, "y": 3.3, "w": 8, "h": 0.5, "fontSize": 16, "fontFace": "Arial", "color": "44546A", "align": "center", "italic": true } },
+{ "method": "text", "text": "12", "options": { "x": 9.3, "y": 5.2, "w": 0.5, "h": 0.3, "fontSize": 10, "color": "7A7A7A", "align": "center" } }
+]
+}
+]
+}
+```

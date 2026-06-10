@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT Builder — slides.json → PPTX</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #21262d;
+            --text: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #3b82f6;
+            --accent-green: #22c55e;
+            --radius: 8px;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex; flex-direction: column;
+        }
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px; background: var(--surface);
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header-left h1 { font-size: 16px; font-weight: 600; }
+        .header-left span { font-size: 12px; color: var(--text-secondary); }
+        .header-actions { display: flex; gap: 8px; }
+        .main {
+            flex: 1; display: flex; flex-direction: column; padding: 16px;
+            gap: 12px; max-width: 1200px; width: 100%; margin: 0 auto;
+        }
+        .toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; flex-shrink: 0;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 12px; }
+        .toolbar-left label { font-size: 13px; color: var(--text-secondary); }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border: none; border-radius: var(--radius);
+            font-family: inherit; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-primary:disabled { opacity: 0.5; cursor: wait; filter: none; }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-success:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+        .btn-success:disabled { opacity: 0.6; cursor: wait; filter: none; }
+        .btn-outline {
+            background: transparent; border: 1px solid var(--border); color: var(--text-secondary);
+        }
+        .btn-outline:hover { border-color: var(--text-secondary); color: var(--text); }
+        .editor-wrap {
+            flex: 1; display: flex; flex-direction: column; min-height: 0;
+            border: 1px solid var(--border); border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .editor-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 14px; background: var(--surface);
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .editor-header-left { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+        .editor-header-left svg { stroke: var(--text-secondary); }
+        .editor-status { font-size: 12px; color: var(--text-secondary); }
+        .editor-body {
+            flex: 1; padding: 16px; border: none; outline: none; resize: none;
+            background: #0d1117; color: #e6edf3;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px; line-height: 1.7; tab-size: 2;
+        }
+        .editor-body::placeholder { color: #484f58; }
+        .footer {
+            flex-shrink: 0; padding: 10px 20px; text-align: center;
+            font-size: 12px; color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>📊 PPT Builder</h1>
+            <span>slides.json → PPTX</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline" id="load-sample-btn">📃 加载示例</button>
+            <button class="btn btn-outline" id="clear-btn">🗑️ 清空</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <label>粘贴或编辑 slides.json 数据，点击生成 PPT</label>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline" id="format-btn">✨ 格式化</button>
+                <button class="btn btn-success" id="generate-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    生成 PPT
+                </button>
+            </div>
+        </div>
+
+        <div class="editor-wrap">
+            <div class="editor-header">
+                <div class="editor-header-left">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    slides.json
+                </div>
+                <div class="editor-status" id="status-text">就绪</div>
+            </div>
+            <textarea class="editor-body" id="json-input" spellcheck="false" wrap="off"
+placeholder='{
+  "title": "我的PPT",
+  "style": "tech-dark",
+  "outputFile": "demo.pptx",
+  "theme": {
+    "colors": {
+      "background": "0f172a",
+      "surface": "1e293b",
+      "primary": "3b82f6",
+      "secondary": "06b6d4",
+      "accent": "f59e0b",
+      "text": "f8fafc",
+      "textSecondary": "94a3b8",
+      "textMuted": "64748b",
+      "border": "334155"
+    },
+    "fonts": {
+      "title": {"family":"Microsoft YaHei","weight":"bold","size":36,"color":"f8fafc"},
+      "subtitle": {"family":"Microsoft YaHei","size":18,"color":"94a3b8"},
+      "body": {"family":"Microsoft YaHei","size":14,"color":"f8fafc"},
+      "tocNumber": {"family":"Microsoft YaHei","weight":"bold","size":28,"color":"3b82f6"},
+      "slideNumber": {"family":"Microsoft YaHei","size":8,"color":"64748b"}
+    }
+  },
+  "slides": [
+    {"elements":[
+      {"method":"bg","options":{"fill":{"color":"background"}}},
+      {"method":"shape","shapeType":"rect","options":{"x":0,"y":0,"w":10,"h":0.06,"fill":{"color":"primary"}}},
+      {"method":"text","text":"2026 AI 趋势","options":{"x":1,"y":1.2,"w":8,"h":1.2,"fontSize":44,"fontFace":"Microsoft YaHei","bold":true,"color":"text","align":"center"}},
+      {"method":"text","text":"行业洞察与展望","options":{"x":1,"y":2.6,"w":8,"h":0.8,"fontSize":20,"color":"textSecondary","align":"center"}}
+    ]},
+    {"elements":[
+      {"method":"bg","options":{"fill":{"color":"background"}}},
+      {"method":"text","text":"目录","options":{"x":0.8,"y":0.3,"w":8.4,"h":0.6,"fontSize":28,"fontFace":"Microsoft YaHei","bold":true,"color":"text"}},
+      {"method":"shape","shapeType":"rect","options":{"x":0.8,"y":1.2,"w":3.8,"h":3,"fill":{"color":"surface"},"rectRadius":0.12}},
+      {"method":"text","text":"01  多模态 AI","options":{"x":1.2,"y":1.5,"w":3.2,"h":0.5,"fontSize":16,"color":"text"}},
+      {"method":"text","text":"02  Agent 规模化","options":{"x":1.2,"y":2.2,"w":3.2,"h":0.5,"fontSize":16,"color":"text"}},
+      {"method":"text","text":"03  端侧智能","options":{"x":1.2,"y":2.9,"w":3.2,"h":0.5,"fontSize":16,"color":"text"}},
+      {"method":"text","text":"04  AI 安全","options":{"x":1.2,"y":3.6,"w":3.2,"h":0.5,"fontSize":16,"color":"text"}}
+    ]},
+    {"elements":[
+      {"method":"bg","options":{"fill":{"color":"background"}}},
+      {"method":"text","text":"多模态 AI","options":{"x":0.8,"y":0.3,"w":8.4,"h":0.6,"fontSize":28,"fontFace":"Microsoft YaHei","bold":true,"color":"text"}},
+      {"method":"shape","shapeType":"rect","options":{"x":0.6,"y":1.2,"w":8.8,"h":3.5,"fill":{"color":"surface"},"rectRadius":0.12}},
+      {"method":"text","text":"GPT-5 实现原生多模态理解","options":{"x":1,"y":1.5,"w":8,"h":0.5,"fontSize":16,"color":"text","bullet":{"type":"bullet"}}},
+      {"method":"text","text":"视频生成质量达到影视级","options":{"x":1,"y":2.2,"w":8,"h":0.5,"fontSize":16,"color":"text","bullet":{"type":"bullet"}}},
+      {"method":"text","text":"实时语音交互成为标配","options":{"x":1,"y":2.9,"w":8,"h":0.5,"fontSize":16,"color":"text","bullet":{"type":"bullet"}}}
+    ]},
+    {"elements":[
+      {"method":"bg","options":{"fill":{"color":"background"}}},
+      {"method":"text","text":"市场规模","options":{"x":0.8,"y":0.3,"w":8.4,"h":0.6,"fontSize":28,"fontFace":"Microsoft YaHei","bold":true,"color":"text"}},
+      {"method":"chart","chartType":"bar","chartData":[{"name":"规模(亿美元)","labels":["2022","2023","2024","2025","2026"],"values":[200,350,580,920,1500]}],"options":{"x":0.8,"y":1.2,"w":8.4,"h":3.5,"showLegend":true,"chartColors":["primary"],"catAxisLabelColor":"textSecondary","showGridLines":false,"showValue":true,"dataLabelFormatCode":"#,##0"}}
+    ]},
+    {"elements":[
+      {"method":"bg","options":{"fill":{"color":"background"}}},
+      {"method":"shape","shapeType":"rect","options":{"x":2.5,"y":1.8,"w":5,"h":2.5,"fill":{"color":"surface"},"rectRadius":0.15}},
+      {"method":"text","text":"谢谢","options":{"x":3,"y":2.2,"w":4,"h":1,"fontSize":40,"fontFace":"Microsoft YaHei","bold":true,"color":"text","align":"center"}},
+      {"method":"text","text":"欢迎交流","options":{"x":3,"y":3.2,"w":4,"h":0.5,"fontSize":16,"color":"textSecondary","align":"center"}}
+    ]}
+  ]
+}'></textarea>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="/">← 返回聊天</a> &nbsp;·&nbsp; 使用 PptxGenJS 浏览器端渲染
+    </div>
+
+    <script src="/js/jszip.min.js"></script>
+    <script src="/js/pptxgen.min.js"></script>
+    <script>
+        const jsonInput = document.getElementById('json-input');
+        const statusText = document.getElementById('status-text');
+        const generateBtn = document.getElementById('generate-btn');
+        const formatBtn = document.getElementById('format-btn');
+        const loadSampleBtn = document.getElementById('load-sample-btn');
+        const clearBtn = document.getElementById('clear-btn');
+
+        // ── Auto-load from sessionStorage (sent from chat page) ──
+        (function() {
+            var stored = sessionStorage.getItem('slidesJson');
+            if (stored) {
+                jsonInput.value = stored;
+                setStatus('✅ 已从聊天加载');
+                sessionStorage.removeItem('slidesJson');
+            }
+        })();
+
+        // ── PptxGenJS Elements-based Rendering ──
+        function renderPptx(slideData) {
+            const pres = new PptxGenJS();
+            pres.defineLayout({ name: 'WIDE', width: 10, height: 5.625 });
+            pres.layout = 'WIDE';
+
+            // Auto-fill default theme if missing
+            if (!slideData.theme) slideData.theme = {};
+            if (!slideData.theme.colors) slideData.theme.colors = {};
+            var defaults = { background:'0f172a', surface:'1e293b', primary:'3b82f6',
+                secondary:'06b6d4', accent:'f59e0b', text:'f8fafc',
+                textSecondary:'94a3b8', textMuted:'64748b', border:'334155' };
+            Object.keys(defaults).forEach(function(k) {
+                if (!slideData.theme.colors[k]) slideData.theme.colors[k] = defaults[k];
+            });
+
+            var c = slideData.theme.colors;
+            var totalSlides = slideData.slides.length;
+
+            // Theme color helper: replace theme color keys with actual hex
+            function tc(color) {
+                if (!color || typeof color !== 'string') return color;
+                if (c[color]) return c[color];
+                return color;
+            }
+
+            // Apply theme color to all color fields in an options object
+            function applyTheme(opts) {
+                if (!opts || typeof opts !== 'object') return opts;
+                var o = JSON.parse(JSON.stringify(opts));
+                delete o.letterSpacing;
+                delete o.headerFill;
+                delete o.fillColor;
+                delete o.objectName;
+                if (o.bullet && typeof o.bullet === 'object' && o.bullet.type === 'bullet') o.bullet = true;
+                function forceStr(v) { return (v != null && typeof v === 'string') ? v : null; }
+                if (o.color) o.color = tc(forceStr(o.color)) || o.color;
+                if (o.valueColor) o.valueColor = tc(forceStr(o.valueColor)) || o.valueColor;
+                if (o.fill && typeof o.fill === 'object' && o.fill.color) o.fill.color = tc(forceStr(o.fill.color)) || o.fill.color;
+                if (o.line && o.line.color) o.line.color = tc(forceStr(o.line.color)) || o.line.color;
+                if (o.shadow && o.shadow.color) o.shadow.color = tc(forceStr(o.shadow.color)) || o.shadow.color;
+                if (o.border && o.border.color) o.border.color = tc(forceStr(o.border.color)) || o.border.color;
+                if (o.chartColors && Array.isArray(o.chartColors)) {
+                    o.chartColors = o.chartColors.map(function(c) { return tc(forceStr(c)) || c; });
+                }
+                return o;
+            }
+
+            // Execute a single element on a slide
+            function execElement(sl, el) {
+                if (!el || !el.method) return;
+                try {
+                    switch (el.method) {
+                        case 'text': {
+                            var txt = Array.isArray(el.text) ? el.text : (el.text != null ? String(el.text) : '');
+                            sl.addText(txt, applyTheme(el.options || {}));
+                            break;
+                        }
+                        case 'shape': {
+                            var shapeName = el.shapeType || 'rect';
+                            var st = pres.ShapeType[shapeName];
+                            sl.addShape(st || pres.ShapeType.rect, applyTheme(el.options || {}));
+                            break;
+                        }
+                        case 'table': {
+                            sl.addTable(resolveTableCells(el.rows || []), applyTheme(el.options || {}));
+                            break;
+                        }
+                        case 'chart': {
+                            var ct = pres.ChartType[el.chartType || 'bar'];
+                            sl.addChart(ct, el.chartData || [], applyTheme(el.options || {}));
+                            break;
+                        }
+                        case 'image': {
+                            sl.addImage(applyTheme(el.options || {}));
+                            break;
+                        }
+                        case 'bg': {
+                            if (el.options && el.options.gradient && el.options.gradient.colorStops) {
+                                var gs = el.options.gradient.colorStops.map(function(g) { return { color: tc(g.color) }; });
+                                sl.background = { gradient: { type: el.options.gradient.type || 'linear', colorStops: gs } };
+                            } else if (el.options && el.options.fill && el.options.fill.color) {
+                                sl.background = { color: tc(el.options.fill.color) };
+                            } else if (el.options && el.options.color) {
+                                sl.background = { color: tc(el.options.color) };
+                            }
+                            break;
+                        }
+                    }
+                } catch (ex) {
+                    console.warn('Element failed: ' + (el.method || '?') + ' text=' + (typeof el.text === 'string' ? el.text.substring(0,30) : ''), ex);
+                }
+            }
+
+            // Resolve theme colors in table cell options (nested deep in rows)
+            function resolveTableCells(rows) {
+                if (!rows || !rows.length) return rows;
+                var out = [];
+                for (var ri = 0; ri < rows.length; ri++) {
+                    var row = rows[ri];
+                    if (!row || !row.length) { out.push(row); continue; }
+                    var newRow = [];
+                    for (var ci = 0; ci < row.length; ci++) {
+                        var cell = row[ci];
+                        if (cell && cell.options) {
+                            newRow.push({ text: cell.text, options: applyTheme(cell.options) });
+                        } else {
+                            newRow.push(cell);
+                        }
+                    }
+                    out.push(newRow);
+                }
+                return out;
+            }
+
+            // Render each slide from elements
+            slideData.slides.forEach(function(slide, idx) {
+                var sl = pres.addSlide();
+
+                (slide.elements || []).forEach(function(el) { execElement(sl, el); });
+
+                sl.addText((idx+1) + '/' + totalSlides, { x:9.3, y:5.1, w:0.6, h:0.3, fontSize:8, color:c.textMuted || '64748b', align:'right', fontFace:'Arial', transparency:50 });
+            });
+
+            // Emergency fallback: if PptxGenJS write fails, generate text-only PPT
+            return pres.write({ outputType: 'blob' }).then(function(blob) { return blob; }, function(writeErr) {
+                console.warn('PptxGenJS write failed, generating emergency text-only PPT...', writeErr);
+                var pres2 = new PptxGenJS();
+                pres2.defineLayout({ name: 'WIDE', width: 10, height: 5.625 });
+                pres2.layout = 'WIDE';
+                slideData.slides.forEach(function(s, idx) {
+                    var sl2 = pres2.addSlide();
+                    sl2.background = { color: c.background };
+                    sl2.addText(slideData.title + ' - 第' + (idx+1) + '页', { x:0.5, y:0.3, w:9, h:0.6, fontSize:18, bold:true, color:c.text });
+                    sl2.addText((idx+1) + '/' + totalSlides, { x:9.3, y:5.1, w:0.6, h:0.3, fontSize:8, color:c.textMuted, align:'right', transparency:50 });
+                });
+                return pres2.write({ outputType: 'blob' }).then(function(blob) { return blob; });
+            });
+        }
+
+        // ── UI Handlers ──
+        function getStatus() { return statusText.textContent; }
+        function setStatus(s) { statusText.textContent = s; }
+
+        generateBtn.addEventListener('click', function() {
+            var text = jsonInput.value.trim();
+            if (!text) { setStatus('⚠️ 请先输入 slides.json'); return; }
+            var data;
+            try { data = JSON.parse(text); } catch(e) { setStatus('❌ JSON 格式错误: ' + e.message); return; }
+            if (!data.slides || !data.slides.length) { setStatus('❌ 缺少 slides 数组'); return; }
+            if (!data.theme) data.theme = {};
+            if (!data.theme.colors) data.theme.colors = {};
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = '生成中...';
+            setStatus('⏳ 正在生成 PPT...');
+
+            renderPptx(data).then(function(blob) {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = (data.outputFile || 'presentation.pptx').replace(/^.*[/\\]/, '');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+                setStatus('✅ 已下载 ' + data.slides.length + ' 页');
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> 生成 PPT';
+            }).catch(function(err) {
+                console.error('PPT generation failed:', err);
+                setStatus('❌ 生成失败: ' + err.message);
+                generateBtn.disabled = false;
+                generateBtn.textContent = '重试生成';
+            });
+        });
+
+        formatBtn.addEventListener('click', function() {
+            var text = jsonInput.value.trim();
+            if (!text) return;
+            try { var parsed = JSON.parse(text); jsonInput.value = JSON.stringify(parsed, null, 2); setStatus('✨ 已格式化'); }
+            catch(e) { setStatus('❌ JSON 格式错误: ' + e.message); }
+        });
+
+        loadSampleBtn.addEventListener('click', function() {
+            jsonInput.value = jsonInput.getAttribute('placeholder');
+            setStatus('📃 已加载示例数据');
+        });
+
+        clearBtn.addEventListener('click', function() {
+            jsonInput.value = '';
+            setStatus('就绪');
+            jsonInput.focus();
+        });
+
+        // Keyboard shortcut: Ctrl+Enter to generate
+        jsonInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                generateBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>

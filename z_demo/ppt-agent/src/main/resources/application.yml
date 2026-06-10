@@ -1,0 +1,80 @@
+spring:
+  datasource:
+    url: jdbc:mysql://124.220.83.46:3306/agent-scope-ppt?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+    username: root
+    password: NvhjWgD!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: none           # 不自动建表/改表，schema 完全由 schema.sql 控制
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+    show-sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 5s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+agentscope:
+  agui:
+    path-prefix: /agui
+    cors-enabled: true
+    server-side-memory: true
+    default-agent-id: default
+    enable-reasoning: true
+  studio:
+    enabled: false
+    url: http://localhost:3000
+    project: default
+
+websearch:
+  api-key: 539c4ef8217ad74ed6f25f496e664d354abccbef
+  endpoint: https://google.serper.dev/search
+  timeout-seconds: 15
+  default-result-count: 5
+
+# 图片搜索（免费）：Unsplash / Pixabay
+# 1. Unsplash: 注册 https://unsplash.com/developers → 获取 Access Key（免费，50次/小时）
+# 2. Pixabay: 注册 https://pixabay.com/api/ → 获取 API Key（免费，5000次/小时，CC0无需署名）
+imagesearch:
+  source: pixabay                    # unsplash 或 pixabay
+  unsplash-access-key: ""             # 你的 Unsplash Access Key
+  pixabay-api-key: "56213246-b2e639f4a26fb0117c1da100d"                 # 你的 Pixabay API Key（切换到 pixabay 源时使用）
+  timeout-seconds: 15
+  per-page: 5
+
+# Sa-Token 配置 (JWT + Redis 模式)
+sa-token:
+  # token 名称（同时也是 Authorization Header 名称）
+  token-name: Authorization
+  # token 有效期（单位秒，默认 30 天）
+  timeout: 2592000
+  # 临时活跃有效期（30 分钟无操作自动失效）
+  active-timeout: 1800
+  # 是否允许同一账号并发登录（true=允许，false=新登录顶掉旧登录）
+  is-concurrent: true
+  # 同账号多端登录是否共用同一个 token
+  is-share: false
+  # token 前缀
+  token-prefix: Bearer
+  # token 风格 (uuid / simple-uuid / random-32 / random-64 / random-128 / tik)
+  token-style: random-64
+  # 是否输出日志
+  is-log: false
+  # jwt 秘钥（生产环境必须修改成强随机串）
+  jwt-secret-key: ppt-agent-jwt-secret-please-change-in-production-2026
+
+server:
+  port: 8889
