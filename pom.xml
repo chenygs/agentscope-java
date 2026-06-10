@@ -49,6 +49,7 @@
         <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
         <central.publishing.maven.version>0.10.0</central.publishing.maven.version>
 
+
         <maven.deploy.skip>false</maven.deploy.skip>
         <argLine>-Xms512m -Xmx1024m</argLine>
     </properties>
