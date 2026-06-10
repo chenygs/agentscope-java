@@ -1,9 +1,10 @@
-package io.github.chenygs.pptagent.chat.service;
+package io.github.chenygs.pptagent.orm.service;
 
-import io.github.chenygs.pptagent.chat.entity.ChatSession;
-import io.github.chenygs.pptagent.chat.entity.ChatSessionMessage;
-import io.github.chenygs.pptagent.chat.repository.ChatSessionMessageRepository;
-import io.github.chenygs.pptagent.chat.repository.ChatSessionRepository;
+import io.github.chenygs.pptagent.orm.entity.ChatSession;
+import io.github.chenygs.pptagent.orm.entity.ChatSessionMessage;
+import io.github.chenygs.pptagent.orm.repository.ChatSessionMessageRepository;
+import io.github.chenygs.pptagent.orm.repository.ChatSessionRepository;
+import io.github.chenygs.pptagent.agent.state.MyAgentStateStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.Optional;
  * 前端对话 CRUD 服务 — 仅管理 {@code chat_session} / {@code chat_session_message} 两张表。
  *
  * <p>Agent 运行时状态的持久化由
- * {@link io.github.chenygs.pptagent.session.PptSessionStateStore} 负责（落 {@code ppt_session}
+ * {@link MyAgentStateStore} 负责（落 {@code ppt_session}
  * 表）。本类不再实现 {@code AgentStateStore} 接口。
  */
 @Service

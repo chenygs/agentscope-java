@@ -1,13 +1,11 @@
-package io.github.chenygs.pptagent.chat.middleware;
+package io.github.chenygs.pptagent.agent.middleware;
 
 import io.agentscope.core.agent.Agent;
 import io.agentscope.core.agent.RuntimeContext;
 import io.agentscope.core.message.Msg;
 import io.agentscope.core.agent.StreamOptions;
-import io.agentscope.core.event.AgentEvent;
 import io.agentscope.harness.agent.HarnessAgent;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

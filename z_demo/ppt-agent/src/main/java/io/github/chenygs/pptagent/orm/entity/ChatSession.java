@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.user;
+package io.github.chenygs.pptagent.orm.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,36 +9,37 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 用户实体 — JPA 映射 ppt_user 表
- *
- * <p>表结构由 schema.sql 手动创建，JPA 仅做 OR 映射（ddl-auto=none）。
+ * 聊天会话实体 — 映射 chat_session 表
  */
 @Entity
-@Table(name = "ppt_user")
+@Table(name = "chat_session")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class ChatSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 64)
-    private String username;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column(name = "password_hash", nullable = false, length = 128)
-    private String passwordHash;
+    @Column(name = "agent_id", nullable = false, length = 64)
+    private String agentId;
 
-    @Column(name = "nickname", length = 64)
-    private String nickname;
+    @Column(name = "session_key", length = 255)
+    private String sessionKey;
 
-    @Column(name = "avatar", length = 255)
-    private String avatar;
+    @Column(name = "title", length = 255)
+    private String title;
 
-    @Column(name = "enabled", nullable = false)
-    private Boolean enabled = true;
+    @Column(name = "is_pinned")
+    private Boolean isPinned = false;
+
+    @Column(name = "pin_time")
+    private LocalDateTime pinTime;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -46,15 +47,12 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
-
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        if (this.enabled == null) this.enabled = true;
+        if (this.isPinned == null) this.isPinned = false;
     }
 
     @PreUpdate

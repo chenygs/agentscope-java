@@ -2,7 +2,7 @@ package io.github.chenygs.pptagent.controller;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import io.github.chenygs.pptagent.user.UserService;
+import io.github.chenygs.pptagent.orm.service.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

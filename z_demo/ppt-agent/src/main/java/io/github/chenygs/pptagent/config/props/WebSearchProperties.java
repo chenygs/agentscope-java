@@ -1,6 +1,6 @@
 package io.github.chenygs.pptagent.config.props;
 
-import io.github.chenygs.pptagent.tool.WebSearchTool;
+import io.github.chenygs.pptagent.agent.tool.WebSearchTool;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

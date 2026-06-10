@@ -1,9 +1,9 @@
-package io.github.chenygs.pptagent.chat.controller;
+package io.github.chenygs.pptagent.controller.chat;
 
 import cn.dev33.satoken.stp.StpUtil;
-import io.github.chenygs.pptagent.chat.entity.ChatSession;
-import io.github.chenygs.pptagent.chat.entity.ChatSessionMessage;
-import io.github.chenygs.pptagent.chat.service.ChatSessionService;
+import io.github.chenygs.pptagent.orm.entity.ChatSession;
+import io.github.chenygs.pptagent.orm.entity.ChatSessionMessage;
+import io.github.chenygs.pptagent.orm.service.ChatSessionService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

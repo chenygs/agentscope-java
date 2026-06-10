@@ -1,7 +1,9 @@
-package io.github.chenygs.pptagent.user;
+package io.github.chenygs.pptagent.orm.service;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import io.github.chenygs.pptagent.orm.entity.User;
+import io.github.chenygs.pptagent.orm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;

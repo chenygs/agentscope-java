@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.session;
+package io.github.chenygs.pptagent.agent.state;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,12 +27,12 @@ import java.util.Objects;
 @Table(name = "ppt_session", indexes = {
         @Index(name = "idx_session_state", columnList = "session_id, state_key, item_index")
 })
-@IdClass(PptSession.PptSessionId.class)
+@IdClass(TAgentStateStore.TAgentStateStoreId.class)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PptSession {
+public class TAgentStateStore {
 
     @Id
     @Column(name = "session_id", nullable = false, length = 255)
@@ -74,7 +74,7 @@ public class PptSession {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PptSessionId implements Serializable {
+    public static class TAgentStateStoreId implements Serializable {
         private String sessionId;
         private String stateKey;
         private Integer itemIndex;
@@ -82,7 +82,7 @@ public class PptSession {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof PptSessionId that)) return false;
+            if (!(o instanceof TAgentStateStoreId that)) return false;
             return Objects.equals(sessionId, that.sessionId)
                     && Objects.equals(stateKey, that.stateKey)
                     && Objects.equals(itemIndex, that.itemIndex);

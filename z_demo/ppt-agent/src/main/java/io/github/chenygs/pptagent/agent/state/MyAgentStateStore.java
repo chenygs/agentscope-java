@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.session;
+package io.github.chenygs.pptagent.agent.state;
 
 import io.agentscope.core.state.AgentStateStore;
 import io.agentscope.core.state.ListHashUtil;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Agent 运行时状态存储 — JPA 版本，对应官方 {@code MysqlAgentStateStore}。
  *
- * <p>数据落 {@code ppt_session} 表（实体 {@link PptSession}），存储策略与
+ * <p>数据落 {@code ppt_session} 表（实体 {@link TAgentStateStore}），存储策略与
  * {@code io.agentscope.extensions.mysql.state.MysqlAgentStateStore} 保持一致：
  *
  * <ul>
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class PptSessionStateStore implements AgentStateStore {
+public class MyAgentStateStore implements AgentStateStore {
 
     /** 匿名 user 的占位段 */
     private static final String ANON_USER_SEGMENT = "__anon__";
@@ -44,7 +44,7 @@ public class PptSessionStateStore implements AgentStateStore {
     /** 单值 / 哈希值固定 item_index */
     private static final int SINGLE_STATE_INDEX = 0;
 
-    private final PptSessionRepository repository;
+    private final TAgentStateStoreRepository repository;
 
     // ============== AgentStateStore 接口实现 ==============
 
@@ -77,7 +77,7 @@ public class PptSessionStateStore implements AgentStateStore {
                 .findBySessionIdAndStateKeyOrderByItemIndexAsc(sid, hashKey)
                 .stream()
                 .findFirst()
-                .map(PptSession::getStateData)
+                .map(TAgentStateStore::getStateData)
                 .orElse(null);
         int existingCount = (int) repository.countBySessionIdAndStateKey(sid, key);
 
@@ -102,7 +102,7 @@ public class PptSessionStateStore implements AgentStateStore {
 
         String sid = packSessionId(userId, sessionId);
         return repository
-                .findById(new PptSession.PptSessionId(sid, key, SINGLE_STATE_INDEX))
+                .findById(new TAgentStateStore.TAgentStateStoreId(sid, key, SINGLE_STATE_INDEX))
                 .map(row -> JsonUtils.getJsonCodec().fromJson(row.getStateData(), type));
     }
 
@@ -175,9 +175,9 @@ public class PptSessionStateStore implements AgentStateStore {
 
     /** 单行 upsert（INSERT or UPDATE state_data）。JPA 端通过 save() 实现。 */
     private void upsertRow(String sessionId, String stateKey, int itemIndex, String stateData) {
-        PptSession.PptSessionId id = new PptSession.PptSessionId(sessionId, stateKey, itemIndex);
-        PptSession row = repository.findById(id).orElseGet(() ->
-                PptSession.builder()
+        TAgentStateStore.TAgentStateStoreId id = new TAgentStateStore.TAgentStateStoreId(sessionId, stateKey, itemIndex);
+        TAgentStateStore row = repository.findById(id).orElseGet(() ->
+                TAgentStateStore.builder()
                         .sessionId(sessionId)
                         .stateKey(stateKey)
                         .itemIndex(itemIndex)
@@ -189,10 +189,10 @@ public class PptSessionStateStore implements AgentStateStore {
 
     /** 批量插入列表项，从 startIndex 开始递增 item_index。 */
     private void insertItems(String sessionId, String key, List<? extends State> items, int startIndex) {
-        List<PptSession> batch = new ArrayList<>(items.size());
+        List<TAgentStateStore> batch = new ArrayList<>(items.size());
         int index = startIndex;
         for (State item : items) {
-            batch.add(PptSession.builder()
+            batch.add(TAgentStateStore.builder()
                     .sessionId(sessionId)
                     .stateKey(key)
                     .itemIndex(index++)

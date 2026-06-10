@@ -1,9 +1,8 @@
-package io.github.chenygs.pptagent.session;
+package io.github.chenygs.pptagent.agent.state;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +12,11 @@ import java.util.List;
  * 会话状态 Repository — JPA 操作 ppt_session 表
  */
 @Repository
-public interface PptSessionRepository
-        extends JpaRepository<PptSession, PptSession.PptSessionId> {
+public interface TAgentStateStoreRepository
+        extends JpaRepository<TAgentStateStore, TAgentStateStore.TAgentStateStoreId> {
 
     /** 按 sessionId + stateKey 查询所有项（用于列表读取，按 item_index 升序） */
-    List<PptSession> findBySessionIdAndStateKeyOrderByItemIndexAsc(
+    List<TAgentStateStore> findBySessionIdAndStateKeyOrderByItemIndexAsc(
             String sessionId, String stateKey);
 
     /** 查询某个状态键的项数（用于列表大小判断） */

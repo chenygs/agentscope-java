@@ -1,6 +1,6 @@
-package io.github.chenygs.pptagent.chat.repository;
+package io.github.chenygs.pptagent.orm.repository;
 
-import io.github.chenygs.pptagent.chat.entity.ChatSessionMessage;
+import io.github.chenygs.pptagent.orm.entity.ChatSessionMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;

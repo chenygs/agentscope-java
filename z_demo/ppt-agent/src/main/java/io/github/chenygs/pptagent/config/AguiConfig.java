@@ -3,7 +3,7 @@ package io.github.chenygs.pptagent.config;
 import io.agentscope.core.agent.Agent;
 import io.agentscope.spring.boot.agui.common.AguiProperties;
 import io.agentscope.spring.boot.agui.common.ThreadSessionManager;
-import io.github.chenygs.pptagent.chat.middleware.ChatSessionContext;
+import io.github.chenygs.pptagent.agent.middleware.ChatSessionContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

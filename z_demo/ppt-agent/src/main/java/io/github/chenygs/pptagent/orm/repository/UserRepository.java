@@ -1,5 +1,6 @@
-package io.github.chenygs.pptagent.user;
+package io.github.chenygs.pptagent.orm.repository;
 
+import io.github.chenygs.pptagent.orm.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

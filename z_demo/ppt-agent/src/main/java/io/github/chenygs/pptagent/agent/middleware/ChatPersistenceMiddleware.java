@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.chat.middleware;
+package io.github.chenygs.pptagent.agent.middleware;
 
 import io.agentscope.core.agent.Agent;
 import io.agentscope.core.agent.RuntimeContext;
@@ -8,7 +8,7 @@ import io.agentscope.core.event.TextBlockDeltaEvent;
 import io.agentscope.core.message.MsgRole;
 import io.agentscope.core.middleware.MiddlewareBase;
 import io.agentscope.core.middleware.ReasoningInput;
-import io.github.chenygs.pptagent.chat.service.ChatSessionService;
+import io.github.chenygs.pptagent.orm.service.ChatSessionService;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 

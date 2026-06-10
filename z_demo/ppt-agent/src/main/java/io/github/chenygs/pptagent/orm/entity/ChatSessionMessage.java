@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.chat.entity;
+package io.github.chenygs.pptagent.orm.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

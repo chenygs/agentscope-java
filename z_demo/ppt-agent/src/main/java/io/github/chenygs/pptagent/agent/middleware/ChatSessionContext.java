@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.chat.middleware;
+package io.github.chenygs.pptagent.agent.middleware;
 
 /**
  * 用于传递当前请求的 threadId 给 ChatPersistenceMiddleware。

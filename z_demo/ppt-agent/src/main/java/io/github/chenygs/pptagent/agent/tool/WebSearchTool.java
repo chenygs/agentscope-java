@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.tool;
+package io.github.chenygs.pptagent.agent.tool;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

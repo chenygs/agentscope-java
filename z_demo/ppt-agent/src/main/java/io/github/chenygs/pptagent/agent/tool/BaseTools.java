@@ -1,4 +1,4 @@
-package io.github.chenygs.pptagent.tool;
+package io.github.chenygs.pptagent.agent.tool;
 
 import io.agentscope.core.tool.Tool;
 import io.agentscope.core.tool.ToolParam;
