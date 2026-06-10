@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentScope Java 2.0.0-RC2 — 框架全景分析与落地指南</title>
+<style>
+:root{--bg:#0f1117;--bg-card:#1a1d27;--bg-card-hover:#222633;--bg-code:#12141c;--fg:#e4e6ed;--fg-dim:#8b8fa3;--fg-muted:#5c6070;--accent:#6c8cff;--accent-dim:#4a62b8;--green:#4ade80;--green-dim:#22734a;--yellow:#fbbf24;--yellow-dim:#92670e;--red:#f87171;--red-dim:#8b2020;--cyan:#22d3ee;--purple:#a78bfa;--orange:#fb923c;--border:#2a2e3e;--radius:10px;--shadow:0 2px 16px rgba(0,0,0,.4);--font-mono:'Cascadia Code','Fira Code','JetBrains Mono',Consolas,monospace;--font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;font-size:15px}body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);line-height:1.7}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#13151e;border-right:1px solid var(--border);padding:20px 0;overflow-y:auto;z-index:100;transition:transform .3s}.sidebar .logo{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px}.sidebar .logo span{font-size:1rem;font-weight:700;color:var(--accent)}.sidebar .logo small{display:block;font-size:.7rem;color:var(--fg-muted);margin-top:2px}.sidebar nav a{display:block;padding:6px 20px;font-size:.8rem;color:var(--fg-dim);border-left:3px solid transparent;transition:all .15s}.sidebar nav a:hover{color:var(--fg);background:rgba(108,140,255,.06)}.sidebar nav a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(108,140,255,.08)}.sidebar nav .gt{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fg-muted);padding:12px 20px 4px}
+.main{margin-left:260px;padding:36px 44px 80px;max-width:1140px}.hero{text-align:center;padding:56px 0 40px;background:radial-gradient(ellipse at 50% 0%,rgba(108,140,255,.12) 0%,transparent 70%);border-radius:20px;margin-bottom:40px}.hero h1{font-size:2.6rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero .subtitle{font-size:1.1rem;color:var(--fg-dim);margin-top:10px}.hero .badges{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}.hero .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-size:.78rem;font-weight:600;border:1px solid var(--border);background:var(--bg-card)}.badge.b-eng{color:var(--green);border-color:var(--green-dim)}.badge.b-ent{color:var(--accent);border-color:var(--accent-dim)}.badge.b-ref{color:var(--purple);border-color:#5b3fa0}
+.section{margin-bottom:48px;scroll-margin-top:24px}.section h2{font-size:1.5rem;font-weight:700;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}.section h2 .icon{font-size:1.3rem}.cg{display:grid;gap:14px}.cg.c2{grid-template-columns:1fr 1fr}.cg.c3{grid-template-columns:1fr 1fr 1fr}@media(max-width:900px){.cg.c3{grid-template-columns:1fr 1fr}.cg.c2{grid-template-columns:1fr}}@media(max-width:600px){.cg.c2,.cg.c3{grid-template-columns:1fr}}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:all .2s;cursor:pointer}.card:hover{background:var(--bg-card-hover);border-color:var(--accent-dim);transform:translateY(-2px);box-shadow:var(--shadow)}.card .ct{font-weight:700;font-size:.92rem;margin-bottom:5px;display:flex;align-items:center;gap:8px}.card .cd{font-size:.8rem;color:var(--fg-dim);line-height:1.6}.card .cs{font-family:var(--font-mono);font-size:.7rem;color:var(--cyan);margin-top:6px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-block;font-size:.63rem;padding:2px 7px;border-radius:4px;font-weight:600}.t-g{background:rgba(74,222,128,.12);color:var(--green)}.t-b{background:rgba(108,140,255,.12);color:var(--accent)}.t-p{background:rgba(167,139,250,.12);color:var(--purple)}.t-y{background:rgba(251,191,36,.12);color:var(--yellow)}.t-r{background:rgba(248,113,113,.12);color:var(--red)}.t-c{background:rgba(34,211,238,.12);color:var(--cyan)}.t-o{background:rgba(251,146,60,.12);color:var(--orange)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}.modal-overlay.open{display:flex}.modal{background:#161822;border:1px solid var(--border);border-radius:14px;width:100%;max-width:960px;box-shadow:0 8px 40px rgba(0,0,0,.5);position:relative;margin:auto 0}.modal-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#161822;border-radius:14px 14px 0 0;z-index:2}.modal-head .mh-left{display:flex;align-items:center;gap:10px}.modal-head .mh-step{font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:4px;background:rgba(108,140,255,.15);color:var(--accent)}.modal-head .mh-title{font-size:1rem;font-weight:700}.modal-close{background:none;border:1px solid var(--border);border-radius:6px;color:var(--fg-dim);font-size:1.2rem;cursor:pointer;padding:4px 10px;transition:all .15s}.modal-close:hover{color:var(--fg);border-color:var(--fg-dim)}
+.modal-body{padding:0}.mi-section{padding:6px 24px;font-size:.82rem;color:var(--fg-dim);line-height:1.6;border-bottom:1px solid rgba(42,46,62,.4)}.mi-section .mi-tag{display:inline-block;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px;vertical-align:middle}
+.group-tab-bar{display:flex;border-bottom:1px solid var(--border);background:#0e1018;padding:0 16px;flex-wrap:wrap;position:sticky;top:52px;z-index:1}.group-tab{padding:9px 16px;font-size:.73rem;font-weight:600;color:var(--fg-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}.group-tab:hover{color:var(--fg-dim)}.group-tab.active{color:var(--accent);border-bottom-color:var(--accent)}.group-panel{display:none}.group-panel.active{display:block}.sub-tab-bar{display:flex;border-bottom:1px solid var(--border);background:#11131b;padding:0 16px;flex-wrap:wrap}.sub-tab{padding:8px 14px;font-size:.72rem;font-weight:600;color:var(--fg-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}.sub-tab:hover{color:var(--fg-dim)}.sub-tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}.code-panel{display:none}.code-panel.active{display:block}.code-panel pre{margin:0;border:none;border-radius:0;padding:16px 24px;font-size:.78rem;line-height:1.55;max-height:55vh;overflow:auto}
+.modal-tip{padding:12px 24px;font-size:.76rem;color:var(--fg-muted);border-top:1px solid var(--border);background:rgba(108,140,255,.03)}
+.sidebar-toggle{display:none;position:fixed;top:10px;left:10px;z-index:200;background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--fg);cursor:pointer;font-size:1rem}@media(max-width:1000px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:20px 16px 60px}.sidebar-toggle{display:block}.hero h1{font-size:1.7rem}}
+.al{border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}.alh{padding:9px 18px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:7px}.alh .dot{width:7px;height:7px;border-radius:50%}.alb{padding:14px 18px}.le .alh{background:rgba(167,139,250,.08);color:var(--purple)}.le .dot{background:var(--purple)}.lh .alh{background:rgba(74,222,128,.08);color:var(--green)}.lh .dot{background:var(--green)}.lc .alh{background:rgba(108,140,255,.08);color:var(--accent)}.lc .dot{background:var(--accent)}.acg{display:flex;flex-wrap:wrap;gap:7px}.ac{padding:5px 12px;border-radius:5px;font-size:.75rem;font-weight:600;border:1px solid var(--border);background:var(--bg-card)}.ac.ce{border-color:#5b3fa0;color:var(--purple)}.ac.ch{border-color:var(--green-dim);color:var(--green)}.ac.cc{border-color:var(--accent-dim);color:var(--accent)}
+.deploy-diagram{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:16px 0;text-align:center;overflow-x:auto}.dr{display:flex;justify-content:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}.dbx{padding:7px 16px;border-radius:7px;font-size:.78rem;font-weight:600;border:1px solid var(--border);background:var(--bg-code);white-space:nowrap}.dbx.dg{border-color:var(--green-dim);color:var(--green)}.dbx.db{border-color:var(--accent-dim);color:var(--accent)}.dbx.do{border-color:#92400e;color:var(--orange)}.dbx.dc2{border-color:#0e7490;color:var(--cyan)}.dbx.dp{border-color:#5b3fa0;color:var(--purple)}.dbx.dy{border-color:var(--yellow-dim);color:var(--yellow)}.dcn{color:var(--fg-muted);font-size:.9rem;margin:3px 0}
+</style>
+</head>
+<body>
+
+<script id="steps-json" type="application/json">
+{
+"agent-simple":{
+"title":"Agent 智能体","tip":"小白第一个智能体只需要 3 样东西：ReActAgent + Model + InMemoryMemory。Spring Boot 中通过 @Bean 配置即可。",
+"desc":"Agent 是智能体的核心抽象，封装了「接收消息 - 推理 - 回复」的完整生命周期。所有智能体都实现 Agent 接口。",
+"principle":"AgentScope 中 Agent 采用响应式设计，核心方法 call(Msg) 返回 Mono<Msg>。框架内置了从输入到输出的完整中间件链：AgentInput - Reasoning - ModelCall - Acting 循环。AgentBase 提供了骨架模板方法，子类只需实现 doCall()。ReActAgent 是最重要的开箱即用实现，内置了「思考-行动」的 ReAct 循环引擎。",
+"scenario":"单轮对话 / 多轮聊天 / 流式输出 / 事件驱动",
+"variants":[
+{"name":"ReActAgent","desc":"自带推理-行动循环，支持工具调用、Hook 插拔、流式输出。推荐 90% 场景使用","when":"通用场景"},
+{"name":"AgentBase","desc":"抽象基类，实现 Agent 骨架。自定义 Agent 时继承它，覆写 doCall()","when":"需要完全自定义推理逻辑"},
+{"name":"UserAgent","desc":"代表人类用户的 Agent，可接收外部输入注入","when":"人机协同场景"}
+],
+"groups":{
+"Spring Boot 配置":{
+"配置类":"@Configuration\npublic class AgentConfig {\n\n    @Bean\n    public Model chatModel() {\n        return DashScopeChatModel.builder()\n            .apiKey(System.getenv(\"DASHSCOPE_API_KEY\"))\n            .modelName(\"qwen-plus\")\n            .build();\n    }\n\n    @Bean\n    public ReActAgent demoAgent(Model chatModel) {\n        return ReActAgent.builder()\n            .name(\"demo-assistant\")\n            .sysPrompt(\"你是一个友好的助手。\")\n            .model(chatModel)\n            .memory(new InMemoryMemory())\n            .build();\n    }\n}",
+"REST 接口":"@RestController\n@RequestMapping(\"/api/agent\")\npublic class AgentController {\n\n    @Autowired\n    private ReActAgent demoAgent;\n\n    @PostMapping(\"/chat\")\n    public Mono<Msg> chat(@RequestBody ChatRequest req) {\n        Msg userMsg = Msg.builder()\n            .role(MsgRole.USER)\n            .content(TextBlock.builder().text(req.getMessage()).build())\n            .build();\n        return demoAgent.call(userMsg);\n    }\n\n    @PostMapping(value = \"/chat/stream\", produces = \"text/event-stream\")\n    public Flux<ServerSentEvent<String>> chatStream(@RequestBody ChatRequest req) {\n        Msg userMsg = Msg.builder()\n            .role(MsgRole.USER)\n            .content(TextBlock.builder().text(req.getMessage()).build())\n            .build();\n        return demoAgent.stream(userMsg)\n            .map(msg -> ServerSentEvent.builder(msg.getTextContent()).build());\n    }\n}",
+"自定义 Agent":"@Component\npublic class MyCustomAgent extends AgentBase {\n\n    private final Model model;\n\n    public MyCustomAgent(Model model) {\n        super(\"custom-agent\", \"自定义业务Agent\", true, List.of());\n        this.model = model;\n    }\n\n    @Override\n    protected Mono<Msg> doCall(List<Msg> msgs) {\n        return model.generate(msgs, null, null)\n            .map(response -> Msg.builder()\n                .name(getName()).role(MsgRole.ASSISTANT)\n                .content(TextBlock.builder().text(response.getText()).build())\n                .build());\n    }\n}"
+}
+}
+},
+"model-simple":{
+"title":"Model 模型","tip":"AgentScope 内置 5 种模型实现，通过 @ConditionalOnProperty 可在 application.yml 中一键切换模型供应商。",
+"desc":"Model 是大语言模型的抽象接口，封装了与各种 LLM 服务的通信细节。所有的模型实现都通过响应式 Mono 返回结果。",
+"principle":"Model 接口的核心方法是 generate(List<Msg>, ToolRegistry, GenerateOptions)，接收消息列表和工具注册表，返回 Mono<ChatResponse>。每个模型实现内部通过各自的 HTTP 客户端与 LLM API 通信。GenerateOptions 支持配置 temperature、maxTokens、topP 等通用参数。",
+"scenario":"多模型切换 / 国产模型适配 / 流式推理",
+"variants":[
+{"name":"DashScopeChatModel","desc":"阿里通义千问系列（qwen-max / qwen-plus / qwen-turbo）","when":"国内首选"},
+{"name":"OpenAIChatModel","desc":"OpenAI GPT 系列及兼容接口","when":"国际通用"},
+{"name":"AnthropicChatModel","desc":"Claude 系列（Opus / Sonnet / Haiku）","when":"长上下文"},
+{"name":"GeminiChatModel","desc":"Google Gemini 系列","when":"Google 生态"},
+{"name":"OllamaChatModel","desc":"本地部署模型（Llama / Qwen 本地版）","when":"离线/私有部署"}
+],
+"groups":{
+"DashScope":{"配置":"@Configuration\npublic class ModelConfig {\n    @Bean\n    @ConditionalOnProperty(name = \"agentscope.model.provider\", havingValue = \"dashscope\", matchIfMissing = true)\n    public Model dashScopeModel() {\n        return DashScopeChatModel.builder()\n            .apiKey(System.getenv(\"DASHSCOPE_API_KEY\"))\n            .modelName(\"qwen-plus\")\n            .stream(true)\n            .defaultOptions(GenerateOptions.builder()\n                .temperature(0.7).maxTokens(2048).build())\n            .build();\n    }\n}"},
+"OpenAI":{"配置":"@Bean\n@ConditionalOnProperty(name = \"agentscope.model.provider\", havingValue = \"openai\")\npublic Model openAiModel() {\n    return OpenAIChatModel.builder()\n        .apiKey(System.getenv(\"OPENAI_API_KEY\"))\n        .modelName(\"gpt-4o\")\n        .build();\n}"},
+"Ollama":{"配置":"@Bean\n@ConditionalOnProperty(name = \"agentscope.model.provider\", havingValue = \"ollama\")\npublic Model ollamaModel() {\n    return OllamaChatModel.builder()\n        .modelName(\"qwen2.5:7b\")\n        .baseUrl(\"http://localhost:11434\")\n        .build();\n}"},
+"多模型路由":{"工厂模式":"@Component\npublic class ModelRouter {\n    private final Map<String, Model> modelMap;\n    public ModelRouter(List<Model> models) {\n        this.modelMap = models.stream()\n            .collect(Collectors.toMap(m -> m.getModelName(), m -> m));\n    }\n    public Model getModel(String name) {\n        return modelMap.getOrDefault(name, modelMap.values().iterator().next());\n    }\n}"}
+}
+},
+"memory-simple":{
+"title":"Memory 记忆 - 7 种存储实现全解析","tip":"记忆选型建议：Demo 用 InMemoryMemory，单机生产用 JSON 文件，分布式用 Redis，企业合规用 MySQL，长期记忆用 Mem0。",
+"desc":"Memory 是智能体的「笔记本」，记录对话历史。没有记忆，Agent 每次对话都是「失忆」的。AgentScope 提供了从内存到数据库到分布式缓存的完整记忆方案。",
+"principle":"Memory 接口核心方法：addMessage() 添加消息、getMessages() 获取全部消息、clear() 清空。AgentScope 2.0 记忆体系分为三层：1）基础 Memory 接口（InMemoryMemory、StateBackedMemory）2）Harness 层记忆管理（MemoryFlushManager、Compaction）3）扩展层长期记忆（Mem0、Reme、百炼）。记忆压缩（Compaction）机制在 Token 超阈值时自动精炼历史。",
+"scenario":"单轮对话 / 多轮聊天 / 记忆持久化 / Token 压缩 / 分布式会话",
+"variants":[
+{"name":"InMemoryMemory","desc":"进程内内存存储，重启丢失。最简单的入门方案","when":"开发/原型"},
+{"name":"StateBackedMemory","desc":"基于 AgentStateStore 的记忆，支持 JSON 文件持久化","when":"单机生产"},
+{"name":"JsonFileAgentStateStore","desc":"JSON 文件持久化，Agent 状态和记忆写入本地文件","when":"单机生产"},
+{"name":"Redis 记忆","desc":"基于 Redis 的会话存储，支持水平扩展和会话共享","when":"分布式部署"},
+{"name":"MySQL 记忆","desc":"基于关系型数据库的记忆持久化","when":"企业已有 MySQL"},
+{"name":"Mem0 长期记忆","desc":"Mem0 服务的长期记忆，支持语义搜索和跨会话","when":"长期记忆"},
+{"name":"Harness 记忆管理","desc":"MemoryFlushManager + Compaction 自动压缩与持久化","when":"生产 Harness"}
+],
+"groups":{
+"InMemoryMemory":{
+"原理与配置":"// InMemoryMemory - 最简单的内存级记忆\n// 数据存储在 JVM 堆内存中，重启后丢失\n\n@Configuration\npublic class MemoryConfig {\n    @Bean\n    @ConditionalOnMissingBean(Memory.class)\n    public Memory inMemoryMemory() {\n        return new InMemoryMemory();\n    }\n}\n\n@Bean\npublic ReActAgent simpleAgent(Model model, Memory memory) {\n    return ReActAgent.builder()\n        .name(\"assistant\").model(model).memory(memory).build();\n}",
+"REST 接口":"@RestController\n@RequestMapping(\"/api/memory\")\npublic class MemoryController {\n    @Autowired private ReActAgent agent;\n    @GetMapping(\"/history\")\n    public Mono<List<Msg>> getHistory(@RequestParam(defaultValue = \"20\") int limit) {\n        List<Msg> all = agent.getMemory().getMessages();\n        return Mono.just(all.stream()\n            .skip(Math.max(0, all.size() - limit))\n            .collect(Collectors.toList()));\n    }\n    @DeleteMapping(\"/clear\")\n    public Mono<Void> clearMemory() {\n        agent.getMemory().clear();\n        return Mono.empty();\n    }\n}"
+},
+"JSON 文件存储":{
+"配置":"@Configuration\npublic class JsonFileMemoryConfig {\n    @Bean\n    public AgentStateStore jsonFileStore() {\n        return new JsonFileAgentStateStore(new File(\"./data/agent-states\"));\n    }\n    @Bean\n    public Memory stateBackedMemory(AgentStateStore store) {\n        return new StateBackedMemory(store);\n    }\n}",
+"管理 REST":"@RestController\n@RequestMapping(\"/api/json-memory\")\npublic class JsonMemoryController {\n    @Autowired private AgentStateStore stateStore;\n    @Autowired private ReActAgent agent;\n    @PostMapping(\"/save/{sessionId}\")\n    public Mono<Void> saveState(@PathVariable String sessionId) {\n        return stateStore.save(sessionId, agent.getState());\n    }\n    @PostMapping(\"/restore/{sessionId}\")\n    public Mono<Msg> restoreState(@PathVariable String sessionId) {\n        return stateStore.load(sessionId)\n            .flatMap(state -> {\n                agent.restoreState(state);\n                return agent.call(Msg.builder().role(MsgRole.SYSTEM)\n                    .content(TextBlock.builder().text(\"[系统] 会话已恢复\").build()).build());\n            });\n    }\n    @GetMapping(\"/list\")\n    public Mono<List<String>> listSessions() { return stateStore.listSessions(); }\n}"
+},
+"Redis 记忆":{
+"依赖与配置":"<!-- pom.xml -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-redis</artifactId>\n</dependency>\n<dependency>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-data-redis</artifactId>\n</dependency>",
+"Spring Boot 配置":"@Configuration\npublic class RedisMemoryConfig {\n    @Autowired private RedisConnectionFactory redisFactory;\n    @Bean\n    public SessionStore redisSessionStore() {\n        return new RedisSessionStore(redisFactory, \"agentscope:session:{sessionId}\");\n    }\n    @Bean\n    public Memory redisBackedMemory(SessionStore sessionStore) {\n        return new SessionBackedMemory(sessionStore);\n    }\n}\n# application.yml\nspring:\n  redis:\n    host: ${REDIS_HOST:localhost}\n    port: 6379\n    timeout: 5000\n    lettuce:\n      pool:\n        max-active: 16\n        max-idle: 8\n        min-idle: 4",
+"会话管理 REST":"@RestController\n@RequestMapping(\"/api/session\")\npublic class SessionController {\n    @Autowired private SessionStore sessionStore;\n    @PostMapping(\"/create\")\n    public Mono<String> createSession(@RequestParam String userId) {\n        String sessionId = UUID.randomUUID().toString();\n        return sessionStore.create(sessionId, userId).thenReturn(sessionId);\n    }\n    @GetMapping(\"/{sessionId}/messages\")\n    public Mono<List<Msg>> getMessages(@PathVariable String sessionId) {\n        return sessionStore.getMessages(sessionId);\n    }\n    @DeleteMapping(\"/{sessionId}\")\n    public Mono<Void> deleteSession(@PathVariable String sessionId) {\n        return sessionStore.delete(sessionId);\n    }\n}"
+},
+"MySQL 记忆":{
+"依赖与配置":"<!-- pom.xml -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-mysql</artifactId>\n</dependency>\n<dependency>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-data-jpa</artifactId>\n</dependency>",
+"Spring Boot 配置":"# application.yml\nspring:\n  datasource:\n    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/agentscope?useSSL=false&characterEncoding=utf8mb4\n    username: ${MYSQL_USER:root}\n    password: ${MYSQL_PASSWORD:root}\n  jpa:\n    hibernate:\n      ddl-auto: update\n\n@Configuration\npublic class MysqlMemoryConfig {\n    @Autowired private DataSource dataSource;\n    @Bean\n    public JdbcTemplate jdbcTemplate() { return new JdbcTemplate(dataSource); }\n    @Bean\n    public Memory mysqlMemory(JdbcTemplate jdbc) {\n        return new JdbcBackedMemory(jdbc, \"agent_messages\");\n    }\n}",
+"建表 SQL":"-- MySQL 建表语句\nCREATE TABLE IF NOT EXISTS agent_messages (\n    id BIGINT AUTO_INCREMENT PRIMARY KEY,\n    session_id VARCHAR(64) NOT NULL,\n    agent_name VARCHAR(64) NOT NULL,\n    msg_role VARCHAR(16) NOT NULL,\n    msg_content TEXT NOT NULL,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_session (session_id),\n    INDEX idx_created (created_at)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n\n-- 查询最近 N 条消息\nSELECT * FROM agent_messages WHERE session_id = ? ORDER BY created_at DESC LIMIT ?;\n\n-- 清理 7 天前的会话\nDELETE FROM agent_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 7 DAY);",
+"管理 REST":"@RestController\n@RequestMapping(\"/api/mysql-memory\")\npublic class MysqlMemoryController {\n    @Autowired private JdbcTemplate jdbc;\n    @GetMapping(\"/history/{sessionId}\")\n    public List<Map<String, Object>> getHistory(@PathVariable String sessionId, @RequestParam(defaultValue = \"50\") int limit) {\n        return jdbc.queryForList(\"SELECT * FROM agent_messages WHERE session_id = ? ORDER BY created_at DESC LIMIT ?\", sessionId, limit);\n    }\n    @DeleteMapping(\"/cleanup\")\n    public int cleanup(@RequestParam(defaultValue = \"7\") int daysOld) {\n        return jdbc.update(\"DELETE FROM agent_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL ? DAY)\", daysOld);\n    }\n}"
+},
+"Mem0 长期记忆":{
+"依赖与配置":"<!-- pom.xml -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-mem0</artifactId>\n</dependency>\n\n@Configuration\npublic class Mem0MemoryConfig {\n    @Bean\n    public LongTermMemory mem0LongTermMemory() {\n        return Mem0LongTermMemory.builder()\n            .apiKey(System.getenv(\"MEM0_API_KEY\"))\n            .userId(\"user_default\")\n            .build();\n    }\n    @Bean\n    public ReActAgent agentWithLongTermMem(Model model, LongTermMemory ltm) {\n        return ReActAgent.builder()\n            .name(\"mem0-assistant\").model(ltm)\n            .longTermMemory(ltm)\n            .longTermMemoryMode(LongTermMemoryMode.BOTH)\n            .build();\n    }\n}",
+"三种模式":"// LongTermMemoryMode 三种模式：\n// 1. STATIC_CONTROL - 框架自动管理\n//    每次推理前自动检索相关记忆并注入\n//    适用：简单场景，开箱即用\n// 2. AGENTIC - Agent 自主管理\n//    通过 LongTermMemoryTools 暴露工具给 Agent\n//    适用：需要精细控制的场景\n// 3. BOTH - 两者结合\n//    框架自动管理 + Agent 可主动操作\n//    推荐的生产模式",
+"REST 接口":"@RestController\n@RequestMapping(\"/api/long-term-memory\")\npublic class LongTermMemoryController {\n    @Autowired private LongTermMemory longTermMemory;\n    @PostMapping(\"/search\")\n    public Mono<List<MemoryItem>> search(@RequestParam String query, @RequestParam(defaultValue = \"5\") int limit) {\n        return longTermMemory.search(query, limit);\n    }\n    @PostMapping(\"/store\")\n    public Mono<Void> store(@RequestBody StoreRequest req) {\n        return longTermMemory.store(req.getContent(), req.getMetadata());\n    }\n    @DeleteMapping(\"/{memoryId}\")\n    public Mono<Void> delete(@PathVariable String memoryId) {\n        return longTermMemory.delete(memoryId);\n    }\n}"
+},
+"Harness 记忆管理":{
+"MemoryFlushManager":"@Configuration\npublic class HarnessMemoryConfig {\n    @Bean\n    public MemoryFlushManager memoryFlushManager(SessionStore sessionStore) {\n        return MemoryFlushManager.builder()\n            .sessionStore(sessionStore)\n            .flushInterval(Duration.ofSeconds(30))\n            .batchSize(10)\n            .build();\n    }\n    @Bean\n    public CompactionConfig compactionConfig() {\n        return CompactionConfig.builder()\n            .enabled(true)\n            .tokenThreshold(4000)\n            .targetTokenCount(2000)\n            .build();\n    }\n    @Bean\n    public HarnessAgent harnessAgent(Model model, MemoryFlushManager fm, CompactionConfig cc) {\n        return HarnessAgent.builder()\n            .name(\"production-agent\").model(model)\n            .memoryFlushManager(fm).compactionConfig(cc)\n            .build();\n    }\n}",
+"记忆压缩机制":"// Compaction 记忆压缩流程：\n// 1. 监控 Memory 中消息的 Token 总数\n// 2. 当 Token > tokenThreshold(4000) 时触发压缩\n// 3. 压缩策略：\n//    a. 保留最近的 N 条消息（保留上下文）\n//    b. 对较早的消息进行摘要（使用 LLM）\n//    c. 用摘要替换被压缩的消息\n// 4. 压缩后 Token 数降到 targetTokenCount(2000)\n// 5. 原始消息不丢失（保存在 JSONL 日志中）\n// 优点：避免 Token 超限，保留关键信息，降低成本",
+"工具结果淘汰":"// ToolResultEvictionConfig - 工具结果淘汰策略\n@Bean\npublic ToolResultEvictionConfig toolResultEvictionConfig() {\n    return ToolResultEvictionConfig.builder()\n        .enabled(true)\n        .maxToolResults(20)\n        .evictionPolicy(EvictionPolicy.SUMMARY)\n        .build();\n}\n// EvictionPolicy:\n// - NONE    - 不淘汰\n// - DROP    - 直接丢弃最早的工具结果\n// - SUMMARY - 对丢弃的工具结果做摘要保留"
+}
+}
+},
+"tool-complex":{
+"title":"Tool 工具系统","tip":"@Component + @Tool 注解即可自动注册工具。Agent 的 ReAct 循环会自动判断何时调用哪个工具。",
+"desc":"Tool 是智能体的「双手」——让 Agent 能执行具体操作：查天气、读文件、执行命令、调 API。",
+"principle":"工具系统由多层组成：1. @Tool 注解标记方法为工具 2. @ToolParam 注解标记参数 3. Toolkit 工具包容器 4. ToolRegistry 注册中心 5. ToolExecutor 执行引擎 6. PermissionEngine 权限决策（ALLOW/ASK/DENY）。方法返回值支持：String（同步）、Mono<String>（异步）、Mono<ToolResultBlock>（复杂结果）。",
+"scenario":"文件操作 / Shell 执行 / API 调用 / 数据库查询 / 子智能体调用",
+"variants":[
+{"name":"TodoTools","desc":"内置任务规划工具（PlanNotebook）","when":"复杂任务分解"},
+{"name":"ReadFileTool/WriteFileTool","desc":"沙箱化文件读写","when":"文件操作"},
+{"name":"ShellCommandTool","desc":"安全执行 Shell 命令","when":"系统操作"},
+{"name":"SubAgentTool","desc":"主 Agent 动态创建子 Agent","when":"任务委派"},
+{"name":"McpTool","desc":"通过 MCP 协议连接外部工具服务器","when":"生态集成"}
+],
+"groups":{
+"注解定义":{
+"@Tool + @ToolParam":"@Component\npublic class WeatherTools {\n    @Tool(description = \"获取指定城市的实时天气信息\")\n    public String getWeather(\n            @ToolParam(name = \"city\", description = \"城市名\") String city) {\n        return String.format(\"【%s天气】晴天，25°C\", city);\n    }\n}\n\n@Component\npublic class DatabaseTools {\n    @Autowired private JdbcTemplate jdbcTemplate;\n    @Tool(description = \"执行 SQL 查询并返回结果\")\n    public String queryDatabase(@ToolParam(name = \"sql\", description = \"SQL 语句\") String sql) {\n        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);\n        return rows.stream().limit(10).map(Object::toString).collect(Collectors.joining(\"\\n\"));\n    }\n}",
+"异步工具":"@Component\npublic class AsyncTools {\n    @Tool(description = \"异步调用外部 API\")\n    public Mono<String> fetchData(@ToolParam(name = \"url\", description = \"API URL\") String url) {\n        return webClient.get().uri(url).retrieve()\n            .bodyToMono(String.class)\n            .timeout(Duration.ofSeconds(10))\n            .onErrorResume(e -> Mono.just(\"Error: \" + e.getMessage()));\n    }\n}"
+},
+"Spring Boot 装配":{
+"Toolkit @Bean":"@Configuration\npublic class ToolConfig {\n    @Bean\n    public Toolkit toolkit(List<Object> toolBeans) {\n        Toolkit toolkit = new Toolkit();\n        toolBeans.forEach(toolkit::registerTool);\n        toolkit.registerTool(new TodoTools());\n        return toolkit;\n    }\n}\n@Bean\npublic ReActAgent agentWithTools(Model model, Toolkit toolkit) {\n    return ReActAgent.builder()\n        .name(\"tool-assistant\").model(model).toolkit(toolkit).maxIters(15).build();\n}",
+"MCP 工具集成":"@Configuration\npublic class McpToolConfig {\n    @Bean\n    public McpClientWrapper fileSystemMcp() {\n        return McpClientBuilder.stdio()\n            .command(\"npx\")\n            .args(\"-y\", \"@modelcontextprotocol/server-filesystem@0.6.2\", \"/data\")\n            .build();\n    }\n    @Bean\n    public Toolkit mcpEnhancedToolkit(McpClientWrapper mcp, List<Object> toolBeans) {\n        Toolkit toolkit = new Toolkit();\n        toolBeans.forEach(toolkit::registerTool);\n        toolkit.registration().mcpClient(mcp)\n            .enableTools(List.of(\"read_file\", \"write_file\")).apply();\n        return toolkit;\n    }\n}"
+}
+}
+},
+"hook-complex":{
+"title":"Hook 钩子系统","tip":"Hook 的 priority 决定执行顺序：0=最高（安全/鉴权），500=正常（日志），1000=最低。",
+"desc":"Hook 是 Agent 生命周期的「监控器」，可以在执行的不同阶段插入自定义逻辑——日志、鉴权、修改消息、拦截工具调用。",
+"principle":"Hook 接口只有一个方法 onEvent(T event)，接收各种 HookEvent 子类。事件类型覆盖完整生命周期：PreCallEvent/PostCallEvent、PreReasoningEvent/PostReasoningEvent（可修改消息/响应）、ReasoningChunkEvent（流式）、PreActingEvent/PostActingEvent（可拦截/修改）、ErrorEvent（异常）。priority() 决定执行顺序。",
+"scenario":"日志监控 / 权限检查 / 消息审计 / 输入输出过滤",
+"variants":[
+{"name":"日志 Hook","desc":"在各阶段打印日志","when":"调试/监控"},
+{"name":"鉴权 Hook","desc":"检查用户和工具权限","when":"安全控制"},
+{"name":"审计 Hook","desc":"记录消息和工具调用到数据库","when":"合规要求"},
+{"name":"过滤 Hook","desc":"过滤敏感词，脱敏","when":"内容安全"}
+],
+"groups":{
+"基础 Hook":{
+"Spring Boot 配置":"@Configuration\npublic class HookConfig {\n    @Bean\n    public Hook loggingHook() {\n        return new Hook() {\n            private final Logger log = LoggerFactory.getLogger(\"AgentHook\");\n            @Override\n            public <T extends HookEvent> Mono<T> onEvent(T event) {\n                if (event instanceof PreReasoningEvent)\n                    log.info(\"Agent 开始推理...\");\n                else if (event instanceof PreActingEvent e)\n                    log.info(\"调用工具: {}\", e.getToolUse().getName());\n                else if (event instanceof PostActingEvent e)\n                    log.info(\"工具完成: {}\", e.getToolUse().getName());\n                else if (event instanceof ErrorEvent e)\n                    log.error(\"异常: {}\", e.getError().getMessage());\n                return Mono.just(event);\n            }\n            @Override public int priority() { return 500; }\n        };\n    }\n}\n@Bean\npublic ReActAgent agentWithHooks(Model model, Hook loggingHook) {\n    return ReActAgent.builder()\n        .name(\"monitored-assistant\").model(model)\n        .hook(loggingHook)\n        .hooks(List.of(new AuditHook(), new SecurityHook()))\n        .build();\n}",
+"事件列表":"// 所有 HookEvent 类型（按执行顺序）：\n// PreCallEvent      - Agent 调用前（可修改）\n// PreReasoningEvent - 模型推理前（可修改消息）\n// ReasoningChunkEvent - 流式推理中（通知型）\n// PostReasoningEvent - 模型推理后（可修改响应）\n// PreActingEvent    - 工具执行前（可拦截）\n// ActingChunkEvent  - 工具执行中（通知型）\n// PostActingEvent   - 工具执行后（可修改结果）\n// PreSummaryEvent   - 总结前（可修改）\n// PostSummaryEvent  - 总结后（可修改）\n// PostCallEvent     - Agent 返回后（可修改）\n// ErrorEvent        - 异常时触发"
+},
+"实战 Hook":{
+"审计 Hook（数据库）":"@Component\npublic class AuditHook implements Hook {\n    @Autowired private AuditLogRepository auditRepo;\n    @Override\n    public <T extends HookEvent> Mono<T> onEvent(T event) {\n        if (event instanceof PostReasoningEvent e) {\n            AuditLog log = new AuditLog();\n            log.setType(\"REASONING\");\n            log.setInputTokens(e.getInputTokens());\n            log.setOutputTokens(e.getOutputTokens());\n            return auditRepo.save(log).thenReturn(event);\n        }\n        if (event instanceof PostActingEvent e) {\n            AuditLog log = new AuditLog();\n            log.setType(\"TOOL_CALL\");\n            log.setToolName(e.getToolUse().getName());\n            return auditRepo.save(log).thenReturn(event);\n        }\n        return Mono.just(event);\n    }\n    @Override public int priority() { return 100; }\n}",
+"安全拦截":"@Component\npublic class SecurityHook implements Hook {\n    private static final List<String> BLOCKED = List.of(\"shell_execute\", \"delete_file\");\n    @Override\n    public <T extends HookEvent> Mono<T> onEvent(T event) {\n        if (event instanceof PreActingEvent e) {\n            if (BLOCKED.contains(e.getToolUse().getName())) {\n                ToolResultBlock error = ToolResultBlock.builder()\n                    .toolUseId(e.getToolUse().getId())\n                    .content(List.of(TextBlock.builder()\n                        .text(\"安全策略禁止此工具\").build()))\n                    .build();\n                return Mono.just((T) new PostActingEvent(error));\n            }\n        }\n        return Mono.just(event);\n    }\n    @Override public int priority() { return 10; }\n}"
+}
+}
+},
+"permission-complex":{
+"title":"Permission 权限引擎","tip":"生产环境建议：开发用 BYPASS，测试用 DEFAULT，生产用 EXPLORE + 敏感工具 DONT_ASK。",
+"desc":"权限引擎控制工具调用是否需要用户确认或是否允许执行。生产环境中确保 Agent 不会执行危险操作。",
+"principle":"权限引擎核心是三态决策模型：ALLOW（允许）、ASK（询问用户）、DENY（拒绝）。内置工具不可绕过权限系统。PermissionMode 四种模式：BYPASS（直接 ALLOW）、DONT_ASK（直接 DENY）、DEFAULT（默认 ASK）、EXPLORE（只读 ALLOW，写操作 ASK）。",
+"scenario":"危险命令保护 / 文件删除确认 / 敏感 API 调用审批",
+"variants":[
+{"name":"PermissionRule","desc":"定义工具级别的权限规则","when":"细粒度控制"},
+{"name":"PermissionMode","desc":"全局权限模式","when":"环境级别"}
+],
+"groups":{
+"配置与规则":{
+"Spring Boot 配置":"@Configuration\npublic class PermissionConfig {\n    @Bean\n    public PermissionEngine permissionEngine() {\n        PermissionEngine engine = new PermissionEngine();\n        engine.registerRule(new PermissionRule().toolName(\"get_weather\").mode(PermissionMode.ALLOW));\n        engine.registerRule(new PermissionRule().toolName(\"shell_execute\").mode(PermissionMode.DENY));\n        engine.registerRule(new PermissionRule().toolName(\"write_file\").mode(PermissionMode.ASK));\n        return engine;\n    }\n}",
+"四种模式":"// PermissionMode 四种模式：\n// BYPASS   - 直接 ALLOW，不检查任何规则（开发环境）\n// DONT_ASK - 直接 DENY，只允许白名单（生产安全）\n// DEFAULT  - 默认 ASK，未注册规则的工具询问用户\n// EXPLORE  - 只读工具 ALLOW，写操作 ASK"
+}
+}
+},
+"skill-complex":{
+"title":"Skill 技能系统 - 5 种仓库实现 + 自学习闭环","tip":"Skill 是 AgentScope 2.0 的核心升级点。通过 Git/MySQL/PostgreSQL 管理技能，团队可以像管理代码一样管理 AI 技能。",
+"desc":"Skill 是「提示词 + 工具 + 示例」的组合包。一个技能教会 Agent 如何完成某一类特定任务。AgentScope 提供了 5 种技能仓库实现，覆盖从本地文件到分布式数据库的完整方案。",
+"principle":"Skill 系统核心是让 Agent 动态加载「领域知识包」。一个 Skill 包含：系统提示词（教 Agent 如何思考该领域任务）、关联工具（完成任务所需的工具列表）、Few-shot 示例（输入输出范例）。\n\n核心接口体系：\n- AgentSkillRepository — 技能仓库接口，定义技能的 CRUD\n- SkillRegistry — 技能注册中心，管理所有可用技能\n- SkillBox — 技能的运行时容器，按需加载\n- DynamicSkillMiddleware — 在推理前动态注入匹配的技能提示词\n- SkillCurator — 技能自学习闭环（起草 -> 审核 -> 灰度 -> 发布）\n- ProposeSkillTool / SkillManageTool — Agent 自主管理技能的工具",
+"scenario":"领域专家技能 / 代码审查技能 / 数据分析技能 / 客服问答技能",
+"variants":[
+{"name":"GitSkillRepository ⭐","desc":"从 Git 仓库获取技能定义（YAML/MD 文件），支持版本管理","when":"团队共享，推荐"},
+{"name":"MysqlSkillRepository","desc":"从 MySQL 表存储技能，支持结构化查询","when":"企业内部已有 MySQL"},
+{"name":"PostgresSkillRepository","desc":"从 PostgreSQL 表存储技能","when":"企业内部已有 PostgreSQL"},
+{"name":"FileSystemSkillRepository","desc":"从本地文件系统加载技能文件","when":"单机/开发"},
+{"name":"ClasspathSkillRepository","desc":"从 classpath 资源加载技能（打包在 JAR 内）","when":"内置技能"},
+{"name":"WorkspaceSkillRepository","desc":"Harness 工作区技能仓库，多租户隔离","when":"Harness 生产"},
+{"name":"SkillCurator","desc":"技能自学习闭环：起草-审核-灰度-发布-整理","when":"生产运营"}
+],
+"groups":{
+"核心接口体系":{
+"AgentSkillRepository":"// AgentSkillRepository — 技能仓库接口\n// 所有技能仓库实现都实现此接口\npublic interface AgentSkillRepository {\n    // 获取所有技能列表\n    List<AgentSkillRepositoryInfo> listSkills();\n    // 根据名称获取技能\n    AgentSkill getSkill(String name);\n    // 刷新技能（重新加载）\n    void refresh();\n}\n\n// AgentSkillRepositoryInfo — 技能元信息\npublic class AgentSkillRepositoryInfo {\n    private String name;        // 技能名称\n    private String description; // 技能描述\n    private String version;     // 版本号\n}\n\n// AgentSkill — 技能定义\npublic class AgentSkill {\n    private String name;\n    private String description;\n    private String prompt;      // 系统提示词\n    private List<String> tools; // 关联工具列表\n    private List<Example> examples; // Few-shot 示例\n}",
+"SkillRegistry":"// SkillRegistry — 技能注册中心\n// 管理所有技能仓库，提供统一的技能查询接口\n\n@Configuration\npublic class SkillRegistryConfig {\n\n    @Bean\n    public SkillRegistry skillRegistry(List<AgentSkillRepository> repos) {\n        SkillRegistry registry = new SkillRegistry();\n        // 注册多个技能仓库（按优先级）\n        repos.forEach(registry::registerRepository);\n        return registry;\n    }\n\n    @Bean\n    public DynamicSkillMiddleware dynamicSkillMiddleware(SkillRegistry registry) {\n        // 自动在推理前注入匹配的技能提示词\n        return new DynamicSkillMiddleware(registry);\n    }\n}",
+"SkillBox":"// SkillBox — 技能的运行时容器\n// 缓存已加载的技能，支持按名称查找\n\n@Component\npublic class SkillBoxExample {\n\n    @Autowired\n    private SkillBox skillBox;\n\n    public void useSkill(String skillName) {\n        // 按名称获取技能\n        AgentSkill skill = skillBox.getSkill(skillName);\n        if (skill != null) {\n            System.out.println(\"使用技能: \" + skill.getName());\n            System.out.println(\"提示词: \" + skill.getPrompt());\n            System.out.println(\"工具: \" + skill.getTools());\n        }\n    }\n\n    @Scheduled(fixedRate = 60000)\n    public void refreshSkills() {\n        // 定期刷新技能缓存\n        skillBox.refresh();\n    }\n}"
+},
+"GitSkillRepository":{
+"Maven 依赖":"<!-- pom.xml 添加依赖 -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-skill-git-repository</artifactId>\n    <version>${agentscope.version}</version>\n</dependency>",
+"Spring Boot 配置":"@Configuration\npublic class GitSkillConfig {\n\n    @Bean\n    public AgentSkillRepository gitSkillRepository() {\n        return new GitSkillRepository(\n            \"https://github.com/team/agent-skills.git\",  // Git 仓库地址\n            \"main\",                                        // 分支\n            \"/skills\"                                      // 技能文件目录\n        );\n    }\n\n    @Bean\n    public SkillRegistry skillRegistry(AgentSkillRepository repo) {\n        SkillRegistry registry = new SkillRegistry();\n        registry.registerRepository(repo);\n        return registry;\n    }\n}",
+"仓库目录结构":"// Git 技能仓库推荐目录结构：\n//\n// agent-skills/\n// ├── skills/\n// │   ├── code-review/\n// │   │   └── SKILL.md          # 代码审查技能\n// │   ├── data-analysis/\n// │   │   └── SKILL.md          # 数据分析技能\n// │   ├── customer-support/\n// │   │   └── SKILL.md          # 客服技能\n// │   └── security-audit/\n// │       └── SKILL.md          # 安全审计技能\n// ├── README.md\n// └── .gitignore\n//\n// 每个技能一个目录，目录名即技能名\n// 目录内 SKILL.md 定义技能内容",
+"技能 YAML 定义":"# skills/code-review/SKILL.md\nname: code-review\ndescription: 代码审查专家\nprompt: |\n  你是一个资深的代码审查专家。\n  请从以下维度审查代码：\n  1. 正确性 - 是否存在 bug\n  2. 安全性 - 是否存在安全漏洞\n  3. 性能 - 是否有性能问题\n  4. 可维护性 - 代码是否清晰\n\ntools:\n  - read_file\n  - shell_execute\n  - search_code\n\nexamples:\n  - input: \"审查这段代码\"\n    output: \"发现以下问题：...\"",
+"REST 管理接口":"@RestController\n@RequestMapping(\"/api/skills/git\")\npublic class GitSkillController {\n\n    @Autowired\n    private GitSkillRepository gitSkillRepository;\n\n    @PostMapping(\"/sync\")\n    public Mono<String> syncFromGit() {\n        try {\n            gitSkillRepository.pull();  // 从 Git 拉取最新技能\n            gitSkillRepository.refresh();\n            return Mono.just(\"技能已从 Git 仓库同步\");\n        } catch (Exception e) {\n            return Mono.just(\"同步失败: \" + e.getMessage());\n        }\n    }\n\n    @GetMapping(\"/status\")\n    public Map<String, Object> getStatus() {\n        Map<String, Object> status = new HashMap<>();\n        status.put(\"repository\", gitSkillRepository.getRepositoryUrl());\n        status.put(\"branch\", gitSkillRepository.getBranch());\n        status.put(\"lastCommit\", gitSkillRepository.getLastCommitHash());\n        status.put(\"lastSync\", gitSkillRepository.getLastSyncTime());\n        status.put(\"skillCount\", gitSkillRepository.listSkills().size());\n        return status;\n    }\n}"
+},
+"MysqlSkillRepository":{
+"Maven 依赖":"<!-- pom.xml 添加依赖 -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-skill-mysql-repository</artifactId>\n    <version>${agentscope.version}</version>\n</dependency>\n<dependency>\n    <groupId>com.mysql</groupId>\n    <artifactId>mysql-connector-j</artifactId>\n    <scope>runtime</scope>\n</dependency>",
+"建表 SQL":"-- MySQL 建表语句\nCREATE TABLE IF NOT EXISTS agent_skills (\n    id BIGINT AUTO_INCREMENT PRIMARY KEY,\n    name VARCHAR(128) NOT NULL UNIQUE,\n    description VARCHAR(512),\n    prompt TEXT NOT NULL,\n    tools JSON,\n    examples JSON,\n    version VARCHAR(32) DEFAULT '1.0',\n    status VARCHAR(16) DEFAULT 'active',\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    INDEX idx_name (name),\n    INDEX idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n-- 插入一条技能示例\nINSERT INTO agent_skills (name, description, prompt, tools) VALUES (\n    'code-review',\n    '代码审查专家',\n    '你是一个资深的代码审查专家...',\n    '[\"read_file\", \"shell_execute\"]'\n);\n\n-- 查询所有活跃技能\nSELECT id, name, description, version FROM agent_skills WHERE status = 'active' ORDER BY name;",
+"Spring Boot 配置":"@Configuration\npublic class MysqlSkillConfig {\n\n    @Autowired\n    private DataSource dataSource;\n\n    @Bean\n    public AgentSkillRepository mysqlSkillRepository() {\n        return new MysqlSkillRepository(dataSource);\n    }\n\n    @Bean\n    public SkillRegistry skillRegistry(AgentSkillRepository repo) {\n        SkillRegistry registry = new SkillRegistry();\n        registry.registerRepository(repo);\n        return registry;\n    }\n}\n\n# application.yml\nspring:\n  datasource:\n    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/agentscope?useSSL=false&characterEncoding=utf8mb4\n    username: ${MYSQL_USER:root}\n    password: ${MYSQL_PASSWORD:root}",
+"REST 管理接口":"@RestController\n@RequestMapping(\"/api/skills/mysql\")\npublic class MysqlSkillController {\n\n    @Autowired\n    private AgentSkillRepository mysqlSkillRepository;\n    @Autowired\n    private JdbcTemplate jdbc;\n\n    @GetMapping\n    public List<AgentSkillRepositoryInfo> listSkills() {\n        return mysqlSkillRepository.listSkills();\n    }\n\n    @PostMapping\n    public int createSkill(@RequestBody SkillCreateRequest req) {\n        return jdbc.update(\n            \"INSERT INTO agent_skills (name, description, prompt, tools) VALUES (?, ?, ?, ?)\",\n            req.getName(), req.getDescription(), req.getPrompt(), req.getToolsJson());\n    }\n\n    @PutMapping(\"/{name}\")\n    public int updateSkill(@PathVariable String name, @RequestBody SkillUpdateRequest req) {\n        return jdbc.update(\n            \"UPDATE agent_skills SET prompt = ?, version = version + 1 WHERE name = ?\",\n            req.getPrompt(), name);\n    }\n\n    @DeleteMapping(\"/{name}\")\n    public int deleteSkill(@PathVariable String name) {\n        return jdbc.update(\"UPDATE agent_skills SET status = 'deleted' WHERE name = ?\", name);\n    }\n}"
+},
+"PostgresSkillRepository":{
+"Maven 依赖":"<!-- pom.xml 添加依赖 -->\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-extensions-skill-postgresql-repository</artifactId>\n    <version>${agentscope.version}</version>\n</dependency>\n<dependency>\n    <groupId>org.postgresql</groupId>\n    <artifactId>postgresql</artifactId>\n    <scope>runtime</scope>\n</dependency>",
+"Spring Boot 配置":"@Configuration\npublic class PostgresSkillConfig {\n\n    @Autowired\n    private DataSource dataSource;\n\n    @Bean\n    public AgentSkillRepository postgresSkillRepository() {\n        return new PostgresSkillRepository(dataSource);\n    }\n\n    @Bean\n    public SkillRegistry skillRegistry(AgentSkillRepository repo) {\n        SkillRegistry registry = new SkillRegistry();\n        registry.registerRepository(repo);\n        return registry;\n    }\n}\n\n# application.yml\nspring:\n  datasource:\n    url: jdbc:postgresql://${PG_HOST:localhost}:5432/agentscope\n    username: ${PG_USER:postgres}\n    password: ${PG_PASSWORD:postgres}",
+"建表 SQL":"-- PostgreSQL 建表语句\nCREATE TABLE IF NOT EXISTS agent_skills (\n    id BIGSERIAL PRIMARY KEY,\n    name VARCHAR(128) NOT NULL UNIQUE,\n    description VARCHAR(512),\n    prompt TEXT NOT NULL,\n    tools JSONB DEFAULT '[]',\n    examples JSONB DEFAULT '[]',\n    version VARCHAR(32) DEFAULT '1.0',\n    status VARCHAR(16) DEFAULT 'active',\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX idx_skills_name ON agent_skills(name);\nCREATE INDEX idx_skills_status ON agent_skills(status);\n\n-- 插入示例数据\nINSERT INTO agent_skills (name, description, prompt, tools) VALUES\n  ('code-review', '代码审查专家', '你是一个资深的代码审查专家...', '[\"read_file\",\"shell_execute\"]'),\n  ('data-analysis', '数据分析师', '你是一个数据分析专家...', '[\"read_file\",\"query_database\"]');"
+},
+"FileSystem & Classpath":{
+"FileSystemSkillRepository":"// FileSystemSkillRepository — 从本地文件系统加载技能\n// 适合开发阶段快速测试技能\n\n@Configuration\npublic class FsSkillConfig {\n\n    @Bean\n    public AgentSkillRepository fileSystemSkillRepository() {\n        // 从本地目录加载技能\n        return new FileSystemSkillRepository(\n            new File(\"./my-skills\"));  // 技能文件目录\n    }\n}\n\n// 目录结构：\n// ./my-skills/\n//   ├── my-custom-skill/\n//   │   └── SKILL.md\n//   └── another-skill/\n//       └── SKILL.md\n//\n// 每个子目录对应一个技能，SKILL.md 定义技能内容",
+"ClasspathSkillRepository":"// ClasspathSkillRepository — 从 classpath 加载技能\n// 技能打包在 JAR 内，适合内置/默认技能\n\n@Configuration\npublic class CpSkillConfig {\n\n    @Bean\n    public AgentSkillRepository classpathSkillRepository() {\n        // 从 classpath 的 skills/ 目录加载\n        return new ClasspathSkillRepository(\n            \"classpath:default-skills/\");  // classpath 路径\n    }\n}\n\n// 资源位置：\n// src/main/resources/\n//   └── default-skills/\n//       ├── greeting/\n//       │   └── SKILL.md\n//       └── help/\n//           └── SKILL.md\n//\n// 打包后位于 JAR 内的 classpath 中，无需外部文件",
+"多仓库组合":"// 同时注册多个技能仓库（按优先级）\n@Configuration\npublic class MultiRepoSkillConfig {\n\n    @Bean\n    public SkillRegistry multiSourceSkillRegistry(\n            AgentSkillRepository gitRepo,      // 最高优先级\n            AgentSkillRepository mysqlRepo,    // 第二优先级\n            AgentSkillRepository fsRepo) {     // 最低优先级\n\n        SkillRegistry registry = new SkillRegistry();\n        // 注册顺序决定优先级：先注册的优先级高\n        registry.registerRepository(gitRepo);\n        registry.registerRepository(mysqlRepo);\n        registry.registerRepository(fsRepo);\n\n        // 同名技能时，优先使用高优先级仓库中的版本\n        return registry;\n    }\n}"
+},
+"Skill 自学习闭环":{
+"SkillCurator 配置":"// SkillCurator — 技能自学习闭环\n// Agent 可通过 ProposeSkillTool 提议创建新技能\n// 经过审核 -> 灰度 -> 发布流程后自动生效\n\n@Configuration\npublic class SkillCuratorConfig {\n\n    @Bean\n    public SkillCuratorConfig skillCuratorConfig() {\n        return SkillCuratorConfig.builder()\n            // 启用 Agent 自主提议技能\n            .enableSkillPromotionGate(true)\n            // 启用技能审核流程\n            .enableSkillCurator(true)\n            // 灰度比例（10% 的会话使用新技能）\n            .canaryPercent(10)\n            // 审核通过后的提升策略\n            .promotionStrategy(PromotionStrategy.AUTO_PROMOTE)\n            .build();\n    }\n\n    // 技能安全扫描器\n    @Bean\n    public SkillSecurityScanner skillSecurityScanner() {\n        return new SkillSecurityScanner();\n    }\n\n    // 技能审核日志\n    @Bean\n    public SkillAuditLog skillAuditLog() {\n        return new SkillAuditLog();\n    }\n}",
+"审核流程":"// SkillCurator 完整的审核流程：\n//\n// 1. 起草阶段：\n//    Agent 通过 ProposeSkillTool 提议创建技能\n//    -> SkillCandidate 包含技能名称、描述、提示词、工具列表\n//\n// 2. 安全扫描：\n//    SkillSecurityScanner 检查技能提示词中的安全风险\n//    -> 检查 SQL 注入、命令注入、敏感信息泄露等\n//\n// 3. 审核阶段：\n//    LocalApprovalGate / NotifyAndWaitGate 审核\n//    -> 自动通过 / 需要人工审核\n//\n// 4. 灰度阶段：\n//    CanaryFilter 控制灰度比例（如 10%）\n//    -> 只对部分会话生效\n//\n// 5. 发布阶段：\n//    SkillPromoter 将技能标记为正式发布\n//    -> 对所有会话生效\n//\n// 6. 使用统计：\n//    SkillUsageStore 记录技能使用情况\n//    -> 使用频率、成功率、用户反馈",
+"技能管理工具":"// Agent 可用的技能管理工具\n\n// 1. ProposeSkillTool — Agent 提议创建新技能\n@Tool(description = \"提议创建一个新的技能\")\npublic String proposeSkill(\n        @ToolParam(name = \"name\", description = \"技能名称\") String name,\n        @ToolParam(name = \"prompt\", description = \"技能提示词\") String prompt,\n        @ToolParam(name = \"tools\", description = \"需要的工具列表\") String tools) {\n    return skillCurator.submitCandidate(\n        SkillCandidate.builder()\n            .name(name).prompt(prompt)\n            .tools(Arrays.asList(tools.split(\",\")))\n            .build());\n}\n\n// 2. SkillManageTool — 管理已有技能\n@Tool(description = \"列出所有可用技能\")\npublic String listSkills() {\n    return skillRegistry.getAllSkills().stream()\n        .map(s -> \"- \" + s.getName() + \": \" + s.getDescription())\n        .collect(Collectors.joining(\"\\n\"));\n}\n\n@Tool(description = \"启用或禁用某个技能\")\npublic String toggleSkill(\n        @ToolParam(name = \"name\", description = \"技能名称\") String name,\n        @ToolParam(name = \"enable\", description = \"是否启用\") boolean enable) {\n    skillRegistry.setSkillEnabled(name, enable);\n    return (enable ? \"已启用\" : \"已禁用\") + \"技能: \" + name;\n}"
+},
+"Harness 技能集成":{
+"装配到 HarnessAgent":"@Configuration\npublic class HarnessSkillConfig {\n\n    // 1. 配置技能仓库\n    @Bean\n    public AgentSkillRepository gitSkillRepository() {\n        return new GitSkillRepository(\n            \"https://github.com/team/skills.git\", \"main\", \"/skills\");\n    }\n\n    // 2. 注册技能\n    @Bean\n    public SkillRegistry skillRegistry(AgentSkillRepository repo) {\n        return new SkillRegistry(repo);\n    }\n\n    // 3. 配置技能管理\n    @Bean\n    public SkillManageConfig skillManageConfig() {\n        return SkillManageConfig.builder()\n            .enableSkillManageTool(true)   // 启用技能管理工具\n            .enableSkillPromotionGate(true)// 启用技能提议\n            .enableSkillCurator(true)      // 启用技能审核\n            .build();\n    }\n\n    // 4. 装配到 HarnessAgent\n    @Bean\n    public HarnessAgent productionAgent(Model model, SkillRegistry sr,\n            SkillManageConfig smc, PermissionEngine pe) {\n        return HarnessAgent.builder()\n            .name(\"production-agent\")\n            .model(model)\n            .skillRegistry(sr)\n            .skillManageConfig(smc)\n            .permissionEngine(pe)\n            .build();\n        // HarnessAgent 自动注册以下中间件：\n        // - HarnessSkillMiddleware -> 技能注入\n        // - SkillCuratorMiddleware -> 技能审核\n        // - SkillUsageMiddleware   -> 技能使用统计\n    }\n}",
+"Harness 内置技能中间件":"// HarnessAgent 自动注册的 3 个技能相关中间件：\n//\n// 1. HarnessSkillMiddleware\n//    - 在推理前从 SkillRegistry 获取匹配的技能\n//    - 将技能提示词动态注入 SystemPrompt\n//    - 将技能关联的工具注册到当前会话\n//\n// 2. SkillCuratorMiddleware\n//    - 监控 Agent 提出的技能建议\n//    - 执行安全扫描和审核流程\n//    - 管理灰度发布\n//\n// 3. SkillUsageMiddleware\n//    - 记录每个技能的使用次数\n//    - 记录使用成功率\n//    - 为 SkillCurator 提供数据支撑"
+}
+}
+},
+"rag-complex":{
+"title":"RAG 知识库","tip":"RAG 模式建议：简单场景用 AUTO 模式，专业场景用 MANUAL 模式。",
+"desc":"RAG（检索增强生成）让 Agent 在回答前先从知识库检索相关信息，大幅减少「幻觉」，提高回答准确性。",
+"principle":"RAG 核心流程：用户提问 -> 向量化检索 -> 召回相关文档 -> 拼入 Prompt -> LLM 生成。AgentScope 通过 GenericRAGHook 注入检索流程：AUTO 模式（每次推理前自动检索）、MANUAL 模式（按需检索）。Knowledge 接口抽象知识库。",
+"scenario":"企业知识库问答 / 文档检索 / 法律法规查询",
+"variants":[
+{"name":"RagSimple","desc":"本地简单实现","when":"原型验证"},
+{"name":"RagDify","desc":"对接 Dify 知识库 API","when":"已有 Dify"},
+{"name":"RagBailian","desc":"阿里云百炼知识库","when":"阿里云用户"},
+{"name":"RagHaystack","desc":"Haystack 框架集成","when":"已有 Haystack"},
+{"name":"RagRagFlow","desc":"RagFlow 知识库","when":"RagFlow 用户"}
+],
+"groups":{
+"配置与集成":{
+"Spring Boot 配置":"@Configuration\npublic class RagConfig {\n    @Bean\n    public Knowledge knowledgeBase() {\n        return new RagSimple(SimpleRagConfig.builder()\n            .embeddingModel(new DashScopeEmbeddingModel(System.getenv(\"DASHSCOPE_API_KEY\")))\n            .topK(5).similarityThreshold(0.7).build());\n    }\n    @Bean\n    public Hook ragHook(Knowledge knowledge) {\n        return new GenericRAGHook(knowledge, RAGMode.AUTO);\n    }\n    @Bean\n    public ReActAgent agentWithRag(Model model, Hook ragHook) {\n        return ReActAgent.builder().name(\"knowledge-assistant\").model(model).hook(ragHook).build();\n    }\n}"
+},
+"管理接口":{
+"文档 CRUD":"@RestController\n@RequestMapping(\"/api/knowledge\")\npublic class KnowledgeController {\n    @Autowired private Knowledge knowledge;\n    @PostMapping(\"/documents\")\n    public Mono<Void> addDocument(@RequestBody DocumentRequest req) {\n        return knowledge.addDocument(Document.builder()\n            .id(req.getId()).title(req.getTitle())\n            .content(req.getContent()).build());\n    }\n    @DeleteMapping(\"/documents/{id}\")\n    public Mono<Void> deleteDocument(@PathVariable String id) { return knowledge.deleteDocument(id); }\n    @GetMapping(\"/search\")\n    public Mono<List<SearchResult>> search(@RequestParam String query, @RequestParam(defaultValue = \"5\") int topK) {\n        return knowledge.search(query, topK);\n    }\n}"
+}
+}
+},
+"middleware-complex":{
+"title":"Middleware 中间件链","tip":"大多数开发者不需要直接操作 MiddlewareChain，HarnessAgent 已内置 13 个生产级中间件。",
+"desc":"MiddlewareChain 是 Agent 执行流程的「管道骨架」，所有推理和行动都通过中间件链串联执行。",
+"principle":"AgentScope 2.0 中间件链为五阶段模型：1. onAgent（洋葱式）2. onReasoning 3. onSystemPrompt（变换式）4. onModelCall 5. onActing。MiddlewareBase 是实现自定义中间件的基类。",
+"scenario":"自定义推理逻辑 / 消息预处理 / 上下文注入 / 性能监控",
+"variants":[
+{"name":"CompactionMiddleware","desc":"Token 超阈值时自动压缩记忆","when":"长对话"},
+{"name":"PlanModeMiddleware","desc":"Plan Mode 中间件","when":"任务规划"},
+{"name":"MemoryFlushMiddleware","desc":"自动将记忆刷入持久化存储","when":"持久化"}
+],
+"groups":{
+"五阶段模型":{
+"执行流程":"// Middleware 五阶段模型：\n// call() 入口\n//   +-- onAgent (洋葱式) - 前置逻辑 -> [执行] -> 后置逻辑\n//   +-- ReAct Loop\n//         +-- onReasoning（处理输入消息）\n//         +-- onSystemPrompt（动态组装 Prompt）\n//         +-- onModelCall（调用 LLM）\n//         +-- onActing（工具调用）",
+"自定义 Middleware":"@Component\npublic class PerformanceMonitorMiddleware extends MiddlewareBase {\n    private static final Logger log = LoggerFactory.getLogger(\"Performance\");\n    @Override\n    public Mono<ReasoningInput> onReasoning(ReasoningInput input) {\n        input.setAttribute(\"startTime\", System.currentTimeMillis());\n        return Mono.just(input);\n    }\n    @Override\n    public Mono<ModelCallInput> onModelCall(ModelCallInput input) {\n        long start = System.currentTimeMillis();\n        return super.onModelCall(input)\n            .doOnSuccess(r -> log.info(\"Model call: {}ms\", System.currentTimeMillis() - start));\n    }\n    @Override\n    public Mono<ActingInput> onActing(ActingInput input) {\n        long start = System.currentTimeMillis();\n        return super.onActing(input)\n            .doOnSuccess(r -> log.info(\"Tool: {}ms\", System.currentTimeMillis() - start));\n    }\n}"
+},
+"Harness 内置中间件":{
+"完整列表":"// HarnessAgent 自动注册的 13 个内置中间件：\n// 1. WorkspaceContextMiddleware  -> 工作区上下文\n// 2. CompactionMiddleware        -> 记忆压缩\n// 3. MemoryFlushMiddleware       -> 记忆持久化\n// 4. PlanModeMiddleware          -> 任务规划\n// 5. DynamicSubagentsMiddleware  -> 动态子智能体\n// 6. AtPathExpansionMiddleware   -> @路径展开\n// 7. HarnessSkillMiddleware      -> 技能注入\n// 8. SkillCuratorMiddleware      -> 技能审核\n// 9. SkillUsageMiddleware        -> 技能使用统计\n// 10. ToolResultEvictionMiddleware -> 工具结果淘汰\n// 11. SandboxLifecycleMiddleware  -> 沙箱生命周期\n// 12. AgentTraceMiddleware        -> 链路追踪\n// 13. SubagentsMiddleware         -> 子智能体管理"
+}
+}
+},
+"pipeline-multi":{
+"title":"Pipeline 编排","tip":"Pipeline 实现了 Agent 接口，因此可以嵌套使用。",
+"desc":"Pipeline 是 Agent 编排引擎，支持顺序执行和并行执行。让多个 Agent 像流水线工人一样协作。",
+"principle":"SequentialPipeline（顺序执行）：上一个 Agent 的输出作为下一个的输入。FanoutPipeline（并行执行）：所有 Agent 同时处理相同输入，结果汇总合并。Pipeline 实现了 Agent 接口，可以嵌套使用。",
+"scenario":"内容创作流水线 / 多维度代码审查 / 数据ETL处理",
+"variants":[
+{"name":"SequentialPipeline","desc":"顺序执行：Agent A -> B -> C","when":"流水线作业"},
+{"name":"FanoutPipeline","desc":"并行执行：所有 Agent 同时处理","when":"多维度分析"}
+],
+"groups":{
+"顺序 Pipeline":{
+"Spring Boot 配置":"@Configuration\npublic class PipelineConfig {\n    @Bean\n    public ReActAgent researchAgent(Model model) {\n        return ReActAgent.builder().name(\"研究员\").model(model)\n            .sysPrompt(\"你是一个研究员。\").build();\n    }\n    @Bean\n    public ReActAgent writeAgent(Model model) {\n        return ReActAgent.builder().name(\"写作者\").model(model)\n            .sysPrompt(\"你是一个技术写手。\").build();\n    }\n    @Bean\n    public SequentialPipeline contentPipeline(ReActAgent a, ReActAgent b) {\n        return SequentialPipeline.builder().addAgent(a).addAgent(b).build();\n    }\n}",
+"REST 接口":"@RestController\n@RequestMapping(\"/api/pipeline\")\npublic class PipelineController {\n    @Autowired private SequentialPipeline contentPipeline;\n    @PostMapping(\"/content\")\n    public Mono<Msg> generateContent(@RequestBody ChatRequest req) {\n        Msg input = Msg.builder().role(MsgRole.USER)\n            .content(TextBlock.builder().text(req.getMessage()).build()).build();\n        return contentPipeline.execute(input);\n    }\n}"
+},
+"Pipeline 嵌套":{
+"嵌套编排":"// Pipeline 嵌套：顺序中包含并行\n@Bean\npublic SequentialPipeline advancedPipeline(\n        ReActAgent planner, FanoutPipeline analysisPipeline, ReActAgent summarizer) {\n    return SequentialPipeline.builder()\n        .addAgent(planner)\n        .addAgent(analysisPipeline)  // Pipeline 嵌套\n        .addAgent(summarizer)\n        .build();\n}"
+}
+}
+},
+"subagent-multi":{
+"title":"SubAgent 子智能体","tip":"同步模式适合短任务，异步模式适合长任务或可并行的子任务。",
+"desc":"SubAgent 是主 Agent 动态创建的子任务执行单元。主 Agent 通过 SubAgentTool 创建子 Agent 来委派任务。",
+"principle":"SubAgent 机制让主 Agent 成为「管理者」，子 Agent 成为「执行者」。SubAgentDeclaration 声明子 Agent 模板，SubAgentFactory 创建子 Agent 实例。支持同步（等待结果）和异步（后台+通知）两种模式。",
+"scenario":"任务委派 / 多步骤并行执行 / 专家子系统调用",
+"variants":[
+{"name":"SubAgentTool","desc":"主 Agent 通过该工具创建子 Agent","when":"主-从模式"},
+{"name":"SubAgentDeclaration","desc":"声明子 Agent 模板","when":"定义子 Agent"}
+],
+"groups":{
+"声明与配置":{
+"Spring Boot 配置":"@Configuration\npublic class SubAgentConfig {\n    @Bean\n    public SubagentDeclaration codingSubAgent(Model model) {\n        return SubagentDeclaration.builder()\n            .name(\"coder\").displayName(\"代码生成专家\")\n            .sysPrompt(\"你是一个资深程序员。\").model(model).maxIters(10).build();\n    }\n    @Bean\n    public HarnessAgent mainAgent(Model model, List<SubagentDeclaration> subAgents) {\n        return HarnessAgent.builder()\n            .name(\"manager\").model(model).subagents(subAgents).build();\n    }\n}"
+},
+"同步 vs 异步":{
+"同步模式":"@Tool(description = \"委托编码任务给子智能体（同步等待结果）\")\npublic Mono<String> delegateCoding(@ToolParam(name = \"task\", description = \"编码任务描述\") String task) {\n    return subAgentFactory.execute(\"coder\", task)\n        .map(Msg::getTextContent)\n        .timeout(Duration.ofMinutes(5))\n        .onErrorResume(e -> Mono.just(\"任务执行超时\"));\n}",
+"异步模式":"@Tool(description = \"委托后台任务给子智能体（异步执行）\")\npublic Mono<String> delegateBackground(@ToolParam(name = \"task\", description = \"任务描述\") String task) {\n    String taskId = UUID.randomUUID().toString();\n    return subAgentFactory.executeAsync(\n        BackgroundTask.builder().taskId(taskId).subAgentName(\"coder\")\n            .taskDescription(task).build())\n        .thenReturn(\"任务已提交，ID: \" + taskId);\n}"
+}
+}
+},
+"a2a-multi":{
+"title":"A2A 协议","tip":"A2A 适合跨服务/跨团队场景。同进程内用 Pipeline 或 SubAgent 更轻量。",
+"desc":"A2A（Agent-to-Agent）协议让不同进程甚至不同机器上的 Agent 通过网络互相调用和协作。",
+"principle":"A2A Server 将 Agent 注册为网络服务，A2A Client 通过网络调用远程 Agent，Nacos 集成实现服务发现。与 SubAgent 的区别：SubAgent 是同进程的，A2A 是跨进程/跨机器的。",
+"scenario":"跨服务 Agent 调用 / 微服务 Agent 架构 / 分布式编排",
+"variants":[
+{"name":"A2A Server","desc":"将 Agent 发布为网络服务","when":"暴露能力"},
+{"name":"A2A Client","desc":"远程调用其他 Agent","when":"调用远程"},
+{"name":"Nacos A2A","desc":"基于 Nacos 的服务发现","when":"已有 Nacos"}
+],
+"groups":{
+"A2A Server":{
+"配置":"@Configuration\n@EnableA2AServer\npublic class A2AServerConfig {\n    @Bean\n    public A2AAgentEndpoint expertAgent(ReActAgent agent) {\n        return A2AAgentEndpoint.builder()\n            .agent(agent)\n            .exposeSkills(List.of(\"code-review\"))\n            .build();\n    }\n}"
+},
+"A2A Client":{
+"客户端调用":"@Configuration\npublic class A2AClientConfig {\n    @Bean\n    public A2AClient a2aClient() {\n        return A2AClient.builder()\n            .discoveryServer(\"http://nacos:8848\")\n            .timeout(Duration.ofSeconds(30)).build();\n    }\n}\n@Service\npublic class AgentOrchestrator {\n    @Autowired private A2AClient a2aClient;\n    public Mono<String> callRemoteExpert(String skillName, String input) {\n        return a2aClient.discover(skillName)\n            .flatMap(info -> a2aClient.call(info.getEndpoint(), skillName, input));\n    }\n}"
+}
+}
+},
+"higress-multi":{
+"title":"Higress + Nacos + RocketMQ","tip":"Higress 管入口流量，Nacos 管配置发现，RocketMQ 管异步通信。",
+"desc":"将 AgentScope 接入 Higress 网关、Nacos 配置中心、RocketMQ 消息队列，构建企业级 AI 基础设施。",
+"principle":"Higress 提供请求路由、限流熔断、认证鉴权。Nacos 提供服务发现和配置管理。RocketMQ 提供异步消息通信。三者组合是企业级 Agent 部署的「铁三角」。",
+"scenario":"企业级 Agent 平台 / 微服务架构 / 高可用部署",
+"variants":[
+{"name":"Higress","desc":"统一 API 网关","when":"统一入口"},
+{"name":"Nacos","desc":"服务发现+配置管理","when":"微服务"},
+{"name":"RocketMQ","desc":"异步消息通信","when":"事件驱动"}
+],
+"groups":{
+"配置":{
+"application.yml":"# agentscope:\n#   nacos:\n#     a2a:\n#       enabled: true\n#       server-addr: ${NACOS_ADDR:127.0.0.1:8848}\n#   higress:\n#     enabled: true\n#   rocketmq:\n#     enabled: true\n#     name-server: ${ROCKETMQ_ADDR:127.0.0.1:9876}\n#     topic: agent-events",
+"集成代码":"@Configuration\n@EnableNacosA2A @EnableHigressGateway @EnableRocketMQEventBus\npublic class InfrastructureConfig {\n    @Bean\n    public NacosPromptManager nacosPromptManager() {\n        return new NacosPromptManager(\"agent-prompts\", \"AGENTSCOPE\");\n    }\n    @Bean\n    public Consumer<AgentEvent> rocketMQEventConsumer() {\n        return event -> log.info(\"Agent event: {}\", event.getType());\n    }\n}"
+}
+}
+},
+"harness-agent":{
+"title":"HarnessAgent 生产运行时","tip":"HarnessAgent = ReActAgent + Workspace + Memory + SubAgent + Skill + Sandbox + Permission + Tracing。",
+"desc":"HarnessAgent 是 AgentScope 2.0 的生产级 Agent 运行时，集成了 Workspace、记忆管理、子 Agent、技能、沙箱、文件系统、权限等全部能力。",
+"principle":"HarnessAgent = ReActAgent + Workspace + Memory双层 + SubAgent + Skill + Sandbox + Filesystem + Permission + Tracing。Builder 模式支持丰富的定制选项。",
+"scenario":"生产环境部署 / 多租户系统 / 需要持久化的场景",
+"variants":[
+{"name":"HarnessAgent","desc":"生产级 Agent 运行时","when":"生产部署"},
+{"name":"HarnessGateway","desc":"消息网关","when":"Builder 平台"},
+{"name":"IsolationScope","desc":"多租户隔离范围","when":"多租户"}
+],
+"groups":{
+"HarnessAgent 配置":{
+"Spring Boot":"@Configuration\npublic class HarnessConfig {\n    @Bean\n    public HarnessAgent productionAgent(Model model, Toolkit toolkit,\n            WorkspaceManager wm, SkillRegistry sr, PermissionEngine pe) {\n        return HarnessAgent.builder()\n            .name(\"production-agent\").model(model).toolkit(toolkit)\n            .workspaceManager(wm).skillRegistry(sr).permissionEngine(pe)\n            .enablePlanMode(true).maxIters(20).build();\n    }\n}",
+"REST 接口（多租户）":"@RestController\n@RequestMapping(\"/api/harness\")\npublic class HarnessController {\n    @Autowired private HarnessAgent harnessAgent;\n    @PostMapping(\"/chat\")\n    public Mono<Msg> chat(@RequestBody ChatRequest req, @RequestHeader(\"X-User-Id\") String userId) {\n        IsolationScope scope = IsolationScope.builder()\n            .userId(userId).tenantId(req.getTenantId()).sessionId(req.getSessionId()).build();\n        Msg msg = Msg.builder().role(MsgRole.USER)\n            .content(TextBlock.builder().text(req.getMessage()).build()).build();\n        return harnessAgent.call(msg, scope);\n    }\n}"
+}
+}
+},
+"deploy-prod":{
+"title":"生产部署架构","tip":"生产环境最小配置：Redis + MySQL + 至少 2 个 Pod。",
+"desc":"企业级 AgentScope 部署方案，包含水平扩展、多租户隔离、可观测性、滚动发布等生产必备能力。",
+"principle":"1. 无状态水平扩展（AgentState 持久化到 Redis）2. 多租户隔离（IsolationScope）3. 安全沙箱（Docker）4. 可观测性（OpenTelemetry + Studio）5. 滚动发布（ShutdownManager）",
+"scenario":"生产部署 / 高可用 / 多租户 / 安全合规",
+"variants":[],
+"groups":{
+"部署架构":{
+"整体架构":"// 生产部署架构：\n// 前端 -> SSE/WS -> API 网关 (Higress) -> Pod 实例（无状态）\n//   HarnessGateway -> SessionManager (Redis)\n//   -> HarnessAgent -> WorkspaceManager\n//   -> SandboxClient (Docker) -> PermissionEngine\n// 基础设施：Redis + MySQL + Docker + OTel + Nacos"
+},
+"K8s 部署":{
+"Deployment":"apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: agentscope-agent\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: agent\n  template:\n    spec:\n      containers:\n        - name: agent\n          image: agentscope-agent:latest\n          env:\n            - name: REDIS_HOST\n              value: \"redis-service\"\n          resources:\n            requests:\n              memory: \"2Gi\"\n              cpu: \"1\"\n---\napiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\nmetadata:\n  name: agentscope-agent-hpa\nspec:\n  scaleTargetRef:\n    kind: Deployment\n    name: agentscope-agent\n  minReplicas: 3\n  maxReplicas: 10\n  metrics:\n    - type: Resource\n      resource:\n        name: cpu\n        target:\n          type: Utilization\n          averageUtilization: 70"
+},
+"多租户隔离":{
+"隔离方案":"@Configuration\npublic class MultiTenantConfig {\n    @Bean\n    public AbstractFilesystem tenantFilesystem() {\n        return new OverlayFilesystem(new LocalFilesystem(\"/data/workspaces\"),\n            (scope) -> scope.getTenantId() + \"/\" + scope.getUserId());\n    }\n    @Bean\n    public SessionStore tenantSessionStore() {\n        return new RedisSessionStore(redisConnectionFactory,\n            \"agentscope:session:{tenantId}:{userId}\");\n    }\n    @Bean\n    public PermissionEngine tenantPermissionEngine() {\n        PermissionEngine engine = new PermissionEngine();\n        engine.registerRule(new PermissionRule().tenantId(\"tenant-a\")\n            .toolName(\"shell_execute\").mode(PermissionMode.ALLOW));\n        engine.registerRule(new PermissionRule().tenantId(\"tenant-b\")\n            .toolName(\"shell_execute\").mode(PermissionMode.DENY));\n        return engine;\n    }\n}"
+}
+}
+},
+"arch-overall":{
+"title":"架构全景图","tip":"核心原则：按需取用。小项目只用 agentscope-core，大项目逐步叠加 Harness 和扩展模块。",
+"desc":"AgentScope 2.0.0-RC2 的整体架构分为 Core -> Harness -> Extensions -> Examples 四层。",
+"principle":"Core 层提供核心抽象（ReActAgent、Model、Message、Middleware、Toolkit、Hook、Memory）。Harness 层提供生产运行时（HarnessAgent、Workspace、SubAgent、Skill、Sandbox、Filesystem、Permission、Tracing）。Extensions 层提供 40+ 扩展模块。",
+"scenario":"架构理解 / 模块选型 / 依赖管理",
+"variants":[],
+"groups":{
+"架构全景":{
+"四层架构":"// Extensions 层（40+ 扩展模块）\n// Channel, RAG, Mem, Skills, Nacos, Sandbox, Scheduler, Spring Boot Starters\n// Harness 层\n// HarnessAgent, Workspace, Filesystem, Memory, SubAgent, Skill, Sandbox, Permission\n// Core 层\n// ReActAgent, Model(5种), MiddlewareChain, Toolkit, Hook, Memory, Msg, Event"
+},
+"依赖管理":{
+"Maven POM":"<parent>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-parent</artifactId>\n    <version>2.0.0-SNAPSHOT</version>\n</parent>\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-core</artifactId>\n</dependency>\n<dependency>\n    <groupId>io.agentscope</groupId>\n    <artifactId>agentscope-harness</artifactId>\n</dependency>"
+},
+"选型指南":{
+"场景 -> 模块":"// 场景1：简单对话 -> agentscope-core\n// 场景2：生产级 Agent -> agentscope-core + agentscope-harness\n// 场景3：多智能体 -> agentscope-core + A2A 扩展\n// 场景4：企业级部署 -> agentscope-harness + 全部扩展"
+}
+}
+}
+}
+</script>
+
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<aside class="sidebar">
+<div class="logo"><span>AgentScope 2.0 RC2</span><small>框架全景分析与落地指南</small></div>
+<nav>
+<div class="gt">概览</div><a href="#top" class="active">首页</a><a href="#arch-overall">架构全景</a>
+<div class="gt">单 Agent (Demo级)</div>
+<a href="#agent-simple">Agent 智能体</a><a href="#model-simple">Model 模型</a><a href="#memory-simple">Memory 记忆</a>
+<div class="gt">复杂智能体</div>
+<a href="#tool-complex">Tool 工具系统</a><a href="#hook-complex">Hook 钩子系统</a><a href="#skill-complex">Skill 技能系统</a><a href="#rag-complex">RAG 知识库</a><a href="#middleware-complex">Middleware 中间件链</a><a href="#permission-complex">Permission 权限引擎</a>
+<div class="gt">多智能体联合</div>
+<a href="#pipeline-multi">Pipeline 编排</a><a href="#subagent-multi">SubAgent 子智能体</a><a href="#a2a-multi">A2A 协议</a><a href="#higress-multi">Higress+Nacos+RocketMQ</a>
+<div class="gt">Harness 生产级</div>
+<a href="#harness-agent">HarnessAgent 运行时</a>
+<div class="gt">部署运维</div>
+<a href="#deploy-prod">生产部署架构</a>
+</nav>
+</aside>
+
+<main class="main" id="top">
+
+<div class="hero">
+<h1>AgentScope Java 2.0.0-RC2</h1>
+<p class="subtitle">从单智能体到多智能体联合的完整落地指南 — 基于 Spring Boot 生产架构</p>
+<div class="badges"><span class="badge b-eng">Harness 工程化</span><span class="badge b-ent">企业级分布式</span><span class="badge b-ref">三层递进</span></div>
+</div>
+
+<section class="section" id="arch-overall"><h2><span class="icon">🏛️</span> 架构全景图</h2>
+<p style="margin-bottom:14px;color:var(--fg-dim)">AgentScope Java 2.0.0-RC2 采用<strong style="color:var(--fg)">四层架构</strong>：</p>
+<div class="al le"><div class="alh"><span class="dot"></span> Extensions 扩展层</div><div class="alb"><div class="acg"><span class="ac ce">Channel(钉钉/飞书/企微)</span><span class="ac ce">RAG(Dify/Bailian/Haystack)</span><span class="ac ce">Mem(Mem0/Reme)</span><span class="ac ce">Skill(Git/MySQL/PostgreSQL)</span><span class="ac ce">Nacos(A2A/Prompt/Skill)</span><span class="ac ce">Sandbox(Docker/E2B/K8s)</span><span class="ac ce">Spring Boot Starter</span></div></div></div>
+<div class="al lh"><div class="alh"><span class="dot"></span> Harness 生产运行时层</div><div class="alb"><div class="acg"><span class="ac ch">HarnessAgent</span><span class="ac ch">Workspace</span><span class="ac ch">Filesystem(3种)</span><span class="ac ch">Memory双层</span><span class="ac ch">SubAgent</span><span class="ac ch">Skill</span><span class="ac ch">Sandbox</span><span class="ac ch">Permission</span><span class="ac ch">Tracing(OTel)</span></div></div></div>
+<div class="al lc"><div class="alh"><span class="dot"></span> Core 核心抽象层</div><div class="alb"><div class="acg"><span class="ac cc">ReActAgent</span><span class="ac cc">Model(5种LLM)</span><span class="ac cc">Msg+ContentBlock</span><span class="ac cc">Middleware五阶段</span><span class="ac cc">Hook生命周期</span><span class="ac cc">Toolkit工具系统</span><span class="ac cc">Memory记忆</span><span class="ac cc">Event事件体系</span><span class="ac cc">Permission权限</span></div></div></div>
+</section>
+
+<section class="section" id="agent-simple"><h2><span class="icon">🥚</span> 单智能体（Demo 级）</h2>
+<p style="color:var(--fg-dim);margin-bottom:18px">最简可用的智能体，只需 3 个核心概念：Agent + Model + Memory</p>
+<div class="cg c3">
+<div class="card" onclick="openModal('agent-simple')"><div class="ct"><span class="tag t-b">Agent</span> 智能体</div><div class="cd">接收消息 -> 推理 -> 回复。最核心的抽象，所有智能体的基类。</div><span class="cs">ReActAgent / AgentBase</span></div>
+<div class="card" onclick="openModal('model-simple')"><div class="ct"><span class="tag t-g">Model</span> 模型</div><div class="cd">对接大语言模型的接口。内置 5 种实现：通义千问、OpenAI、Claude、Gemini、Ollama。</div><span class="cs">DashScopeChatModel / OpenAIChatModel</span></div>
+<div class="card" onclick="openModal('memory-simple')" style="border-color:var(--yellow-dim);box-shadow:0 0 12px rgba(251,191,36,.1)"><div class="ct"><span class="tag t-y">Memory ⭐</span> 记忆（7种实现）</div><div class="cd">记录对话历史。支持 InMemory、JSON 文件、Redis、MySQL、Mem0 等 7 种存储方案。</div><span class="cs">InMemory / Redis / MySQL / JSON / Mem0</span></div>
+</div>
+</section>
+
+<section class="section" id="tool-complex"><h2><span class="icon">🧠</span> 复杂智能体</h2>
+<p style="color:var(--fg-dim);margin-bottom:18px">叠加工具、钩子、技能、知识库、中间件、权限六大能力</p>
+<div class="cg c3">
+<div class="card" onclick="openModal('tool-complex')"><div class="ct"><span class="tag t-y">Tool</span> 工具系统</div><div class="cd">@Tool + @ToolParam 注解定义工具，让 Agent 能做事。</div><span class="cs">Toolkit / @Tool / @ToolParam</span></div>
+<div class="card" onclick="openModal('hook-complex')"><div class="ct"><span class="tag t-p">Hook</span> 钩子系统</div><div class="cd">在 Agent 生命周期各阶段插入逻辑：日志、鉴权、审计、过滤。</div><span class="cs">Hook / HookEvent</span></div>
+<div class="card" onclick="openModal('skill-complex')"><div class="ct"><span class="tag t-c">Skill</span> 技能系统</div><div class="cd">提示词+工具+示例的组合包。支持自学习闭环。</div><span class="cs">SkillRegistry / SkillGitRepository</span></div>
+<div class="card" onclick="openModal('rag-complex')"><div class="ct"><span class="tag t-g">RAG</span> 知识库</div><div class="cd">检索增强生成，减少幻觉。5 种实现。</div><span class="cs">Knowledge / GenericRAGHook</span></div>
+<div class="card" onclick="openModal('middleware-complex')"><div class="ct"><span class="tag t-o">Middleware</span> 中间件链</div><div class="cd">Agent 执行管道，五阶段模型。Harness 内置 13 个。</div><span class="cs">MiddlewareChain / MiddlewareBase</span></div>
+<div class="card" onclick="openModal('permission-complex')"><div class="ct"><span class="tag t-r">Permission</span> 权限引擎</div><div class="cd">ALLOW/ASK/DENY 三态决策。保护危险操作。</div><span class="cs">PermissionEngine / PermissionMode</span></div>
+</div>
+</section>
+
+<section class="section" id="pipeline-multi"><h2><span class="icon">👥</span> 多智能体联合</h2>
+<p style="color:var(--fg-dim);margin-bottom:18px">从 Pipeline 编排到 SubAgent 委派，从 A2A 跨服务调用到 Higress 企业网关</p>
+<div class="cg c2">
+<div class="card" onclick="openModal('pipeline-multi')"><div class="ct"><span class="tag t-b">Pipeline</span> 顺序/并行编排</div><div class="cd">SequentialPipeline / FanoutPipeline，支持嵌套。</div><span class="cs">SequentialPipeline / FanoutPipeline</span></div>
+<div class="card" onclick="openModal('subagent-multi')"><div class="ct"><span class="tag t-g">SubAgent</span> 子智能体</div><div class="cd">主 Agent 动态创建子 Agent 委派任务。</div><span class="cs">SubAgentTool / SubAgentDeclaration</span></div>
+<div class="card" onclick="openModal('a2a-multi')"><div class="ct"><span class="tag t-p">A2A</span> 跨进程协议</div><div class="cd">Agent-to-Agent 协议，跨进程/跨机器调用。</div><span class="cs">A2AClient / A2AServer</span></div>
+<div class="card" onclick="openModal('higress-multi')"><div class="ct"><span class="tag t-o">Higress+Nacos+RocketMQ</span></div><div class="cd">企业级基础设施集成。</div><span class="cs">Higress / Nacos / RocketMQ</span></div>
+</div>
+</section>
+
+<section class="section" id="harness-agent"><h2><span class="icon">🏭</span> Harness 生产运行时</h2>
+<p style="color:var(--fg-dim);margin-bottom:18px">HarnessAgent 集成了所有生产级能力</p>
+<div class="cg c2">
+<div class="card" onclick="openModal('harness-agent')"><div class="ct"><span class="tag t-b">HarnessAgent</span></div><div class="cd">= ReActAgent + Workspace + Memory + SubAgent + Skill + Sandbox + Filesystem + Permission + Tracing</div><span class="cs">HarnessAgent.builder()</span></div>
+<div class="card" style="cursor:default"><div class="ct"><span class="tag t-g">Harness 内置中间件（13个）</span></div><div class="cd"><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">WorkspaceContext</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">Compaction</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">MemoryFlush</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">PlanMode</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">DynamicSubagents</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">HarnessSkill</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">SandboxLifecycle</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">AgentTrace</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">ToolResultEviction</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">SkillCurator</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">SkillUsage</span><span style="display:inline-block;background:var(--bg-code);border-radius:4px;padding:2px 8px;margin:2px;font-size:.7rem;font-family:var(--font-mono)">Subagents</span></div></div>
+</div>
+</section>
+
+<section class="section" id="deploy-prod"><h2><span class="icon">☁️</span> 生产部署架构</h2>
+<p style="color:var(--fg-dim);margin-bottom:18px">从单机原型到企业级高可用部署</p>
+<div class="card" onclick="openModal('deploy-prod')" style="margin-bottom:14px;"><div class="ct"><span class="tag t-r">生产部署架构</span></div><div class="cd">Higress 网关 -> 无状态 Pod -> Redis + Docker + MySQL + OTel + Nacos</div><span class="cs">K8s / HPA / Multi-Tenant</span></div>
+<div class="deploy-diagram">
+<div class="dr"><span class="dbx dg">前端 (Vue/React/AG-UI)</span></div><div class="dcn">| SSE / WebSocket</div>
+<div class="dr"><span class="dbx db">API Gateway (Higress)</span></div><div class="dcn">| 限流/鉴权/路由</div>
+<div class="dr"><span class="dbx do">Pod 1</span><span class="dbx do">Pod 2</span><span class="dbx do">Pod N</span></div>
+<div style="font-size:.68rem;color:var(--fg-muted);margin:2px 0">无状态水平扩展 (HPA)</div>
+<div class="dcn">|</div>
+<div class="dr"><span class="dbx dc2">Redis Session</span><span class="dbx dp">Docker Sandbox</span><span class="dbx dy">MySQL (审计)</span><span class="dbx dg">OTel + Studio</span><span class="dbx dy">Nacos (配置)</span></div>
+</div>
+</section>
+
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+<div class="modal">
+<div class="modal-head">
+<div class="mh-left"><span class="mh-step" id="modalStep"></span><span class="mh-title" id="modalTitle"></span></div>
+<button class="modal-close" onclick="closeModal()">x</button>
+</div>
+<div class="modal-body">
+<div id="modalInfo" style="padding:14px 24px;border-bottom:1px solid rgba(42,46,62,.4)"></div>
+<div class="group-tab-bar" id="groupTabs"></div>
+<div id="groupPanels"></div>
+<div class="modal-tip" id="modalTip"></div>
+</div>
+</div>
+</div>
+
+<script>
+var STEPS = {};
+try {
+  var jsonData = document.getElementById('steps-json').textContent;
+  STEPS = JSON.parse(jsonData);
+} catch(e) {
+  console.error('JSON parse error:', e);
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openModal(id) {
+  var data = STEPS[id];
+  if (!data) return;
+  document.getElementById('modalStep').textContent = id;
+  document.getElementById('modalTitle').textContent = data.title;
+
+  var infoHtml = '';
+  if (data.desc) infoHtml += '<div class="mi-section" style="padding-top:14px"><span class="mi-tag" style="background:rgba(34,211,238,.12);color:#22d3ee">是什么</span> ' + escHtml(data.desc) + '</div>';
+  if (data.principle) infoHtml += '<div class="mi-section"><span class="mi-tag" style="background:rgba(108,140,255,.12);color:#6c8cff">原理</span> ' + escHtml(data.principle) + '</div>';
+  if (data.scenario) infoHtml += '<div class="mi-section"><span class="mi-tag" style="background:rgba(74,222,128,.12);color:#4ade80">应用场景</span> ' + escHtml(data.scenario) + '</div>';
+  if (data.variants && data.variants.length > 0) {
+    infoHtml += '<div class="mi-section" style="padding-bottom:14px"><span class="mi-tag" style="background:rgba(251,191,36,.12);color:#fbbf24">可选方案</span><div style="margin-top:6px;display:grid;gap:6px">';
+    for (var vi = 0; vi < data.variants.length; vi++) {
+      var v = data.variants[vi];
+      infoHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(42,46,62,.3);font-size:.78rem">';
+      infoHtml += '<span style="flex-shrink:0;font-weight:700;color:#fbbf24;min-width:105px">' + escHtml(v.name) + '</span>';
+      infoHtml += '<span style="flex:1;color:var(--fg-dim)">' + escHtml(v.desc) + '</span>';
+      infoHtml += '<span style="flex-shrink:0;color:var(--fg-muted);font-size:.7rem;text-align:right;max-width:100px">-> ' + escHtml(v.when) + '</span></div>';
+    }
+    infoHtml += '</div></div>';
+  }
+  document.getElementById('modalInfo').innerHTML = infoHtml;
+
+  var groupBar = document.getElementById('groupTabs');
+  var groupPanels = document.getElementById('groupPanels');
+  groupBar.innerHTML = '';
+  groupPanels.innerHTML = '';
+
+  var groupNames = [];
+  for (var gk in data.groups) if (data.groups.hasOwnProperty(gk)) groupNames.push(gk);
+
+  for (var gi = 0; gi < groupNames.length; gi++) {
+    (function(gIdx) {
+      var gName = groupNames[gIdx];
+      var subTabs = data.groups[gName];
+      var gTab = document.createElement('div');
+      gTab.className = 'group-tab' + (gIdx === 0 ? ' active' : '');
+      gTab.textContent = gName;
+      gTab.onclick = function() {
+        var a = groupBar.querySelectorAll('.group-tab');
+        for (var x = 0; x < a.length; x++) a[x].classList.remove('active');
+        var b = groupPanels.querySelectorAll('.group-panel');
+        for (var y = 0; y < b.length; y++) b[y].classList.remove('active');
+        gTab.classList.add('active');
+        document.getElementById('gp-' + id + '-' + gIdx).classList.add('active');
+      };
+      groupBar.appendChild(gTab);
+
+      var gPanel = document.createElement('div');
+      gPanel.className = 'group-panel' + (gIdx === 0 ? ' active' : '');
+      gPanel.id = 'gp-' + id + '-' + gIdx;
+
+      var subBar = document.createElement('div');
+      subBar.className = 'sub-tab-bar';
+      var subNames = [];
+      for (var sk in subTabs) if (subTabs.hasOwnProperty(sk)) subNames.push(sk);
+
+      for (var si = 0; si < subNames.length; si++) {
+        (function(sIdx) {
+          var sName = subNames[sIdx];
+          var sTab = document.createElement('div');
+          sTab.className = 'sub-tab' + (sIdx === 0 ? ' active' : '');
+          sTab.textContent = sName;
+          sTab.onclick = function() {
+            var c = subBar.querySelectorAll('.sub-tab');
+            for (var a2 = 0; a2 < c.length; a2++) c[a2].classList.remove('active');
+            var d = gPanel.querySelectorAll('.code-panel');
+            for (var b2 = 0; b2 < d.length; b2++) d[b2].classList.remove('active');
+            sTab.classList.add('active');
+            document.getElementById('cp-' + id + '-' + gIdx + '-' + sIdx).classList.add('active');
+          };
+          subBar.appendChild(sTab);
+        })(si);
+      }
+      gPanel.appendChild(subBar);
+
+      for (var si2 = 0; si2 < subNames.length; si2++) {
+        (function(sIdx2) {
+          var sName2 = subNames[sIdx2];
+          var cPanel = document.createElement('div');
+          cPanel.className = 'code-panel' + (sIdx2 === 0 ? ' active' : '');
+          cPanel.id = 'cp-' + id + '-' + gIdx + '-' + sIdx2;
+          var pre = document.createElement('pre');
+          pre.textContent = subTabs[sName2];
+          cPanel.appendChild(pre);
+          gPanel.appendChild(cPanel);
+        })(si2);
+      }
+      groupPanels.appendChild(gPanel);
+    })(gi);
+  }
+
+  document.getElementById('modalTip').innerHTML = data.tip || '';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+var secs = document.querySelectorAll('.section');
+var links = document.querySelectorAll('.sidebar nav a');
+var obs = new IntersectionObserver(function(entries) {
+  for (var ei = 0; ei < entries.length; ei++) {
+    if (entries[ei].isIntersecting) {
+      var id2 = entries[ei].target.id;
+      for (var ni = 0; ni < links.length; ni++)
+        links[ni].classList.toggle('active', links[ni].getAttribute('href') === '#' + id2);
+    }
+  }
+}, { rootMargin: '-20% 0px -60% 0px' });
+for (var si = 0; si < secs.length; si++) { if (secs[si].id) obs.observe(secs[si]); }
+for (var nli = 0; nli < links.length; nli++) {
+  links[nli].addEventListener('click', function() {
+    if (window.innerWidth <= 1000) document.querySelector('.sidebar').classList.remove('open');
+  });
+}
+</script>
+
+</body>
+</html>
