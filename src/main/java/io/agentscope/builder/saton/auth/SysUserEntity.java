@@ -10,13 +10,13 @@ import jakarta.persistence.Table;
 public class SysUserEntity {
 
     @Id
-    @Column(name = "user_id", length = 64, nullable = false)
+    @Column(name = "user_id", length = 128, nullable = false)
     private String userId;
 
     @Column(name = "username", length = 64, nullable = false, unique = true)
     private String username;
 
-    @Column(name = "password_hash", length = 100, nullable = false)
+    @Column(name = "password_hash", length = 128, nullable = false)
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false)
