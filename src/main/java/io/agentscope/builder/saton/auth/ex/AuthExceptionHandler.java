@@ -35,4 +35,10 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiError.of(409, e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiError.of(400, e.getMessage()));
+    }
 }
