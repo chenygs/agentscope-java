@@ -109,4 +109,34 @@ class FactoriesControllerFlowTest {
         client.get().uri("/api/factories/tool-types")
                 .exchange().expectStatus().isUnauthorized();
     }
+
+    @Test
+    void skillRepoTypesReturnsBuiltins() {
+        List<TypeMeta> types = client.get().uri("/api/factories/skill-repo-types")
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
+                .returnResult().getResponseBody();
+
+        assertNotNull(types);
+        Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
+        assertTrue(names.containsAll(Set.of("local", "git")),
+                "missing builtin skill repo types; got " + names);
+    }
+
+    @Test
+    void hookTypesReturnsBuiltins() {
+        List<TypeMeta> types = client.get().uri("/api/factories/hook-types")
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
+                .returnResult().getResponseBody();
+
+        assertNotNull(types);
+        Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
+        assertTrue(names.containsAll(Set.of("logging", "audit-jsonl")),
+                "missing builtin hook types; got " + names);
+    }
 }
