@@ -1,50 +1,85 @@
 package io.agentscope.builder.saton.agent.runtime;
 
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
+import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
+import io.agentscope.builder.saton.agent.HookSpec;
+import io.agentscope.builder.saton.agent.SkillRepoSpec;
 import io.agentscope.builder.saton.agent.ToolSpec;
 import io.agentscope.builder.saton.common.json.JsonUtil;
+import io.agentscope.builder.saton.factory.hook.HookFactory;
 import io.agentscope.builder.saton.factory.model.ModelFactory;
+import io.agentscope.builder.saton.factory.skill.SkillFactory;
 import io.agentscope.builder.saton.factory.tool.ToolFactory;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
+import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
 import io.agentscope.builder.saton.workspace.WorkspacePathResolver;
+import io.agentscope.core.hook.Hook;
 import io.agentscope.core.model.Model;
+import io.agentscope.core.skill.repository.AgentSkillRepository;
 import io.agentscope.core.state.AgentStateStore;
 import io.agentscope.core.tool.Toolkit;
 import io.agentscope.harness.agent.HarnessAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 用 agent_definition 行 + model_provider 行 + ownerId 装配一个真实可调的 {@link HarnessAgent}。
+ * Builds {@link HarnessAgent} from agent_definition + model_provider + ownerId.
  *
- * <p>M7 起：返回类型从 ReActAgent 切到 HarnessAgent。HarnessAgent 接口和 ReActAgent 一致
- * （都有 call / streamEvents），ChatService 改个 import 即可；HarnessAgent 多出来的
- * skillRepository / subagentFactory / workspace context 等 M7 后续 task 接入。
+ * <p>M7 wires skill repositories (skill_repositories_json), hooks (hook_specs_json),
+ * and subagent factories (subagent_refs_json) on top of M5/M6's model + tools + state.
  *
- * <p>workspace 路径由 {@link WorkspacePathResolver#agentRoot(String, Long)} 给出,
- * orchestrator 负责 mkdir 后传给 HarnessAgent.Builder.workspace(...)。
+ * <p>Subagent factories are recursive: parent declares child agent_id in subagent_refs;
+ * orchestrator looks up child's AgentDefinitionEntity by (ownerId, agent_id) and recursively
+ * builds a HarnessAgent for it.
+ *
+ * <p>@Lazy on AgentDefinitionRepository + ModelProviderRepository 避免 Spring 启动期
+ * DI 死循环（orchestrator → resolver → AgentService → orchestrator 之类）。
+ *
+ * <p>Spec §12.18: HarnessAgent default middlewares (HarnessSkillMiddleware +
+ * WorkspaceContextMiddleware) call {@code Mono.block()} on the Netty event loop;
+ * incompatible with WebFlux. Disable via {@code .disableDynamicSkills()
+ * .disableWorkspaceContext()} until upstream is fixed.
  */
 @Component
+@SuppressWarnings("deprecation") // Hook is deprecated but still used by HarnessAgent.Builder
 public class AgentBuildOrchestrator {
+
+    private static final Logger log = LoggerFactory.getLogger(AgentBuildOrchestrator.class);
 
     private final ModelFactory modelFactory;
     private final ToolFactory toolFactory;
+    private final SkillFactory skillFactory;
+    private final HookFactory hookFactory;
     private final AgentStateStore stateStore;
     private final WorkspacePathResolver workspaceResolver;
+    private final AgentDefinitionRepository agentRepo;
+    private final ModelProviderRepository modelRepo;
 
     public AgentBuildOrchestrator(ModelFactory modelFactory,
                                   ToolFactory toolFactory,
+                                  SkillFactory skillFactory,
+                                  HookFactory hookFactory,
                                   AgentStateStore stateStore,
-                                  WorkspacePathResolver workspaceResolver) {
+                                  WorkspacePathResolver workspaceResolver,
+                                  @Lazy AgentDefinitionRepository agentRepo,
+                                  @Lazy ModelProviderRepository modelRepo) {
         this.modelFactory = modelFactory;
         this.toolFactory = toolFactory;
+        this.skillFactory = skillFactory;
+        this.hookFactory = hookFactory;
         this.stateStore = stateStore;
         this.workspaceResolver = workspaceResolver;
+        this.agentRepo = agentRepo;
+        this.modelRepo = modelRepo;
     }
 
     public HarnessAgent build(AgentDefinitionEntity def,
@@ -55,8 +90,7 @@ public class AgentBuildOrchestrator {
 
         Toolkit toolkit = new Toolkit();
         for (ToolSpec spec : parseToolSpecs(def.getToolSpecsJson())) {
-            Object tool = toolFactory.instantiate(spec.type(), spec.props());
-            toolkit.registerTool(tool);
+            toolkit.registerTool(toolFactory.instantiate(spec.type(), spec.props()));
         }
 
         Path workspace = workspaceResolver.agentRoot(ownerId, def.getId());
@@ -66,7 +100,25 @@ public class AgentBuildOrchestrator {
             throw new IllegalStateException("failed to mkdir workspace: " + workspace, e);
         }
 
-        return HarnessAgent.builder()
+        List<AgentSkillRepository> skillRepos = new ArrayList<>();
+        for (SkillRepoSpec spec : parseSkillRepoSpecs(def.getSkillRepositoriesJson())) {
+            try {
+                skillRepos.add(skillFactory.instantiate(spec.type(), spec.props(), workspace));
+            } catch (RuntimeException e) {
+                log.warn("skip skill repo type={} due to {}", spec.type(), e.getMessage());
+            }
+        }
+
+        List<Hook> hooks = new ArrayList<>();
+        for (HookSpec spec : parseHookSpecs(def.getHookSpecsJson())) {
+            try {
+                hooks.add(hookFactory.instantiate(spec.type(), spec.props(), workspace));
+            } catch (RuntimeException e) {
+                log.warn("skip hook type={} due to {}", spec.type(), e.getMessage());
+            }
+        }
+
+        HarnessAgent.Builder b = HarnessAgent.builder()
                 .name(def.getAgentId())
                 .sysPrompt(def.getSysPrompt() != null ? def.getSysPrompt() : "")
                 .model(llm)
@@ -75,13 +127,34 @@ public class AgentBuildOrchestrator {
                 .stateStore(stateStore)
                 .defaultSessionId("agent_" + def.getId() + "_default")
                 .workspace(workspace)
-                // M7-1 见 spec §12.18 — 关掉默认的 dynamic skill + workspace context middleware，
-                // 它们的 onSystemPrompt 实现内部 Mono.block() 会在 WebFlux Netty loop 上抛
-                // IllegalStateException。后续 task 启用 skill 时配合 Schedulers.boundedElastic
-                // offload 再去掉这两行。
+                // spec §12.18: WebFlux + HarnessAgent middleware Mono.block() workaround
                 .disableDynamicSkills()
-                .disableWorkspaceContext()
-                .build();
+                .disableWorkspaceContext();
+
+        if (!skillRepos.isEmpty()) {
+            b.skillRepositories(skillRepos);
+        }
+        for (Hook h : hooks) {
+            b.hook(h);
+        }
+
+        // Subagents: look up each ref by (ownerId, agentId), build recursively.
+        for (String childAgentId : parseSubagentRefs(def.getSubagentRefsJson())) {
+            b.subagentFactory(childAgentId, name -> buildChildAgent(name, ownerId));
+        }
+
+        return b.build();
+    }
+
+    private io.agentscope.core.agent.Agent buildChildAgent(String childAgentId, String ownerId) {
+        AgentDefinitionEntity child = agentRepo.findByOwnerIdAndAgentId(ownerId, childAgentId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "subagent not found: " + childAgentId + " (owner=" + ownerId + ")"));
+        ModelProviderEntity childModel = modelRepo
+                .findByIdAndOwnerId(child.getDefaultModelProviderId(), ownerId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "subagent's model not found: " + child.getDefaultModelProviderId()));
+        return build(child, childModel, ownerId);
     }
 
     private static List<ToolSpec> parseToolSpecs(String json) {
@@ -90,6 +163,33 @@ public class AgentBuildOrchestrator {
             return JsonUtil.mapper().readValue(json, new TypeReference<List<ToolSpec>>() {});
         } catch (Exception e) {
             throw new IllegalStateException("invalid tool_specs_json", e);
+        }
+    }
+
+    private static List<SkillRepoSpec> parseSkillRepoSpecs(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return JsonUtil.mapper().readValue(json, new TypeReference<List<SkillRepoSpec>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException("invalid skill_repositories_json", e);
+        }
+    }
+
+    private static List<HookSpec> parseHookSpecs(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return JsonUtil.mapper().readValue(json, new TypeReference<List<HookSpec>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException("invalid hook_specs_json", e);
+        }
+    }
+
+    private static List<String> parseSubagentRefs(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return JsonUtil.mapper().readValue(json, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException("invalid subagent_refs_json", e);
         }
     }
 }

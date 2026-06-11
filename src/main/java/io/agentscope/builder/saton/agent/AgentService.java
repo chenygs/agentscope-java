@@ -58,6 +58,9 @@ public class AgentService {
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
+        e.setSkillRepositoriesJson(serializeJson(req.skillRepositories()));
+        e.setHookSpecsJson(serializeJson(req.hookSpecs()));
+        e.setSubagentRefsJson(serializeJson(req.subagentRefs()));
         e.setCreatedAt(now);
         e.setUpdatedAt(now);
         return AgentVO.from(repo.save(e));
@@ -81,6 +84,9 @@ public class AgentService {
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
+        e.setSkillRepositoriesJson(serializeJson(req.skillRepositories()));
+        e.setHookSpecsJson(serializeJson(req.hookSpecs()));
+        e.setSubagentRefsJson(serializeJson(req.subagentRefs()));
         e.setUpdatedAt(System.currentTimeMillis());
         runtimeResolver.invalidateByAgent(e.getId());
         return AgentVO.from(e);
@@ -123,6 +129,16 @@ public class AgentService {
             return io.agentscope.builder.saton.common.json.JsonUtil.mapper().writeValueAsString(specs);
         } catch (Exception ex) {
             throw new IllegalArgumentException("invalid toolSpecs", ex);
+        }
+    }
+
+    /** 通用 list → JSON 字符串；null/empty → null。 */
+    private static String serializeJson(java.util.List<?> list) {
+        if (list == null || list.isEmpty()) return null;
+        try {
+            return io.agentscope.builder.saton.common.json.JsonUtil.mapper().writeValueAsString(list);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("invalid json payload", ex);
         }
     }
 }

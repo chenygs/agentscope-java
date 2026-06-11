@@ -11,6 +11,8 @@ public interface AgentDefinitionRepository extends JpaRepository<AgentDefinition
 
     Optional<AgentDefinitionEntity> findByIdAndOwnerId(Long id, String ownerId);
 
+    Optional<AgentDefinitionEntity> findByOwnerIdAndAgentId(String ownerId, String agentId);
+
     boolean existsByOwnerIdAndAgentId(String ownerId, String agentId);
 
     long deleteByIdAndOwnerId(Long id, String ownerId);
