@@ -1033,6 +1033,44 @@ WebFlux Netty 事件循环禁止 `Mono.block()`，SSE / 任何 streaming chat �
 
 短期保留 `.disableDynamicSkills().disableWorkspaceContext()` —— M7-2/M7-3/M7-4 仍按 plan 把工厂建好，但 M7-4 启用时把 disable 去掉的同时必须配合 subscribeOn 改造。
 
+### 12.19 Subagent factory 递归无环检测 → 运行时 StackOverflow
+
+**事实**（M7-4 发现）：`AgentBuildOrchestrator` 把每个 child agent 注册成 lambda：
+
+```java
+b.subagentFactory(childId, name -> buildChildAgent(loginId, childId, sessionId, name));
+```
+
+`subagentFactory(...)` 在 build 阶段是 lazy 的（只存 lambda，不实例化），所以 build 阶段不会爆。**但**，第一次运行时 child 调 parent（A→B→A）或者 self-spawn（A→A），lambda 会在同一栈上反复触发 `buildChildAgent → orchestrator → subagentFactory`，没有任何 visited-set / depth guard 兜底，结果就是 `StackOverflowError`。
+
+**对策**（M8/M9 hardening，不在 M7 范围）：在 `buildChildAgent(loginId, parentId, sessionId, name)` 入口处加 ThreadLocal `Set<Long> visiting`：
+
+```java
+if (!visiting.get().add(childId)) {
+    throw new BadRequestException("subagent recursion detected: " + visiting.get() + " → " + childId);
+}
+try { /* build ... */ } finally { visiting.get().remove(childId); }
+```
+
+或者更彻底地：用 graph 静态分析（`AgentEntity.subAgentIds` 反查环），在 save 阶段 reject。**目前不做**：M7-4 的 spec test 只覆盖 round-trip + dryRun，不构造递归用例，前端配置时手动规避；上线前必须补。
+
+### 12.20 HarnessAgent.Builder 仍接受 deprecated Hook
+
+**事实**（M7-3 发现）：`io.agentscope.core.hook.Hook` 在 agentscope-core 2.0.0-RC2 已经标记 `@Deprecated(since="2.0.0")`，官方文档推荐迁移到 `MiddlewareBase`。但 `HarnessAgent.Builder.hook(Hook)` 这个入口**仍然存在且仍然工作**。M7-3 选择继续用 Hook，理由：
+
+- `HookType.instantiate(props, activityDir) → Hook` 是最小 diff（直接 wire 进 `b.hook(...)`）
+- 改成 `→ MiddlewareBase` 需要重写两个内置 type（LoggingHookType / AuditJsonlHookType）+ 改 orchestrator `b.middleware(...)` 调用 + 改 HookFactoryTest 全部断言 + 学 MiddlewareBase 的事件回调 API（与 Hook 的接口不完全等价）
+- 估算 200 LOC + 半天，超出 M7 范围
+
+**风险**：core 哪天真的删 Hook（不只是标 deprecated），`HookFactory` / 两个 HookType / orchestrator 全部停止编译。M7-3 全文件加 `@SuppressWarnings("deprecation")` 抑制 warning，方便未来 grep `deprecation` 找迁移点。
+
+**迁移 recipe**（未来用）：
+1. `HookType.instantiate(...)` 返回类型 `Hook → MiddlewareBase`
+2. `LoggingHookType` 重写成 `extends MiddlewareBase`，覆盖 `onReply` / `onPostCall`（具体回调名以 core 当时为准）
+3. `AuditJsonlHookType` 同上
+4. `AgentBuildOrchestrator`：`b.hook(hookFactory.instantiate(...)) → b.middleware(...)`
+5. `HookFactory` / `HookFactoryTest`：去 `@SuppressWarnings("deprecation")`，更新类型断言
+
 ---
 
 ## 13. 开放问题（实施期再决定）
