@@ -16,10 +16,14 @@ public class AgentService {
 
     private final AgentDefinitionRepository repo;
     private final ModelProviderRepository modelRepo;
+    private final io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver;
 
-    public AgentService(AgentDefinitionRepository repo, ModelProviderRepository modelRepo) {
+    public AgentService(AgentDefinitionRepository repo,
+                        ModelProviderRepository modelRepo,
+                        io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver) {
         this.repo = repo;
         this.modelRepo = modelRepo;
+        this.runtimeResolver = runtimeResolver;
     }
 
     public List<AgentVO> list() {
@@ -73,8 +77,7 @@ public class AgentService {
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setUpdatedAt(System.currentTimeMillis());
-        // M4-3 完成后这里调 runtimeResolver.invalidateByAgent(e.getId())；
-        // 本步骤先不调（解耦）。
+        runtimeResolver.invalidateByAgent(e.getId());
         return AgentVO.from(e);
     }
 
@@ -85,7 +88,7 @@ public class AgentService {
         if (n == 0) {
             throw new NotFoundException("agent not found: " + id);
         }
-        // M4-3 完成后这里调 runtimeResolver.invalidateByAgent(id)；本步骤先不调。
+        runtimeResolver.invalidateByAgent(id);
     }
 
     private AgentDefinitionEntity loadMine(Long id, String me) {

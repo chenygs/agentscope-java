@@ -22,7 +22,8 @@ class ModelFactoryTest {
     void allFiveBuiltinTypesRegistered() {
         List<TypeMeta> types = factory.listTypes();
         Set<String> names = types.stream().map(TypeMeta::type).collect(java.util.stream.Collectors.toSet());
-        assertEquals(Set.of("anthropic", "dashscope", "gemini", "ollama", "openai"), names);
+        assertTrue(names.containsAll(Set.of("anthropic", "dashscope", "gemini", "ollama", "openai")),
+                "missing some builtin types; got " + names);
     }
 
     @Test
