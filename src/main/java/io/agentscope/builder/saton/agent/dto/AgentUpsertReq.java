@@ -1,14 +1,21 @@
 package io.agentscope.builder.saton.agent.dto;
 
+import io.agentscope.builder.saton.agent.ToolSpec;
+
+import java.util.List;
+
 /**
- * Create / update agent 的请求体。M4 字段最小集 —— tool/skill/hook 等扩展字段以后再加。
+ * Create / update agent 的请求体。
+ *
+ * <p>{@code toolSpecs} 为 null 表示“不带工具”（M5 之前的默认）；空列表也是同样语义。
  */
 public record AgentUpsertReq(
-        String agentId,             // 业务唯一标识（per-owner）
+        String agentId,
         String name,
         String description,
         String sysPrompt,
-        String agentType,           // "react" / "harness"（M4 默认 react）
+        String agentType,
         Long defaultModelProviderId,
-        Integer maxIters
+        Integer maxIters,
+        List<ToolSpec> toolSpecs
 ) {}

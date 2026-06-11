@@ -64,7 +64,7 @@ class ChatFlowTest {
                 .bodyValue(new AgentUpsertReq(
                         "chat-agent-" + System.nanoTime(),
                         "chat agent", "test", "you are helpful",
-                        "react", modelId, 3))
+                        "react", modelId, 3, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)

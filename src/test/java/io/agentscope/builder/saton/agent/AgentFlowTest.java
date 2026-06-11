@@ -69,7 +69,7 @@ class AgentFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         agentBizId, "My Agent", "test", "you are helpful",
-                        "react", modelId, 5))
+                        "react", modelId, 5, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)
@@ -106,7 +106,7 @@ class AgentFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         agentBizId, "Renamed", "x", "you are now strict",
-                        "react", modelId, 8))
+                        "react", modelId, 8, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)
@@ -134,12 +134,12 @@ class AgentFlowTest {
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(dupId, null, null, null,
-                        "react", modelId, null))
+                        "react", modelId, null, null))
                 .exchange().expectStatus().isOk();
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(dupId, null, null, null,
-                        "react", modelId, null))
+                        "react", modelId, null, null))
                 .exchange().expectStatus().is4xxClientError();   // 409
     }
 
@@ -148,7 +148,7 @@ class AgentFlowTest {
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq("bad-agent-" + System.nanoTime(), null, null, null,
-                        "react", 999999L, null))
+                        "react", 999999L, null, null))
                 .exchange().expectStatus().isNotFound();
     }
 
@@ -156,5 +156,39 @@ class AgentFlowTest {
     void listWithoutTokenReturns401() {
         client.get().uri("/api/agents")
                 .exchange().expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void createWithToolSpecsRoundTrips() {
+        String agentBizId = "tool-agent-" + System.nanoTime();
+        io.agentscope.builder.saton.agent.dto.AgentVO created = client.post().uri("/api/agents")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new io.agentscope.builder.saton.agent.dto.AgentUpsertReq(
+                        agentBizId, "T", null, "you are helpful",
+                        "react", modelId, 3,
+                        java.util.List.of(
+                                new io.agentscope.builder.saton.agent.ToolSpec("read-file", java.util.Map.of()),
+                                new io.agentscope.builder.saton.agent.ToolSpec("shell-cmd",
+                                        java.util.Map.of("allowedCommands", java.util.List.of("ls", "cat"))))))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(io.agentscope.builder.saton.agent.dto.AgentVO.class)
+                .returnResult().getResponseBody();
+        assertNotNull(created);
+        assertNotNull(created.toolSpecs());
+        assertEquals(2, created.toolSpecs().size());
+        assertEquals("read-file", created.toolSpecs().get(0).type());
+        assertEquals("shell-cmd", created.toolSpecs().get(1).type());
+
+        // GET should return the same shape
+        io.agentscope.builder.saton.agent.dto.AgentVO got = client.get().uri("/api/agents/" + created.id())
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(io.agentscope.builder.saton.agent.dto.AgentVO.class)
+                .returnResult().getResponseBody();
+        assertNotNull(got);
+        assertEquals(2, got.toolSpecs().size());
     }
 }

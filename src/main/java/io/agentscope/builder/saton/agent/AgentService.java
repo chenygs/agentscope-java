@@ -54,6 +54,7 @@ public class AgentService {
         e.setAgentType(req.agentType() != null ? req.agentType() : "react");
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
+        e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
         e.setCreatedAt(now);
         e.setUpdatedAt(now);
         return AgentVO.from(repo.save(e));
@@ -76,6 +77,7 @@ public class AgentService {
         e.setAgentType(req.agentType() != null ? req.agentType() : "react");
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
+        e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
         e.setUpdatedAt(System.currentTimeMillis());
         runtimeResolver.invalidateByAgent(e.getId());
         return AgentVO.from(e);
@@ -107,6 +109,16 @@ public class AgentService {
     private void requireModelOwned(Long modelId, String me) {
         if (modelRepo.findByIdAndOwnerId(modelId, me).isEmpty()) {
             throw new NotFoundException("model provider not found or not yours: " + modelId);
+        }
+    }
+
+    /** toolSpecs → JSON 字符串；null/empty → null。 */
+    private static String serializeToolSpecs(java.util.List<io.agentscope.builder.saton.agent.ToolSpec> specs) {
+        if (specs == null || specs.isEmpty()) return null;
+        try {
+            return io.agentscope.builder.saton.common.json.JsonUtil.mapper().writeValueAsString(specs);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("invalid toolSpecs", ex);
         }
     }
 }
