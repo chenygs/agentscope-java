@@ -694,7 +694,179 @@ src/main/resources/
 
 ---
 
-## 12. 开放问题（实施期再决定）
+## 12. 实施踩坑笔记（M1 实测沉淀，后续 milestone 套用）
+
+这一节记录在 M1（基础设施）实施过程中真实踩到的 Spring Boot 4 + sa-token 1.45 + Jackson 3 集成事实，后续 milestone 直接照搬，不要再花时间踩。
+
+### 12.1 Maven 默认 surefire 不识别 JUnit 5
+
+**事实**：Maven 3.8.4 的 super-pom 默认 `maven-surefire-plugin:2.12.4`，**静默跳过**所有 JUnit 5 测试 —— 报 BUILD SUCCESS 但 Tests run: 0。
+
+**对策**：所有 milestone 的 `pom.xml` 必须 pin surefire 3.2.5+：
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+```
+
+### 12.2 Spring Boot 4 拆出多个 test slice 依赖
+
+Spring Boot 4 把若干 test slice 从 `spring-boot-starter-test` 默认传递依赖里拆走。Starter 不再传递这些，必须在 pom.xml 显式声明 test-scope。
+
+**已知拆走的**：
+
+| Slice 注解 | SB4 独立 artifact |
+|---|---|
+| `@DataJpaTest` | `spring-boot-data-jpa-test` |
+| `@AutoConfigureWebTestClient` | `spring-boot-webtestclient`（或用 `@LocalServerPort` 手动 `WebTestClient.bindToServer()`，M1 走的就是手动路线，无需加 dep） |
+
+**对策**：用到 `@DataJpaTest` 必须加：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-data-jpa-test</artifactId>
+    <version>${spring.boot.version}</version>
+    <scope>test</scope>
+</dependency>
+```
+
+**集成测试不依赖 `@AutoConfigureWebTestClient`**，用：
+
+```java
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class XxxTest {
+    @LocalServerPort int port;
+    WebTestClient client;
+
+    @BeforeEach void setUp() {
+        client = WebTestClient.bindToServer()
+                .baseUrl("http://localhost:" + port)
+                .responseTimeout(Duration.ofSeconds(10))
+                .build();
+    }
+}
+```
+
+### 12.3 Spring Boot 4 默认 Jackson 3
+
+**事实**：SB4 把默认 ObjectMapper 升到 Jackson **3.x**，包名从 `com.fasterxml.jackson.databind` 改为 `tools.jackson.databind`。`com.fasterxml.jackson.core:jackson-annotations:2.20` 还在 classpath，但 `ObjectMapper` 本体在新包。
+
+**对策**：自己写的代码引入 ObjectMapper 时：
+
+```java
+import tools.jackson.databind.ObjectMapper;   // NOT com.fasterxml.jackson.databind.ObjectMapper
+```
+
+### 12.4 sa-token reactor 在 WebFlux 里调 `StpUtil.login()` 的正确姿势
+
+**事实**：sa-token-reactor 不写 ThreadLocal 也不写 Reactor Context，它把 `ServerWebExchange` 塞进 `SaReactorSyncHolder`（一个 ThreadLocal binding），但仅在 filter 链上有效。`Mono.fromCallable` 的 lambda 跑在的线程上**没有这个 binding**，直接调 `StpUtil.login()` 抛 `SaTokenContextException: SaTokenContext 上下文尚未初始化`。
+
+**对策**：controller 方法签名加上 `ServerWebExchange exchange`，在调用 `StpUtil` 的同步代码块外手动 set/clear：
+
+```java
+@PostMapping("/login")
+public Mono<LoginResponse> login(@RequestBody LoginRequest req, ServerWebExchange exchange) {
+    return Mono.fromCallable(() -> {
+        SaReactorSyncHolder.setContext(exchange);
+        try {
+            return userService.login(req);   // 这里面调 StpUtil.login()
+        } finally {
+            SaReactorSyncHolder.clearContext();
+        }
+    });
+}
+```
+
+**也不要再 `.subscribeOn(Schedulers.boundedElastic())`**：boundedElastic 线程上同样没有 binding，再加 subscribeOn 会让事情更糟。M1 的 in-memory JPA 在 Netty 线程跑足够快；真要切池子，M-？ 再讨论统一方案（含 binding 跨线程传递）。
+
+**纯单元测试（无 HTTP 请求）调用 service 时同理失败** —— 这就是为什么 M1 的 `UserServiceTest` 只测 `BadCredentialsException`，把"login 拿 token"的 happy path 放到 `AuthFlowTest`（有真实 HTTP 上下文）。
+
+### 12.5 WebFlux filter 抛的异常不走 `@RestControllerAdvice`
+
+**事实**：`@RestControllerAdvice` 的 `@ExceptionHandler` 只接 controller 方法抛出的异常。`SaReactorFilter` 是 WebFilter，跑在 controller 之前，它抛的 `NotLoginException` 不会被 advice 接到，最终走 Spring 的默认 500 处理器。
+
+**对策**：实现 `WebExceptionHandler` bean，`@Order(-2)` 让它在默认处理器之前：
+
+```java
+@Component
+@Order(-2)
+public class GlobalErrorWebExceptionHandler implements WebExceptionHandler {
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+        NotLoginException notLogin = findNotLogin(ex);
+        if (notLogin != null) {
+            return writeJson(exchange, HttpStatus.UNAUTHORIZED,
+                ApiError.of(401, "not logged in: " + notLogin.getType()));
+        }
+        return Mono.error(ex);   // 让 @RestControllerAdvice 接 controller 异常
+    }
+    // ...
+}
+```
+
+### 12.6 sa-token 把 NotLoginException wrap 在 SaTokenException 里
+
+**事实**：`SaReactorFilter` 在 line 98 左右把 `NotLoginException` 包进一个外层 `SaTokenException` 再抛。直接 `if (ex instanceof NotLoginException)` 永远进不去。
+
+**对策**：递归走 cause chain（深度限制防自循环）：
+
+```java
+private static NotLoginException findNotLogin(Throwable ex) {
+    Throwable cur = ex;
+    for (int i = 0; cur != null && i < 8; i++) {
+        if (cur instanceof NotLoginException nle) return nle;
+        cur = cur.getCause();
+    }
+    return null;
+}
+```
+
+### 12.7 集成测试用 in-memory H2，与 dev 文件 db 隔离
+
+**事实**：`spring.datasource.url=jdbc:h2:file:./data/builderdb` 在 `@SpringBootTest` 里也会被加载，跟一个本地正在运行的 dev 实例抢同一文件，H2 抛 `Database may be already in use`。
+
+**对策**：`src/test/resources/application.yml` 显式覆盖为 in-memory，create-drop：
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+sa-token:
+  is-log: false
+```
+
+### 12.8 Logback 在 Windows 默认非 UTF-8
+
+**事实**：Windows 控制台默认 GBK，logback 不显式声明 charset 会乱码（特别是 sa-token 自带中文异常文案 + 我们项目本身中文日志）。
+
+**对策**：encoder 块加 `<charset>UTF-8</charset>`。
+
+```xml
+<encoder>
+    <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+    <charset>UTF-8</charset>
+</encoder>
+```
+
+### 12.9 spring-security-crypto 不要显式 pin 版本
+
+**事实**：M1 早期手贱 pin 了 `spring-security-crypto:6.4.1`，比 SB4 BOM 管理的版本（7.0.2）旧两个大版本，硬降级。
+
+**对策**：所有 Spring 生态的 artifact **不写 version**，让 `spring-boot-dependencies` BOM 管理。仅 `spring.boot.version` 和 `sa-token.version` 在 properties 里。
+
+---
+
+## 13. 开放问题（实施期再决定）
 
 - `application.yml` 端口默认 8080 还是另选
 - JSON Schema 校验库选 [networknt/json-schema-validator](https://github.com/networknt/json-schema-validator) 还是 [erosb/json-sKema](https://github.com/erosb/json-sKema)
