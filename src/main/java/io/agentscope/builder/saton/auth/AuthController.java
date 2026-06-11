@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.auth;
 
+import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
 import io.agentscope.builder.saton.auth.dto.LoginResponse;
 import io.agentscope.builder.saton.auth.dto.MeResponse;
@@ -8,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,14 +23,26 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Mono<LoginResponse> login(@RequestBody LoginRequest req) {
-        return Mono.fromCallable(() -> userService.login(req))
-                .subscribeOn(Schedulers.boundedElastic());
+    public Mono<LoginResponse> login(@RequestBody LoginRequest req, ServerWebExchange exchange) {
+        return Mono.fromCallable(() -> {
+            SaReactorSyncHolder.setContext(exchange);
+            try {
+                return userService.login(req);
+            } finally {
+                SaReactorSyncHolder.clearContext();
+            }
+        });
     }
 
     @GetMapping("/me")
-    public Mono<MeResponse> me() {
-        return Mono.fromCallable(userService::currentUser)
-                .subscribeOn(Schedulers.boundedElastic());
+    public Mono<MeResponse> me(ServerWebExchange exchange) {
+        return Mono.fromCallable(() -> {
+            SaReactorSyncHolder.setContext(exchange);
+            try {
+                return userService.currentUser();
+            } finally {
+                SaReactorSyncHolder.clearContext();
+            }
+        });
     }
 }
