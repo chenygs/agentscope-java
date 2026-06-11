@@ -960,6 +960,58 @@ public Flux<AgentEvent> stream(Long agentDefId, ChatSendReq req) {
 
 短期对策记录在 SSE 客户端文档里："靠 event: name 路由，不要从 data: 字段读 type"。
 
+### 12.16 SB4 不会在多个 public 构造器之间自动挑选 → 必须显式 @Autowired
+
+**事实**（M6-3 发现）：一个 `@Service` / `@Component` 有两个 public 构造器（典型场景：一个走 `@Value` 注入用于 Spring，一个走原始 `Path` 用于单元测试 `@TempDir`），Spring Boot 4 **不会**自动挑选其中一个，会在另一个 `@SpringBootTest` 加载时报：
+
+```
+No default constructor found; nested exception is java.lang.NoSuchMethodException
+```
+
+而且这个错只在**其它**测试类加载 ApplicationContext 时炸（带 `@SpringBootTest` 的 flow test），单跑 `SessionServiceTest` 自己（不需要 Spring）反而绿。诊断有迷惑性。
+
+**对策**（M6-3 已用）：
+- Spring 用的 ctor 显式标 `@Autowired`，让 SB 明确选用
+- 测试 ctor 改 `package-private`（同包测试可见，但 Spring 看不到）
+
+```java
+@Service
+public class SessionService {
+    private final Path root;
+    private final AgentStateStore stateStore;
+
+    @Autowired
+    public SessionService(@Value("${app.session.root:./data/sessions}") String rootConfig,
+                          AgentStateStore stateStore) {
+        this(Paths.get(rootConfig).toAbsolutePath().normalize(), stateStore);
+    }
+
+    /** package-private — 仅给同包测试用 */
+    SessionService(Path root, AgentStateStore stateStore) {
+        this.root = root;
+        this.stateStore = stateStore;
+    }
+}
+```
+
+也可以走单 ctor + Spring 自动注入 + 测试用 `@SpringBean` / `@MockBean` 替换 —— 但这两个 ctor 的写法更轻。
+
+### 12.17 WebFlux Controller 兜底异常处理：IllegalArgumentException → 400 要主动加
+
+**事实**（M6-7 发现）：M1 写的 `AuthExceptionHandler` 通过 `@RestControllerAdvice + @ExceptionHandler` 处理 `NotFoundException → 404` / `ConflictException → 409` / `BadCredentialsException → 401`，但**没有** `IllegalArgumentException → 400`。Workspace 模块的 `WorkspacePathResolver` 抛 `IllegalArgumentException` 表达"路径越界"，前端用户 POST `path=../etc/passwd` 时本应返回 400，实际拿到 **500 internal server error**。
+
+**对策**：在 `AuthExceptionHandler` 直接加一个 handler（沿用同步 `ResponseEntity<ApiError>` 风格）：
+
+```java
+@ExceptionHandler(IllegalArgumentException.class)
+public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ApiError.of(400, ex.getMessage()));
+}
+```
+
+`GlobalErrorWebExceptionHandler` 是 `WebExceptionHandler`（接 WebFilter 抛的 sa-token NotLoginException），跟 controller 抛的异常各管一摊（spec §12.5 已说明）；新增 controller 异常类型一律加到 `@RestControllerAdvice` 文件里，别动 `WebExceptionHandler`。
+
 ---
 
 ## 13. 开放问题（实施期再决定）
