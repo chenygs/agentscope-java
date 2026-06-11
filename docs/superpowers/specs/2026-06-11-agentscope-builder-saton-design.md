@@ -864,6 +864,60 @@ sa-token:
 
 **对策**：所有 Spring 生态的 artifact **不写 version**，让 `spring-boot-dependencies` BOM 管理。仅 `spring.boot.version` 和 `sa-token.version` 在 properties 里。
 
+### 12.10 JPA AttributeConverter 要被 Spring 注入必须加 @Component
+
+**事实**（M2 发现）：一个实现 `AttributeConverter<X,Y>` 的类如果有 Spring bean 依赖（比如本项目的 `EncryptedJsonConverter` 依赖 `AesGcmCipher`），仅靠 `@Converter` 注解 + 构造器注入是不够的。JPA 通过 SPI 用 no-arg 构造器实例化，但 Spring 这边因为没有 stereotype 注解（`@Component` / `@Service`）也不会注册成 bean，autowire 测试就会拿不到。
+
+**对策**：同时加 `@Converter` 和 `@Component`，构造器参数加 `@Autowired @Lazy`：
+
+```java
+@Converter
+@Component
+public class EncryptedJsonConverter implements AttributeConverter<String, String> {
+
+    private final AesGcmCipher cipher;
+
+    @Autowired
+    public EncryptedJsonConverter(@Lazy AesGcmCipher cipher) {
+        this.cipher = cipher;
+    }
+    // ...
+}
+```
+
+### 12.11 pom 没开 -parameters → @PathVariable / @RequestParam 必须写显式名字
+
+**事实**（M2 发现）：默认 javac 不保留参数名到 .class 文件，Spring 拿不到 `@PathVariable Long id` 中的 `id` 名字，请求 `/api/models/7` 会因为 path variable 缺失返回 500。
+
+**对策**（两选一，本项目走 A）：
+
+**A. controller 里始终显式写名字**（最小变更，零 pom 改动）：
+```java
+@GetMapping("/{id}")
+public Mono<Foo> get(@PathVariable("id") Long id, ServerWebExchange exchange) { ... }
+```
+
+**B. pom 开 `-parameters` 编译选项**（一次配，永久受益；后续可考虑）：
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <parameters>true</parameters>
+    </configuration>
+</plugin>
+```
+
+### 12.12 @PathVariable 风格小结（参考）
+
+对 `@PathVariable` / `@RequestParam` / `@MatrixVariable`，全项目沿用方案 A 显式名字写法，直到任何一处需要更复杂参数处理时再考虑切换 B。
+
+### 12.13 ResourceCommon.normalizePropsJson 解 NPE
+
+**事实**：JPA 通过 `setPropsJson(null)` 写入是合法的，但 `JsonUtil.mapper().readTree(null)` 会抛 NPE。VO mask 路径必须 null-guard。
+
+**对策**：`ResourceCommon.normalizePropsJson(s)` 把 `null/blank` 都规范化成 `"{}"` 再传给 Jackson。
+
 ---
 
 ## 13. 开放问题（实施期再决定）
