@@ -1071,6 +1071,21 @@ try { /* build ... */ } finally { visiting.get().remove(childId); }
 4. `AgentBuildOrchestrator`：`b.hook(hookFactory.instantiate(...)) → b.middleware(...)`
 5. `HookFactory` / `HookFactoryTest`：去 `@SuppressWarnings("deprecation")`，更新类型断言
 
+### 12.21 [M8] GitBuilderMarketplace / NacosBuilderMarketplace 依赖反射
+
+两个市场实现都通过反射加载底层 SDK（`GitSkillRepository` / Nacos maintainer client），
+构造阶段捕获 `ClassNotFoundException` → `IllegalStateException`。
+`UserMarketplaceRegistry` 在创建实例时吞掉 ISE（`log.warn` 后跳过），
+不阻塞 marketplace 的浏览/列表 —— 跟 M7-4 orchestrator 的 skill/hook try/catch 模式一致。
+
+### 12.22 [M8] AgentSkillsController 的安全边界
+
+目前 `AgentSkillsController` 用 `agentRepo.existsByIdAndOwnerId` 校验 owner 身份，
+尚未接入 spec §6.3 的 `AgentAccessGuard` 三层 ACL（EDIT/RUN/CLONE）。
+M9 引入了 `AgentAccessGuard` 后需要替换这里的校验（见 M9 plan）。
+届时还需同步更新 `WorkspaceService` 的 owner 校验 —— 共享 agent 的 RUN/EDIT 用户
+通过不同的 ownerId 透传可能导致 workspace path 错位。
+
 ---
 
 ## 13. 开放问题（实施期再决定）
