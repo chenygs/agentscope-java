@@ -1012,6 +1012,27 @@ public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException ex) {
 
 `GlobalErrorWebExceptionHandler` 是 `WebExceptionHandler`（接 WebFilter 抛的 sa-token NotLoginException），跟 controller 抛的异常各管一摊（spec §12.5 已说明）；新增 controller 异常类型一律加到 `@RestControllerAdvice` 文件里，别动 `WebExceptionHandler`。
 
+### 12.18 HarnessAgent 默认 middleware 链在 WebFlux + sa-token-reactor 上 `Mono.block()` 死锁
+
+**事实**（M7-1 发现）：`agentscope-core` 2.0.0-RC2 的 `ReActAgent.applySystemPromptMiddlewares` 在任何 middleware override `onSystemPrompt` 时执行 `Mono.block()`（ReActAgent.java:569）。`HarnessAgent` 的默认 builder 链会自动安装：
+
+- `HarnessSkillMiddleware` —— `.skillRepositories(...)` 非空或默认 Layer-4 workspace skills 启用时
+- `WorkspaceContextMiddleware` —— `.workspace(Path)` 调用即启用
+- `PlanModeMiddleware` —— planMode 启用时（本项目不开）
+
+WebFlux Netty 事件循环禁止 `Mono.block()`，SSE / 任何 streaming chat 都会抛 `IllegalStateException: block()/blockFirst()/blockLast() are blocking`。原 `agentscope-builder` 用 Spring MVC (servlet)，没踩到；本项目用 WebFlux + sa-token-reactor 必然踩。
+
+**对策**（M7-1 已用 —— 留到 M7-4 引入 skill 时再处理）：
+- 在 `AgentBuildOrchestrator` 的 builder 链上加 `.disableDynamicSkills().disableWorkspaceContext()`
+- 仍调 `.workspace(path)`（路径已 mkdir，给 future skill_manage tool 用），但不开 context middleware
+- HarnessAgent 行为退化为 ReActAgent 等同 —— 现有 SSE 测试全绿
+
+**M7-4 注意事项**：当 skill_repositories_json 真正传入并要启用 dynamic skill 时，需要二选一：
+- 选项 A: 在 `ChatService.stream` 的 streamEvents 调用上加 `.subscribeOn(Schedulers.boundedElastic())`，把 sa-token loginId 提前 capture（已有），让整个 reactive 链跑在 boundedElastic 上（一次性 thread switch，但不影响响应式语义）。需新 spec §12.19 跟踪
+- 选项 B: 在 agentscope-core 上游修复（让 applySystemPromptMiddlewares 全程返回 `Mono<String>`，不 block）—— 跨 repo，目前不可行
+
+短期保留 `.disableDynamicSkills().disableWorkspaceContext()` —— M7-2/M7-3/M7-4 仍按 plan 把工厂建好，但 M7-4 启用时把 disable 去掉的同时必须配合 subscribeOn 改造。
+
 ---
 
 ## 13. 开放问题（实施期再决定）
