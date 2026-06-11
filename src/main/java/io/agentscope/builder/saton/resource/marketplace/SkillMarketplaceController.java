@@ -1,6 +1,8 @@
 package io.agentscope.builder.saton.resource.marketplace;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
+import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillSummaryVO;
+import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillVO;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceUpsertReq;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceVO;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +47,20 @@ public class SkillMarketplaceController {
     @DeleteMapping("/{id}")
     public Mono<Void> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
         return inSaContext(exchange, () -> { service.delete(id); return null; });
+    }
+
+    @GetMapping("/{id}/skills")
+    public Mono<List<MarketSkillSummaryVO>> listSkills(
+            @PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> service.listSkills(id));
+    }
+
+    @GetMapping("/{id}/skills/{name}")
+    public Mono<MarketSkillVO> getSkill(
+            @PathVariable("id") Long id,
+            @PathVariable("name") String name,
+            ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> service.getSkill(id, name));
     }
 
     private <T> Mono<T> inSaContext(ServerWebExchange exchange,

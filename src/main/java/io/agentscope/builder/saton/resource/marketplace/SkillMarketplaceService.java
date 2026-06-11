@@ -3,7 +3,12 @@ package io.agentscope.builder.saton.resource.marketplace;
 import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.common.error.ConflictException;
 import io.agentscope.builder.saton.common.error.NotFoundException;
+import io.agentscope.builder.saton.marketplace.BuilderMarketplace;
+import io.agentscope.builder.saton.marketplace.MarketSkillContent;
+import io.agentscope.builder.saton.marketplace.UserMarketplaceRegistry;
 import io.agentscope.builder.saton.resource.ResourceCommon;
+import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillSummaryVO;
+import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillVO;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceUpsertReq;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceVO;
 import org.springframework.stereotype.Service;
@@ -15,9 +20,12 @@ import java.util.List;
 public class SkillMarketplaceService {
 
     private final SkillMarketplaceRepository repo;
+    private final UserMarketplaceRegistry marketplaceRegistry;
 
-    public SkillMarketplaceService(SkillMarketplaceRepository repo) {
+    public SkillMarketplaceService(SkillMarketplaceRepository repo,
+                                   UserMarketplaceRegistry marketplaceRegistry) {
         this.repo = repo;
+        this.marketplaceRegistry = marketplaceRegistry;
     }
 
     public List<SkillMarketplaceVO> list() {
@@ -75,6 +83,24 @@ public class SkillMarketplaceService {
         if (n == 0) {
             throw new NotFoundException("skill marketplace not found: " + id);
         }
+    }
+
+    public List<MarketSkillSummaryVO> listSkills(Long marketplaceId) {
+        String me = StpUtil.getLoginIdAsString();
+        SkillMarketplaceEntity entity = loadMine(marketplaceId, me);
+        BuilderMarketplace mp = marketplaceRegistry.find(me, entity.getMarketplaceId())
+                .orElseThrow(() -> new NotFoundException("marketplace not available: " + marketplaceId));
+        return mp.list().stream().map(MarketSkillSummaryVO::from).toList();
+    }
+
+    public MarketSkillVO getSkill(Long marketplaceId, String skillName) {
+        String me = StpUtil.getLoginIdAsString();
+        SkillMarketplaceEntity entity = loadMine(marketplaceId, me);
+        BuilderMarketplace mp = marketplaceRegistry.find(me, entity.getMarketplaceId())
+                .orElseThrow(() -> new NotFoundException("marketplace not available: " + marketplaceId));
+        MarketSkillContent content = mp.fetch(skillName);
+        if (content == null) throw new NotFoundException("skill not found: " + skillName);
+        return MarketSkillVO.from(content);
     }
 
     private SkillMarketplaceEntity loadMine(Long id, String me) {
