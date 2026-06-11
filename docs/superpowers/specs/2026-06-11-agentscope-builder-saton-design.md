@@ -918,6 +918,48 @@ public Mono<Foo> get(@PathVariable("id") Long id, ServerWebExchange exchange) { 
 
 **对策**：`ResourceCommon.normalizePropsJson(s)` 把 `null/blank` 都规范化成 `"{}"` 再传给 Jackson。
 
+### 12.14 SaReactorSyncHolder 在 Flux.defer 嵌套链中会丢
+
+**事实**（M5 发现）：在 controller 层 `Flux.defer(() -> { setContext(exchange); try { return service.stream(...); } finally { clearContext(); } })`，service.stream 内部又是 `Flux.defer(() -> StpUtil.getLoginIdAsString())`。两个 defer 看起来同步链上，但 reactor 实际执行顺序是：
+
+1. 外层 defer lambda 执行 → `setContext` → 调 service.stream → 拿到内部 Flux → `clearContext`（finally 立即执行） → 外层返回内部 Flux
+2. **reactor 再去 subscribe** 内部 Flux → 内部 defer lambda 执行 → 此时 ThreadLocal **已经清空** → `StpUtil` 抛 `SaTokenContextException`
+
+**对策**：service 层在 `Flux.defer` **之前**捕获 loginId 等需要 sa-token 的数据：
+
+```java
+// ChatService.stream 错误写法（context lost）
+return Flux.defer(() -> {
+    String me = StpUtil.getLoginIdAsString();   // ← context 已被清空，抛异常
+    ...
+});
+
+// 正确写法：在 defer 外捕获
+public Flux<AgentEvent> stream(Long agentDefId, ChatSendReq req) {
+    String me = StpUtil.getLoginIdAsString();   // ← 此时 controller 的 setContext 还有效
+    return Flux.defer(() -> {
+        // 只用捕获到的 me，不再调 sa-token
+        var def = agentRepo.findByIdAndOwnerId(agentDefId, me).orElseThrow(...);
+        ...
+    });
+}
+```
+
+### 12.15 AgentEvent 是 Jackson 2 注解、项目用 Jackson 3 mapper —— SSE data JSON 没 type 字段
+
+**事实**（M5 发现）：`io.agentscope.core.event.AgentEvent` 的 `@JsonTypeInfo + @JsonSubTypes` 来自 `com.fasterxml.jackson.annotation`（Jackson 2），但项目的 `JsonUtil.mapper()` 是 Jackson 3（`tools.jackson.databind`）。Jackson 3 **不识别** Jackson 2 注解，所以 `mapper.writeValueAsString(event)` 输出的 JSON **没有** `"type": "TEXT_BLOCK_DELTA"` 这种鉴别字段。
+
+**当前影响**：
+- SSE 的 `event:` name 字段独立来自 `event.getType().name().toLowerCase()`，前端按 event name 路由是 OK 的
+- 但前端如果想从 `data:` 字符串解析回 Java/JS 对象，没有 type 字段就不知道用哪个子类
+
+**对策**（M5 暂未处理，留给 M6+ 或前端集成时再决定）：
+- 选项 A：toSse 方法手动注入 type 字段（如把 `data` 用 ObjectNode 包一层 + put("type", ...)）—— 简单但耦合
+- 选项 B：项目内提供 Jackson 2 兼容 mapper（仅给 SSE 序列化用）—— pom 加 `com.fasterxml.jackson.core:jackson-databind` runtime dep
+- 选项 C：等 agentscope-core 升级到 Jackson 3 注解（理想，等不到）
+
+短期对策记录在 SSE 客户端文档里："靠 event: name 路由，不要从 data: 字段读 type"。
+
 ---
 
 ## 13. 开放问题（实施期再决定）
