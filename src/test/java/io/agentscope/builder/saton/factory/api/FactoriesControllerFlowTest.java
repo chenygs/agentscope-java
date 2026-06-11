@@ -84,4 +84,29 @@ class FactoriesControllerFlowTest {
         client.get().uri("/api/factories/model-types")
                 .exchange().expectStatus().isUnauthorized();
     }
+
+    @Test
+    void listAllToolTypes() {
+        java.util.List<io.agentscope.builder.saton.factory.core.TypeMeta> types =
+                client.get().uri("/api/factories/tool-types")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectBody(new org.springframework.core.ParameterizedTypeReference<
+                                java.util.List<io.agentscope.builder.saton.factory.core.TypeMeta>>() {})
+                        .returnResult().getResponseBody();
+
+        assertNotNull(types);
+        java.util.Set<String> names = types.stream()
+                .map(io.agentscope.builder.saton.factory.core.TypeMeta::type)
+                .collect(java.util.stream.Collectors.toSet());
+        assertTrue(names.containsAll(java.util.Set.of("read-file", "write-file", "shell-cmd")),
+                "missing builtin tool types; got " + names);
+    }
+
+    @Test
+    void toolTypesRequiresLogin() {
+        client.get().uri("/api/factories/tool-types")
+                .exchange().expectStatus().isUnauthorized();
+    }
 }

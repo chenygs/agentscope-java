@@ -23,13 +23,21 @@ import java.util.List;
 public class FactoriesController {
 
     private final ModelFactory modelFactory;
+    private final io.agentscope.builder.saton.factory.tool.ToolFactory toolFactory;
 
-    public FactoriesController(ModelFactory modelFactory) {
+    public FactoriesController(ModelFactory modelFactory,
+                               io.agentscope.builder.saton.factory.tool.ToolFactory toolFactory) {
         this.modelFactory = modelFactory;
+        this.toolFactory = toolFactory;
     }
 
     @GetMapping("/model-types")
     public Mono<List<TypeMeta>> modelTypes() {
         return Mono.fromCallable(modelFactory::listTypes);
+    }
+
+    @GetMapping("/tool-types")
+    public Mono<List<TypeMeta>> toolTypes() {
+        return Mono.fromCallable(toolFactory::listTypes);
     }
 }
