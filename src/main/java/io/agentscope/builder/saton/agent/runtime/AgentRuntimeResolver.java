@@ -5,7 +5,7 @@ import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
 import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
-import io.agentscope.core.ReActAgent;
+import io.agentscope.harness.agent.HarnessAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,14 +15,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * (agentDefId, modelProviderId) → {@link ReActAgent} 缓存。
+ * (agentDefId, modelProviderId) → {@link HarnessAgent} 缓存。
  *
- * <p>语义：
- * <ul>
- *   <li>{@link #resolve(Long, Long)} 拿到（或惰性构造）缓存的 agent</li>
- *   <li>{@link #invalidateByAgent(Long)} agent 自身改/删时，移除所有相关 key</li>
- *   <li>{@link #invalidateByModel(Long)} model 改/删时，移除所有用这个 model 的 key</li>
- * </ul>
+ * <p>M7 起：缓存值类型从 ReActAgent 切到 HarnessAgent。resolve 多接一个 ownerId 参数
+ * （HarnessAgent 需要 workspace 路径，路径取决于 ownerId）；cache key 仍是 (defId, modelId)，
+ * 因为 agent 本身已经隐含 ownership。
  */
 @Component
 public class AgentRuntimeResolver {
@@ -33,10 +30,8 @@ public class AgentRuntimeResolver {
     private final ModelProviderRepository modelRepo;
     private final AgentBuildOrchestrator orchestrator;
 
-    private final Map<RuntimeKey, ReActAgent> cache = new ConcurrentHashMap<>();
-    /** 反向索引：byAgent[defId] 集合中所有 RuntimeKey 用了这个 defId。 */
+    private final Map<RuntimeKey, HarnessAgent> cache = new ConcurrentHashMap<>();
     private final Map<Long, Set<RuntimeKey>> byAgent = new ConcurrentHashMap<>();
-    /** 反向索引：byModel[modelId] 集合中所有 RuntimeKey 用了这个 modelId。 */
     private final Map<Long, Set<RuntimeKey>> byModel = new ConcurrentHashMap<>();
 
     public AgentRuntimeResolver(AgentDefinitionRepository agentRepo,
@@ -47,17 +42,17 @@ public class AgentRuntimeResolver {
         this.orchestrator = orchestrator;
     }
 
-    public ReActAgent resolve(Long agentDefId, Long modelProviderId) {
+    public HarnessAgent resolve(Long agentDefId, Long modelProviderId, String ownerId) {
         RuntimeKey key = new RuntimeKey(agentDefId, modelProviderId);
         return cache.computeIfAbsent(key, k -> {
             AgentDefinitionEntity def = agentRepo.findById(agentDefId)
                     .orElseThrow(() -> new NotFoundException("agent not found: " + agentDefId));
             ModelProviderEntity model = modelRepo.findById(modelProviderId)
                     .orElseThrow(() -> new NotFoundException("model provider not found: " + modelProviderId));
-            ReActAgent built = orchestrator.build(def, model);
+            HarnessAgent built = orchestrator.build(def, model, ownerId);
             byAgent.computeIfAbsent(agentDefId, x -> ConcurrentHashMap.newKeySet()).add(k);
             byModel.computeIfAbsent(modelProviderId, x -> ConcurrentHashMap.newKeySet()).add(k);
-            log.debug("built ReActAgent for {}/{}", agentDefId, modelProviderId);
+            log.debug("built HarnessAgent for {}/{} (owner={})", agentDefId, modelProviderId, ownerId);
             return built;
         });
     }
@@ -84,7 +79,6 @@ public class AgentRuntimeResolver {
         log.debug("invalidated {} cache entries for model {}", keys.size(), modelProviderId);
     }
 
-    /** 测试用：当前缓存条目数量。 */
     int cacheSize() {
         return cache.size();
     }

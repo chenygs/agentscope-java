@@ -4,7 +4,7 @@ import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
 import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
-import io.agentscope.core.ReActAgent;
+import io.agentscope.harness.agent.HarnessAgent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +50,8 @@ class AgentRuntimeResolverTest {
 
     @Test
     void resolveCachesByKey() {
-        ReActAgent a1 = resolver.resolve(agentId, modelId);
-        ReActAgent a2 = resolver.resolve(agentId, modelId);
+        HarnessAgent a1 = resolver.resolve(agentId, modelId, "admin");
+        HarnessAgent a2 = resolver.resolve(agentId, modelId, "admin");
         assertSame(a1, a2);
     }
 
@@ -66,14 +66,14 @@ class AgentRuntimeResolverTest {
         mp2.setCreatedAt(now);
         mp2.setUpdatedAt(now);
         modelRepo.save(mp2);
-        ReActAgent a1 = resolver.resolve(agentId, modelId);
-        ReActAgent a2 = resolver.resolve(agentId, mp2.getId());
+        HarnessAgent a1 = resolver.resolve(agentId, modelId, "admin");
+        HarnessAgent a2 = resolver.resolve(agentId, mp2.getId(), "admin");
         assertNotSame(a1, a2);
     }
 
     @Test
     void invalidateByAgentClearsCache() {
-        resolver.resolve(agentId, modelId);
+        resolver.resolve(agentId, modelId, "admin");
         int before = resolver.cacheSize();
         resolver.invalidateByAgent(agentId);
         int after = resolver.cacheSize();
@@ -82,7 +82,7 @@ class AgentRuntimeResolverTest {
 
     @Test
     void invalidateByModelClearsCache() {
-        resolver.resolve(agentId, modelId);
+        resolver.resolve(agentId, modelId, "admin");
         int before = resolver.cacheSize();
         resolver.invalidateByModel(modelId);
         int after = resolver.cacheSize();

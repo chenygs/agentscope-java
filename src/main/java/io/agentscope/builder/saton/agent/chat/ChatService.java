@@ -8,7 +8,7 @@ import io.agentscope.builder.saton.agent.chat.dto.ChatSendResp;
 import io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
-import io.agentscope.core.ReActAgent;
+import io.agentscope.harness.agent.HarnessAgent;
 import io.agentscope.core.agent.RuntimeContext;
 import io.agentscope.core.message.ContentBlock;
 import io.agentscope.core.message.Msg;
@@ -46,7 +46,7 @@ public class ChatService {
         if (modelRepo.findByIdAndOwnerId(effectiveModelId, me).isEmpty()) {
             throw new NotFoundException("model provider not found or not yours: " + effectiveModelId);
         }
-        ReActAgent agent = runtimeResolver.resolve(def.getId(), effectiveModelId);
+        HarnessAgent agent = runtimeResolver.resolve(def.getId(), effectiveModelId, me);
 
         Msg userMsg = Msg.builder()
                 .name("user")
@@ -74,7 +74,7 @@ public class ChatService {
                 throw new NotFoundException(
                         "model provider not found or not yours: " + effectiveModelId);
             }
-            ReActAgent agent = runtimeResolver.resolve(def.getId(), effectiveModelId);
+            HarnessAgent agent = runtimeResolver.resolve(def.getId(), effectiveModelId, me);
 
             Msg userMsg = Msg.builder()
                     .name("user")

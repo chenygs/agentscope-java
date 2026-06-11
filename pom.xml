@@ -73,6 +73,13 @@
             <version>2.0.0-RC2</version>
         </dependency>
 
+        <!-- M7: HarnessAgent for skill repos + subagent factory + workspace context -->
+        <dependency>
+            <groupId>io.agentscope</groupId>
+            <artifactId>agentscope-harness</artifactId>
+            <version>2.0.0-RC2</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
