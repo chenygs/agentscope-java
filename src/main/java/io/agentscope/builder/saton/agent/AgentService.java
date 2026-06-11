@@ -17,13 +17,16 @@ public class AgentService {
     private final AgentDefinitionRepository repo;
     private final ModelProviderRepository modelRepo;
     private final io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver;
+    private final io.agentscope.builder.saton.session.SessionService sessionService;
 
     public AgentService(AgentDefinitionRepository repo,
                         ModelProviderRepository modelRepo,
-                        io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver) {
+                        io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver,
+                        io.agentscope.builder.saton.session.SessionService sessionService) {
         this.repo = repo;
         this.modelRepo = modelRepo;
         this.runtimeResolver = runtimeResolver;
+        this.sessionService = sessionService;
     }
 
     public List<AgentVO> list() {
@@ -91,6 +94,7 @@ public class AgentService {
             throw new NotFoundException("agent not found: " + id);
         }
         runtimeResolver.invalidateByAgent(id);
+        sessionService.purgeAgent(me, id);
     }
 
     private AgentDefinitionEntity loadMine(Long id, String me) {
