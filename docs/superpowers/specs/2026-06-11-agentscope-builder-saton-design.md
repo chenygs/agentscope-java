@@ -1,0 +1,706 @@
+# AgentScope Builder (sa-token 版) 设计文档
+
+- **代号**: `agentscope-builder-saton`
+- **作者**: chenygs
+- **日期**: 2026-06-11
+- **状态**: Draft（待 review）
+- **参考**: 原项目 `agentscope-examples/agents/agentscope-builder` 及其 `PROJECT_ANALYSIS.md`
+
+---
+
+## 1. 项目定位
+
+`agentscope-builder-saton` 是原 `agentscope-builder` 的"重做"版本。重做范围如下：
+
+- **保留**：1:1 复刻原 builder 的能力 —— Agent 动态创建/编辑、Web Chat (SSE)、Workspace 文件、多轮 Session、子 Agent、动态 Tool/Skill、Skill Marketplace、Agent 分享/ACL、AI 起草、模板、审计日志。
+- **删除**：所有 IM 渠道接入（钉钉/企微/飞书/GitHub/GitLab）、`runtime/outbound`、`IdentityLinkStore` 以及 `/dock_*` slash 命令、`agentscope.json` 静态配置文件持久化。
+- **替换**：Spring Security + JWT → **sa-token**；Spring Boot 3 + WebFlux → **Spring Boot 4 + WebFlux**。
+- **新增**：5 大工厂（Agent / Model / Tool / Skill / Hook）+ 前端可见的"工厂目录" REST；模型/MCP/技能市场/技能仓库等"可复用资源"独立持久化（Hermes / LobeChat 模式）。
+
+**核心心智模型转变**：从原 builder 的"agent 创建时一次性硬编码装配"转向"**资源 + 引用**"模型 —— 模型实例、MCP Server、Skill 仓库都是用户在"管理页"独立维护的持久化资源，agent 只引用它们的 id；聊天时能临时切换模型而无需重建 agent。
+
+---
+
+## 2. 技术栈
+
+| 维度 | 选型 |
+|---|---|
+| JDK | 21 |
+| 构建 | Maven 3.8+ |
+| Web 层 | Spring Boot 4.0.x + Spring WebFlux + Spring Framework 7（Jakarta EE 11） |
+| 鉴权 | `sa-token-reactor-spring-boot4-starter:1.45.0`（Maven Central 已验证可用，无需排除冲突依赖） |
+| 持久化 | Spring Data JPA + Hibernate 7 |
+| 数据库 | 默认 H2（file），profile `jdbc` 切 MySQL 8 / PostgreSQL |
+| Agent 运行时 | `agentscope-harness`（无修改复用） |
+| 配置中心 | 数据库为主，**不再使用 `agentscope.json`** |
+
+依赖示例：
+
+```xml
+<properties>
+    <spring-boot.version>4.0.0</spring-boot.version>
+    <sa-token.version>1.45.0</sa-token.version>
+</properties>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+<dependency>
+    <groupId>cn.dev33</groupId>
+    <artifactId>sa-token-reactor-spring-boot4-starter</artifactId>
+    <version>${sa-token.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.agentscope</groupId>
+    <artifactId>agentscope-core</artifactId>
+    <version>${revision}</version>
+</dependency>
+<dependency>
+    <groupId>io.agentscope</groupId>
+    <artifactId>agentscope-harness</artifactId>
+    <version>${revision}</version>
+</dependency>
+```
+
+---
+
+## 3. 整体架构
+
+### 3.1 一次"用户创建并使用一个 Agent"的完整流程
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 阶段 A：先添加资源                                              │
+│   前端「模型管理」→ POST /api/models { dashscope, apiKey, ... } │
+│   前端「MCP 管理」 → POST /api/mcp-servers                       │
+│   前端「技能市场」→ POST /api/skill-marketplaces                │
+│   后端：ModelFactory.validate(...) → 加密 → INSERT              │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 阶段 B：创建 Agent（仅入库，不实例化）                          │
+│   POST /api/agents {                                            │
+│     name, sysPrompt,                                            │
+│     defaultModelProviderId: 7,                                  │
+│     toolSpecs: [...], skillRefs: [...], hookSpecs: [...]        │
+│   }                                                              │
+│   → INSERT INTO agent_definition                                │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 阶段 C：聊天时按需实例化 HarnessAgent                          │
+│   POST /api/agents/{id}/chat/stream                             │
+│     body: { message, overrideModelProviderId? }   ← 可临时切模型│
+│                                                                  │
+│   AgentRuntimeResolver:                                          │
+│     1. 查 agent_definition                                       │
+│     2. effectiveModelId = overrideModelProviderId               │
+│                          ?? defaultModelProviderId               │
+│     3. 用 (agentId, effectiveModelId) 查缓存                    │
+│     4. 不命中 → 调 AgentBuildOrchestrator 装配：                 │
+│          Model  = ModelFactory.instantiate(modelRow)            │
+│          Tools  = ToolFactory.instantiateAll(def.toolSpecs)     │
+│          Skills = SkillFactory.loadAll(def.skillRefs)           │
+│          Hooks  = HookFactory.createAll(def.hookSpecs)          │
+│          HarnessAgent = AgentFactory.create(def.agentType, ...) │
+│     5. 缓存                                                      │
+│     6. ha.call(message) → SSE 流回前端                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 与原 builder 的关键差异
+
+| 原 builder | 新项目 | 说明 |
+|---|---|---|
+| `agentscope.json` 静态配置 | ❌ 全数据库驱动 | UI 上配 → 立即生效 |
+| Channel 扩展（钉钉/飞书/...） | ❌ 全删 | 仅保留 ChatUI |
+| `OutboundController` + `OutboundTool` | ❌ 删 | 没有 IM 不需要 |
+| `IdentityLinkStore` + `/dock_*` 命令 | ❌ 删 | 同上 |
+| Spring Security + JWT | ❌ 换 sa-token |  |
+| HarnessGateway 路由表 | ✅ 简化保留 | 只有 chatui 一种渠道 |
+| gateKey/sessionKey 双键 | ⚠️ 简化为单 sessionKey | 接口可调，去掉"渠道身份映射"层 |
+| BuilderBootstrap 硬编码装配 | ✅ 替换为 5 大工厂 + AgentBuildOrchestrator | 架构核心改进 |
+| Model 是 Spring Bean 单例 | ✅ ModelProvider 资源表 | Hermes 模式 |
+| MCP / Skill 没有独立资源 | ✅ 新增独立表 | Hermes 模式 |
+| AdminUserController | ❌ 删 | 单人视角，无 admin |
+
+---
+
+## 4. 五大工厂（架构核心）
+
+### 4.1 设计原则
+
+5 个工厂走**完全统一的模板**，便于一次掌握、五处复用。每个工厂由 4 部分构成：
+
+```java
+// 1. SPI 接口（每种 type 一个实现 bean）
+public interface XxxProvider {                    // X = Agent/Model/Tool/Skill/Hook
+    String type();                                 // 唯一标识，如 "dashscope"
+    XxxMeta meta();                                // 给前端列表用：displayName、描述、参数 JSON Schema
+    XxxProduct create(XxxConfig config);           // 真正生产对象
+}
+
+// 2. 注册表（Spring 启动时收集所有 XxxProvider bean 按 type 注册）
+@Component
+public class XxxRegistry {
+    private final Map<String, XxxProvider> providers;
+    public XxxRegistry(List<XxxProvider> beans) {
+        this.providers = beans.stream().collect(toMap(XxxProvider::type, identity()));
+    }
+    public XxxProvider get(String type);
+    public List<XxxMeta> listMetas();              // 前端 GET /api/factories/xxx-types
+}
+
+// 3. 工厂门面
+@Service
+public class XxxFactory {
+    public XxxProduct create(String type, Map<String,Object> config) {
+        var provider = registry.get(type);
+        JsonSchema.validate(provider.meta().schema(), config);
+        return provider.create(config);
+    }
+}
+
+// 4. 内置 Provider 实现（每种 type 一个类，@Component）
+```
+
+**模式归类**：
+- **工厂模式** = `XxxFactory.create(type, config)` 屏蔽 new 细节
+- **策略模式** = 每个 type → 一个 Provider 实现，运行时按 type 选
+
+### 4.2 各工厂的内置 Provider
+
+| 工厂 | 内置 Provider 类型 | 前端使用方式 |
+|---|---|---|
+| **ModelFactory** | `dashscope` / `openai` / `anthropic` / `gemini` / `ollama` | 下拉框选 → 渲染 apiKey/baseUrl/modelName 表单 |
+| **ToolFactory** | `shell-cmd` / `read-file` / `write-file` / `plan-notebook` / `sub-agent` / `mcp-bridge` | 多选框勾选 → 渲染各工具参数表单 |
+| **SkillFactory** | `local` / `git` / `nacos`（对应 `SkillRepoType`） | 装/卸 skill 仓库 |
+| **HookFactory** | `logging` / `tool-notification` / `audit-jsonl` / `tracing-otel` | 多选勾选 |
+| **AgentFactory** | `harness`（默认） / `react` | 高级用户可选 |
+
+> AgentFactory 是真正的"**编排器**"：它接收前 4 个工厂的产物，把它们拼装成 `HarnessAgent`。
+
+### 4.3 给前端用的"工厂目录" REST
+
+```
+GET  /api/factories/model-types      → 列出 dashscope/openai/... + JSON Schema
+GET  /api/factories/tool-types       → 列出 shell-cmd/... + JSON Schema
+GET  /api/factories/skill-repo-types → 列出 local/git/nacos + JSON Schema
+GET  /api/factories/hook-types       → 列出 logging/... + JSON Schema
+GET  /api/factories/agent-types      → 列出 harness/react + JSON Schema
+```
+
+前端可用 [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form) 之类的库自动渲染参数表单 —— **新增一种 Provider = 后端加一个 @Component，前端零改动**。
+
+### 4.4 不做的事情
+
+- **不做**运行时 jar 热加载 / 动态 ClassLoader 隔离（复杂度高、安全难度大）。
+- **不做**用户自定义工具（前端写代码当工具 = RCE 风险）。
+
+---
+
+## 5. 数据模型
+
+### 5.1 表清单总览（7 张）
+
+```
+─── 用户身份 ───
+sys_user                    用户表（sa-token 用）
+
+─── 独立资源（per-owner，UI 上独立管理）───
+model_provider              "我的通义千问"、"我的 GPT-4"
+mcp_server                  MCP Server 实例
+skill_marketplace           技能市场（git/nacos，浏览+安装到 workspace）
+skill_repository            技能仓库（git/filesystem，挂为 overlay）
+
+─── Agent ───
+agent_definition            agent 配置（子配置全部 JSON 列）
+agent_share                 ACL 关联表（唯一需要反向查询的拆表）
+```
+
+### 5.2 字段详情
+
+#### `sys_user`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| user_id | VARCHAR(128) PK | sa-token loginId |
+| username | VARCHAR(64) UNIQUE | 登录名 |
+| password_hash | VARCHAR(128) | BCrypt |
+| created_at | BIGINT | |
+
+> 不引入 `roles` 字段，单人视角无角色概念。
+
+#### `model_provider`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | |
+| owner_id | VARCHAR(128) | = user_id |
+| name | VARCHAR(200) | 显示名："我的千问" |
+| type | VARCHAR(32) | "dashscope"/"openai"/... |
+| props_json | LOB | 加密存储敏感字段（apiKey/token/password） |
+| created_at, updated_at | BIGINT | |
+
+唯一约束 `(owner_id, name)`。
+
+#### `mcp_server`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | |
+| owner_id | VARCHAR(128) | |
+| name | VARCHAR(200) | |
+| transport | VARCHAR(16) | stdio/sse/http |
+| props_json | LOB | 命令、URL、headers 等 |
+| created_at, updated_at | BIGINT | |
+
+#### `skill_marketplace`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | |
+| owner_id | VARCHAR(128) | |
+| marketplace_id | VARCHAR(128) | 用户起的业务名 |
+| type | VARCHAR(32) | "git"/"nacos" |
+| props_json | LOB | 连接参数（url/branch/token） |
+| created_at, updated_at | BIGINT | |
+
+唯一约束 `(owner_id, marketplace_id)`。
+
+#### `skill_repository`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | |
+| owner_id | VARCHAR(128) | |
+| name | VARCHAR(200) | |
+| type | VARCHAR(32) | "filesystem"/"git" |
+| props_json | LOB | 路径或 git url |
+| created_at, updated_at | BIGINT | |
+
+#### `agent_definition`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | row_id |
+| owner_id | VARCHAR(128) | |
+| agent_id | VARCHAR(128) | 业务唯一标识（同原 builder） |
+| name | VARCHAR(200) | |
+| description | LOB | |
+| sys_prompt | LOB | |
+| agent_type | VARCHAR(50) | "harness"（默认）/"react" |
+| default_model_provider_id | BIGINT | FK → model_provider.id |
+| max_iters | INT | |
+| workspace_path | VARCHAR(1024) | |
+| tool_specs_json | LOB | `[{type:"shell-cmd",props:{...}}, ...]` |
+| skill_refs_json | LOB | `[{repoId:7,name:"git-flow"}, ...]` |
+| hook_specs_json | LOB | `[{type:"audit-jsonl",props:{...}}, ...]` |
+| subagent_refs_json | LOB | `["agent_002", "agent_005", ...]` |
+| skill_repositories_json | LOB | agent 启动时挂载的 skill_repository.id 列表 + 配置 |
+| sandbox_mode | VARCHAR(16) | local/sandbox |
+| sandbox_scope | VARCHAR(16) | SESSION/USER/AGENT/GLOBAL |
+| run_as | VARCHAR(20) | INVOKER/OWNER |
+| fork_of | VARCHAR(128) | Clone 来源 |
+| created_at, updated_at | BIGINT | |
+
+唯一约束 `(owner_id, agent_id)`；索引 `(owner_id)`、`(agent_id)`。
+
+#### `agent_share`
+
+| 列 | 类型 | 说明 |
+|---|---|---|
+| id | BIGINT PK | |
+| agent_def_id | BIGINT | FK → agent_definition.id（CascadeType.ALL + orphanRemoval）|
+| grantee_type | VARCHAR(16) | USER（暂不实现 WORKSPACE）|
+| grantee_id | VARCHAR(128) | 被分享给的 user_id |
+| tier | VARCHAR(16) | EDIT/RUN/CLONE |
+| created_by | VARCHAR(128) | |
+| created_at | BIGINT | |
+
+### 5.3 子配置为何用 JSON 列
+
+`tool_specs / skill_refs / hook_specs / subagent_refs` 这 4 个字段都是：
+
+1. **列表**：每个 agent 勾的子项数量不固定
+2. **schemaless**：每种 type 的 props 字段不一样（如 shell-cmd 要 allowedCommands、mcp-bridge 要 mcpServerId）
+3. **无反向查询需求**：不需要问"哪些 agent 用了 read-file"
+
+**结论**：用 `@Lob` JSON 字符串列存储 —— 跟原 `AgentEntity` 风格一致（参考 `tools_allow_json`、`skill_repositories_json`），保留"加新 type 无需改表结构"的灵活性。
+
+唯一拆表的是 `agent_share`，因为它有反向多对多查询（"我能看到哪些 agent"）。
+
+### 5.4 不持久化的数据（同原 builder）
+
+| 数据 | 存放位置 |
+|---|---|
+| Session / Transcript | `<workspace>/agents/<id>/sessions/*.log.jsonl` |
+| UsageStore | 进程内存，重启清空（同原） |
+| AgentActivity | `<workspace>/activity/activity.jsonl` |
+| Session 已读状态 | `~/.agentscope/session-read-state.json` |
+
+---
+
+## 6. 鉴权与数据隔离（sa-token）
+
+### 6.1 全局过滤器
+
+```java
+@Configuration
+public class SaTokenConfig {
+    @Bean
+    public SaReactorFilter saReactorFilter() {
+        return new SaReactorFilter()
+            .addInclude("/**")
+            .addExclude("/api/auth/login",
+                        "/actuator/health",
+                        "/", "/assets/**", "/index.html")
+            .setAuth(obj -> SaRouter.match("/**").check(r -> StpUtil.checkLogin()));
+    }
+}
+```
+
+### 6.2 数据隔离规则（应用层过滤）
+
+| 表 | 规则 |
+|---|---|
+| `model_provider` / `mcp_server` / `skill_marketplace` / `skill_repository` | per owner：所有读写 `WHERE owner_id = StpUtil.getLoginIdAsString()` |
+| `agent_definition` | per owner + 通过 `agent_share` 分享给他人；可见 = `owner_id = me OR EXISTS(share WHERE grantee_id = me)` |
+| `agent_share` | 仅 agent owner 可写；被分享者只能读 |
+| `sys_user` | 仅本人能改自己的密码 |
+
+**Repository 标准模板**：
+
+```java
+public interface ModelProviderRepository extends JpaRepository<ModelProvider, Long> {
+    List<ModelProvider> findByOwnerId(String ownerId);
+    Optional<ModelProvider> findByIdAndOwnerId(Long id, String ownerId);
+    long deleteByIdAndOwnerId(Long id, String ownerId);
+}
+```
+
+**Agent 可见性查询**：
+
+```sql
+SELECT a.* FROM agent_definition a
+WHERE a.owner_id = :me
+   OR EXISTS (SELECT 1 FROM agent_share s
+              WHERE s.agent_def_id = a.id AND s.grantee_id = :me)
+```
+
+### 6.3 Agent 分享 ACL（三级 tier）
+
+沿用原 builder 的 `EDIT > RUN > CLONE`：
+
+```java
+public enum Tier { EDIT, RUN, CLONE }
+
+@Service
+public class AgentAccessGuard {
+    public Mono<AgentDefinition> require(String agentId, Tier minTier) {
+        String me = StpUtil.getLoginIdAsString();
+        return aclService.tierFor(me, agentId)
+            .flatMap(actual -> actual.compareTo(minTier) >= 0
+                ? agentRepo.findByAgentId(agentId)
+                : Mono.error(new NotPermittedException()))
+            .switchIfEmpty(Mono.error(new AgentNotFoundException()));
+    }
+}
+```
+
+### 6.4 敏感字段加密
+
+- 启动时从环境变量 `AGENTSCOPE_BUILDER_SECRET_KEY`（32 字节 base64）读出 AES-256 主密钥
+- JPA `AttributeConverter<String, String>` 在 `props_json` 写入时**字段级**加密 `apiKey` / `token` / `password` 等 key，读取时解密
+- 列表接口返回时再做 mask（`sk-xxxx****`），编辑时前端传特殊占位符表示"不修改"
+- 思路同原 builder `ChannelDirectoryController` 的凭证 mask
+
+### 6.5 子 Agent / 调用者 / 文件系统 owner 三件套
+
+沿用原 builder 设计：SCOPE_USER（即 `run_as = OWNER`）的 agent 被其他用户调用时，调用者的**会话独立**，但**文件系统命名空间锁定到 owner**：
+
+```java
+String fsUserId = agentDef.runAs() == RunAs.OWNER
+    ? agentDef.ownerId()
+    : callerLoginId;
+```
+
+### 6.6 默认账号
+
+启动时 `@PostConstruct` 若 `sys_user` 表空，自动种 `admin/admin`（控制台打印强提示首次登录改密）。同原 builder。
+
+### 6.7 不做的事情
+
+- **不做 admin 视角** —— 不存在 `/api/admin/**` 接口、不存在"看全部数据"的入口
+- **不做用户注册接口** —— 启动种子账号自己用
+- **不做角色字段** —— sys_user 不存 roles
+
+---
+
+## 7. REST 接口总览
+
+```
+─── 认证 ───
+POST   /api/auth/login                         sa-token 登录
+POST   /api/auth/logout
+GET    /api/auth/me
+POST   /api/user/change-password
+
+─── 资源管理（per-owner CRUD）───
+GET/POST/PUT/DELETE  /api/models                     ← model_provider
+GET/POST/PUT/DELETE  /api/mcp-servers                ← mcp_server
+GET/POST/PUT/DELETE  /api/skill-marketplaces         ← skill_marketplace
+GET/POST/PUT/DELETE  /api/skill-repositories         ← skill_repository
+
+GET    /api/skill-marketplaces/{id}/skills           列出市场里的 skill
+GET    /api/skill-marketplaces/{id}/skills/{name}    skill 详情
+
+─── 工厂目录（给前端动态填表单用）───
+GET    /api/factories/model-types
+GET    /api/factories/tool-types
+GET    /api/factories/skill-repo-types
+GET    /api/factories/hook-types
+GET    /api/factories/agent-types
+
+─── Agent ───
+GET/POST/PUT/DELETE  /api/agents[/{id}]
+POST   /api/agents/{id}/clone
+POST   /api/agents/draft                              AI 起草
+
+GET/POST/DELETE      /api/agents/{id}/shares[/...]
+GET    /api/agents/{id}/activity
+
+─── Workspace ───
+GET    /api/agents/{id}/workspace                     摘要
+POST   /api/agents/{id}/workspace/scaffold
+GET/PUT/DELETE       /api/agents/{id}/workspace/file
+POST   /api/agents/{id}/workspace/file/move
+POST   /api/agents/{id}/workspace/upload              multipart
+GET    /api/agents/{id}/workspace/memory
+GET    /api/agents/{id}/workspace/files
+
+GET/PUT              /api/agents/{id}/subagents[/{name}]
+POST   /api/agents/{id}/subagents/from-agent
+DELETE /api/agents/{id}/subagents/{name}
+
+─── Skill 安装到 workspace ───
+GET/PUT/DELETE       /api/agents/{id}/skills/workspace[/{name}]
+GET    /api/agents/{id}/skills/repositories[/{index}/skills[/{name}]]
+POST   /api/agents/{id}/skills/workspace/install
+POST   /api/agents/{id}/skills/workspace/marketplace-install
+
+─── Tool ───
+GET    /api/agents/{id}/tools/active
+GET/PUT              /api/agents/{id}/tools/config
+GET    /api/agents/{id}/tools/catalog/builtins
+GET    /api/agents/{id}/tools/catalog/mcp-servers
+
+─── Session ───
+GET    /api/agents/{id}/sessions/inbox
+GET    /api/agents/{id}/sessions/{key}
+POST   /api/agents/{id}/sessions/{key}/reset
+PATCH  /api/agents/{id}/sessions/{key}/read
+DELETE /api/agents/{id}/sessions/{key}
+
+─── Chat（核心）───
+GET    /api/agents/{id}/chat/session                  当前 sessionKey
+POST   /api/agents/{id}/chat/send                     同步
+POST   /api/agents/{id}/chat/stream                   SSE
+       body: { message, overrideModelProviderId? }    ← 可临时切模型
+
+─── 模板 ───
+GET    /api/templates[/{id}]
+
+─── SPA fallback ───
+GET    /, /assets/**, 其余无扩展名                    → /static/index.html
+```
+
+**SSE 事件类型**（同原）：`token` / `tool_call` / `tool_result` / `done` / `error`
+
+---
+
+## 8. 项目目录结构
+
+单 Maven module，目录：
+
+```
+agentscope-builder-saton/
+├── pom.xml
+└── src/main/java/io/agentscope/builder/saton/
+    ├── BuilderApp.java                      # @SpringBootApplication
+    │
+    ├── auth/                                # sa-token 集成
+    │   ├── SaTokenConfig.java               # SaReactorFilter
+    │   ├── AuthController.java              # /api/auth/**
+    │   └── UserService.java
+    │
+    ├── factory/                             # ★ 五大工厂层（架构核心）
+    │   ├── core/
+    │   │   ├── ProviderRegistry.java
+    │   │   ├── FactoryBase.java
+    │   │   └── TypeMeta.java                # 给前端的 type+schema 元信息
+    │   ├── model/
+    │   │   ├── ModelProviderType.java       # SPI 接口
+    │   │   ├── ModelFactory.java
+    │   │   └── impl/
+    │   │       ├── DashScopeModelProviderType.java
+    │   │       ├── OpenAIModelProviderType.java
+    │   │       ├── AnthropicModelProviderType.java
+    │   │       ├── GeminiModelProviderType.java
+    │   │       └── OllamaModelProviderType.java
+    │   ├── tool/
+    │   │   ├── ToolType.java
+    │   │   ├── ToolFactory.java
+    │   │   └── impl/{ShellCmd,ReadFile,WriteFile,PlanNotebook,SubAgent,McpBridge}ToolType.java
+    │   ├── skill/
+    │   │   ├── SkillRepoType.java
+    │   │   ├── SkillFactory.java
+    │   │   └── impl/{Local,Git,Nacos}SkillRepoType.java
+    │   ├── hook/
+    │   │   ├── HookType.java
+    │   │   ├── HookFactory.java
+    │   │   └── impl/{Logging,ToolNotification,AuditJsonl,TracingOtel}HookType.java
+    │   ├── agent/
+    │   │   ├── AgentType.java
+    │   │   ├── AgentFactory.java            # ★ 编排器
+    │   │   └── impl/{Harness,ReAct}AgentType.java
+    │   └── api/
+    │       └── FactoriesController.java     # /api/factories/*-types
+    │
+    ├── resource/                            # 4 类独立资源 CRUD
+    │   ├── model/        (Controller + Service + Entity + Repo)
+    │   ├── mcp/
+    │   ├── marketplace/
+    │   └── repository/
+    │
+    ├── agent/                               # Agent CRUD + 装配
+    │   ├── AgentController.java             # /api/agents/**
+    │   ├── AgentService.java
+    │   ├── AgentDefinitionEntity.java + Repo
+    │   ├── AgentShareEntity.java + Repo
+    │   ├── AgentAclService.java
+    │   ├── AgentAccessGuard.java
+    │   └── AgentBuildOrchestrator.java      # ★ 调五大工厂装配 HarnessAgent
+    │
+    ├── runtime/                             # HarnessAgent 运行时
+    │   ├── AgentRuntimeResolver.java        # (agentId, modelId) → HarnessAgent 缓存
+    │   ├── AgentInstanceCache.java
+    │   ├── HarnessGatewayConfig.java
+    │   └── session/
+    │       ├── SessionService.java
+    │       ├── SessionController.java       # /api/agents/{id}/sessions/**
+    │       └── SessionReadStateStore.java
+    │
+    ├── chat/                                # SSE 聊天
+    │   ├── ChatController.java              # /api/agents/{id}/chat/**
+    │   ├── ChatService.java
+    │   ├── ToolEventBus.java
+    │   └── ToolNotificationMiddleware.java
+    │
+    ├── workspace/
+    │   ├── WorkspaceController.java         # /api/agents/{id}/workspace/**
+    │   ├── WorkspaceService.java
+    │   └── WorkspaceScaffolder.java
+    │
+    ├── skill/
+    │   └── AgentSkillsController.java       # /api/agents/{id}/skills/**
+    │
+    ├── tool/
+    │   └── AgentToolsController.java        # /api/agents/{id}/tools/**
+    │
+    ├── template/
+    │   ├── TemplateRegistry.java
+    │   └── TemplateController.java          # /api/templates
+    │
+    ├── ai/                                  # AI 起草
+    │   ├── AgentDraftController.java
+    │   └── AgentDraftService.java
+    │
+    ├── audit/
+    │   └── AgentActivityStore.java          # JSONL
+    │
+    ├── common/
+    │   ├── EncryptedJsonConverter.java      # 字段级 AES-256
+    │   ├── SecretFields.java
+    │   ├── ApiException.java + GlobalErrorHandler.java
+    │   └── JsonUtil.java
+    │
+    └── persistence/
+        └── JpaConfig.java                   # @EnableJpaRepositories
+```
+
+```
+src/main/resources/
+├── application.yml                         # 默认 H2 (file)
+├── application-jdbc.yml                    # MySQL/PG 切换 profile
+├── scaffold/default/                       # workspace 脚手架（同原）
+├── templates/                              # 起步模板（同原）
+├── prompts/agent-draft.md                  # AI 起草 system prompt
+└── catalog/mcp-servers.json                # MCP 静态目录（给前端的"建议列表"）
+```
+
+**为何不拆子模块**：原 builder 单 module；类规模 80-120 个可控；过早拆分增加依赖管理负担。若后期某层稳定，按 `factory / runtime / web` 三段拆分。
+
+---
+
+## 9. 落地里程碑
+
+每个里程碑结束都能跑通一个 demo。
+
+| 里程碑 | 内容 | 完成标志 |
+|---|---|---|
+| **M1 基础设施** | pom、SB4 启动、sa-token 拦截器、JPA + H2、sys_user 表 + 登录 | `admin/admin` 登录拿到 token，`/api/auth/me` 返回用户 |
+| **M2 资源管理** | model_provider / mcp_server / skill_marketplace / skill_repository 4 表 + 4 套 CRUD + 加密 Converter | 前端能加一个 DashScope，DB 中 api_key 已加密 |
+| **M3 工厂骨架** | factory/core + ModelFactory 完整 + FactoriesController | `GET /api/factories/model-types` 返回 dashscope 等 + schema |
+| **M4 第一个能聊的 Agent** | AgentDefinition CRUD + AgentBuildOrchestrator（仅接 ModelFactory）+ ChatController 非流式 + HarnessAgent 集成 | 创建 agent → POST 消息 → 拿到回复 |
+| **M5 流式 + 工具** | SSE 推 token + ToolFactory + 6 个内置 ToolType + ToolEventBus + ToolNotificationMiddleware | 前端流式 token + 实时 tool_call 事件 |
+| **M6 Workspace + Session** | workspace CRUD + SessionService + 多轮对话 + transcript 回读 | 刷新页面继续上次对话 |
+| **M7 Skill + Hook + Subagent** | SkillFactory + HookFactory + 3 类 hook + SubAgentTool + sessions_spawn | agent 用 skill 文件、调子 agent |
+| **M8 Marketplace + Repository** | git/nacos marketplace + skill 安装到 workspace | UI 上从市场装 skill |
+| **M9 分享 + Clone + 模板** | agent_share + AccessGuard + AgentClone + 模板初始化 | A 创建 agent 分享给 B；B 能用、能 Clone |
+| **M10 AI 起草 + 审计 + 收尾** | AgentDraftController + AgentActivityStore + polish | 功能对齐原 builder（除 IM） |
+
+---
+
+## 10. 重要约定与坑（沿用原 builder 经验）
+
+1. **`gateKey ↔ sessionKey` 简化为单 sessionKey**：因为去掉了多渠道路由，前端可调，无需保留两层映射。
+2. **每次 EDIT agent 必须 `runtimeResolver.invalidate(agentId)`** —— 丢弃缓存的 HarnessAgent 实例，下次 chat 按新配置重建。
+3. **删除/改密 model_provider 必须 `runtimeResolver.invalidateByModelId(modelId)`** —— 所有引用该模型的 HarnessAgent 全部 invalidate。
+4. **共享 agent 的 `run_as = OWNER` 时**，文件系统命名空间锁定 owner，会话仍按 caller 隔离。
+5. **`activity/` 目录走共享存储** —— 多副本部署时审计日志统一。
+6. **chat 接口 `overrideModelProviderId` 必须校验权限** —— 调用者必须 own 这个 model_provider（不能借别人的 API Key 跑）。
+7. **agent_share 删除/改 tier 触发 `runtimeResolver.invalidate(agentId)`** —— 防止已被踢权限的 caller 仍在用缓存实例。
+
+---
+
+## 11. Out of Scope（明确不做）
+
+- 钉钉/企微/飞书/GitHub/GitLab 等所有 IM 渠道
+- A2A / AGUI / Agent Protocol 等通信协议扩展
+- Outbound 主动外发消息（OutboundController / OutboundTool）
+- IdentityLinkStore 与 `/dock_*` slash 命令
+- AdminUserController 与"看全部数据"的视角
+- 用户注册接口
+- 用户自定义工具（前端写 Java/JavaScript 代码作工具）
+- 运行时 jar 热加载 / 动态 ClassLoader 隔离
+- Hibernate `@TenantId` 多租户（仅做应用层 owner 过滤）
+- 模型/MCP/Skill 资源的跨用户分享（仅 agent 支持分享）
+
+---
+
+## 12. 开放问题（实施期再决定）
+
+- `application.yml` 端口默认 8080 还是另选
+- JSON Schema 校验库选 [networknt/json-schema-validator](https://github.com/networknt/json-schema-validator) 还是 [erosb/json-sKema](https://github.com/erosb/json-sKema)
+- sa-token session 存储默认进程内还是 Redis（多副本部署时）
+- 模型 invalidate 触发后，正在进行的会话是否优雅过渡（让当前 turn 跑完再切换）
+
+---
+
+**End of design** —— 待 review 后进入 writing-plans 阶段。
