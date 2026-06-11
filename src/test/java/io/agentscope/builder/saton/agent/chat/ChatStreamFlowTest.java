@@ -124,4 +124,41 @@ class ChatStreamFlowTest {
                 .expectStatus().value(s ->
                         assertTrue(s >= 400 && s < 500, "expected 4xx; got " + s));
     }
+
+    @Test
+    void streamWithStubToolAttachedBuildsAndCompletes() {
+        AgentVO agWithTool = client.post().uri("/api/agents")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new AgentUpsertReq(
+                        "stream-tool-agent-" + System.nanoTime(),
+                        "stream tool agent", null, "you are helpful",
+                        "react", modelId, 3,
+                        java.util.List.of(new io.agentscope.builder.saton.agent.ToolSpec(
+                                "tool-stub", java.util.Map.of()))))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AgentVO.class)
+                .returnResult().getResponseBody();
+
+        List<ServerSentEvent<String>> events = client.post()
+                .uri("/api/agents/" + agWithTool.id() + "/chat/stream")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ChatSendReq("ignored", null))
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
+                .getResponseBody()
+                .collectList()
+                .block(Duration.ofSeconds(30));
+
+        assertNotNull(events);
+        assertFalse(events.isEmpty());
+        assertEquals("agent_start", events.get(0).event());
+        assertEquals("agent_end", events.get(events.size() - 1).event());
+        // We don't assert tool_call events here because the stub model doesn't trigger tools.
+        // Just verify the agent built and streamed successfully with the tool registered.
+    }
 }
