@@ -14,3 +14,9 @@ spring:
 
 sa-token:
   is-log: false
+
+app:
+  session:
+    root: ${java.io.tmpdir}/agentscope-builder-saton-sessions
+  workspace:
+    root: ${java.io.tmpdir}/agentscope-builder-saton-workspaces

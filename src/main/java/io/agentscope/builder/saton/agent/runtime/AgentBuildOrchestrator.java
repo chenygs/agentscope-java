@@ -8,6 +8,7 @@ import io.agentscope.builder.saton.factory.tool.ToolFactory;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
 import io.agentscope.core.ReActAgent;
 import io.agentscope.core.model.Model;
+import io.agentscope.core.state.AgentStateStore;
 import io.agentscope.core.tool.Toolkit;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
@@ -17,19 +18,23 @@ import java.util.List;
 /**
  * 用 agent_definition 行 + model_provider 行装配一个真实可调的 {@link ReActAgent}。
  *
- * <p>M5 起接入 ToolFactory：解析 {@code toolSpecsJson} 中每个 {@link ToolSpec} 通过
- * {@link ToolFactory#instantiate(String, java.util.Map)} 实例化工具对象，再统一注入到
- * agent 的 {@link Toolkit}。
+ * <p>M5 起接入 ToolFactory；M6 起注入 {@link AgentStateStore} 让 ReActAgent 在
+ * {@code call/streamEvents} 完成后自动按 {@code (userId, sessionId)} 持久化 agent_state，
+ * 下一轮 chat 透传同样 slot 即可恢复历史。
  */
 @Component
 public class AgentBuildOrchestrator {
 
     private final ModelFactory modelFactory;
     private final ToolFactory toolFactory;
+    private final AgentStateStore stateStore;
 
-    public AgentBuildOrchestrator(ModelFactory modelFactory, ToolFactory toolFactory) {
+    public AgentBuildOrchestrator(ModelFactory modelFactory,
+                                  ToolFactory toolFactory,
+                                  AgentStateStore stateStore) {
         this.modelFactory = modelFactory;
         this.toolFactory = toolFactory;
+        this.stateStore = stateStore;
     }
 
     public ReActAgent build(AgentDefinitionEntity def, ModelProviderEntity model) {
@@ -48,6 +53,8 @@ public class AgentBuildOrchestrator {
                 .model(llm)
                 .toolkit(toolkit)
                 .maxIters(maxIters)
+                .stateStore(stateStore)
+                .defaultSessionId("agent_" + def.getId() + "_default")
                 .build();
     }
 
