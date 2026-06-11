@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.factory.skill;
 
+import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.core.skill.repository.AgentSkillRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -28,7 +29,7 @@ class SkillFactoryTest {
 
     @Test
     void unknownTypeThrows() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotFoundException.class,
                 () -> factory.instantiate("never-existed", Map.of(), workspaceRoot));
     }
 }

@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.factory.skill;
 
+import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.core.skill.repository.AgentSkillRepository;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class SkillFactory {
         try {
             impl = registry.get(type);
         } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("unknown skill repo type: " + type);
+            throw new NotFoundException("unknown skill repo type: " + type);
         }
         return impl.instantiate(props == null ? Map.of() : props, workspaceRoot);
     }
