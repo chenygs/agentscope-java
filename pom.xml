@@ -21,7 +21,6 @@
 
         <spring.boot.version>4.0.2</spring.boot.version>
         <sa.token.version>1.45.0</sa.token.version>
-        <spring.security.crypto.version>6.4.1</spring.security.crypto.version>
     </properties>
 
     <dependencyManagement>
@@ -61,11 +60,10 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- BCrypt (only crypto jar, not the full Security framework) -->
+        <!-- BCrypt (only crypto jar, not the full Security framework; version from BOM) -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>${spring.security.crypto.version}</version>
         </dependency>
 
         <!-- Test -->
