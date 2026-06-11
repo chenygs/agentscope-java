@@ -63,6 +63,45 @@ public class ChatService {
         return new ChatSendResp(text, def.getId(), effectiveModelId);
     }
 
+    /**
+     * 流式版本。返回 {@link io.agentscope.core.event.AgentEvent} 的 Flux —— controller 负责
+     * 把它包成 SSE。
+     *
+     * <p>跟 {@link #send} 同样的 owner / model 校验。lazy（直到 subscriber 订阅才 resolve agent）。
+     */
+    public reactor.core.publisher.Flux<io.agentscope.core.event.AgentEvent> stream(
+            Long agentDefId,
+            ChatSendReq req) {
+        // 立即 resolve 当前登录用户 —— 必须在 sa-token 上下文还活着的时候做。
+        // 之后的实际 agent 执行流可以 lazy。
+        String me = StpUtil.getLoginIdAsString();
+        return reactor.core.publisher.Flux.defer(() -> {
+            AgentDefinitionEntity def = agentRepo.findByIdAndOwnerId(agentDefId, me)
+                    .orElseThrow(() -> new NotFoundException(
+                            "agent not found: " + agentDefId));
+
+            Long effectiveModelId = req.overrideModelProviderId() != null
+                    ? req.overrideModelProviderId()
+                    : def.getDefaultModelProviderId();
+
+            if (modelRepo.findByIdAndOwnerId(effectiveModelId, me).isEmpty()) {
+                throw new NotFoundException(
+                        "model provider not found or not yours: " + effectiveModelId);
+            }
+
+            ReActAgent agent = runtimeResolver.resolve(def.getId(), effectiveModelId);
+
+            Msg userMsg = Msg.builder()
+                    .name("user")
+                    .role(MsgRole.USER)
+                    .content(TextBlock.builder()
+                            .text(req.message() == null ? "" : req.message()).build())
+                    .build();
+
+            return agent.streamEvents(userMsg);
+        });
+    }
+
     private String extractText(Msg msg) {
         if (msg == null || msg.getContent() == null) return "";
         StringBuilder sb = new StringBuilder();
