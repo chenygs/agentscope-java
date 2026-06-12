@@ -35,7 +35,7 @@ public class GlobalErrorWebExceptionHandler implements WebExceptionHandler {
         NotLoginException notLogin = findNotLogin(ex);
         if (notLogin != null) {
             return writeJson(exchange, HttpStatus.UNAUTHORIZED,
-                    ApiError.of(401, "not logged in: " + notLogin.getType()));
+                    R.fail(401, "not logged in: " + notLogin.getType()));
         }
         // Let other handlers (incl. @RestControllerAdvice) deal with the rest.
         return Mono.error(ex);
@@ -52,7 +52,7 @@ public class GlobalErrorWebExceptionHandler implements WebExceptionHandler {
         return null;
     }
 
-    private Mono<Void> writeJson(ServerWebExchange exchange, HttpStatus status, ApiError body) {
+    private Mono<Void> writeJson(ServerWebExchange exchange, HttpStatus status, R<?> body) {
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         try {
@@ -60,8 +60,9 @@ public class GlobalErrorWebExceptionHandler implements WebExceptionHandler {
             DataBuffer buf = exchange.getResponse().bufferFactory().wrap(bytes);
             return exchange.getResponse().writeWith(Mono.just(buf));
         } catch (Exception e) {
-            log.warn("failed to serialize ApiError", e);
-            byte[] fallback = "{\"code\":401,\"message\":\"not logged in\"}".getBytes(StandardCharsets.UTF_8);
+            log.warn("failed to serialize R error response", e);
+            byte[] fallback = "{\"code\":401,\"data\":null,\"msg\":\"not logged in\"}"
+                    .getBytes(StandardCharsets.UTF_8);
             DataBuffer buf = exchange.getResponse().bufferFactory().wrap(fallback);
             return exchange.getResponse().writeWith(Mono.just(buf));
         }

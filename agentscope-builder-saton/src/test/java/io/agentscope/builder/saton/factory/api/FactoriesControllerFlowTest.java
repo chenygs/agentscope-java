@@ -1,15 +1,14 @@
 package io.agentscope.builder.saton.factory.api;
 
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.factory.core.TypeMeta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
@@ -33,26 +32,17 @@ class FactoriesControllerFlowTest {
                 .baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(10))
                 .build();
-
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        assertNotNull(login);
-        this.token = login.token();
+        this.token = TestR.login(client);
     }
 
     @Test
     void listAllFiveModelTypes() {
-        List<TypeMeta> types = client.get().uri("/api/factories/model-types")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
-                .returnResult().getResponseBody();
+        List<TypeMeta> types = TestR.data(
+                client.get().uri("/api/factories/model-types")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<TypeMeta>>>() {});
 
         assertNotNull(types);
         Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
@@ -62,12 +52,12 @@ class FactoriesControllerFlowTest {
 
     @Test
     void everyTypeHasMetaAndSchema() {
-        List<TypeMeta> types = client.get().uri("/api/factories/model-types")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
-                .returnResult().getResponseBody();
+        List<TypeMeta> types = TestR.data(
+                client.get().uri("/api/factories/model-types")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<TypeMeta>>>() {});
         assertNotNull(types);
         for (TypeMeta t : types) {
             assertNotNull(t.displayName(), "displayName for " + t.type());
@@ -87,20 +77,16 @@ class FactoriesControllerFlowTest {
 
     @Test
     void listAllToolTypes() {
-        java.util.List<io.agentscope.builder.saton.factory.core.TypeMeta> types =
+        List<TypeMeta> types = TestR.data(
                 client.get().uri("/api/factories/tool-types")
                         .header("satoken", token)
                         .exchange()
-                        .expectStatus().isOk()
-                        .expectBody(new org.springframework.core.ParameterizedTypeReference<
-                                java.util.List<io.agentscope.builder.saton.factory.core.TypeMeta>>() {})
-                        .returnResult().getResponseBody();
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<TypeMeta>>>() {});
 
         assertNotNull(types);
-        java.util.Set<String> names = types.stream()
-                .map(io.agentscope.builder.saton.factory.core.TypeMeta::type)
-                .collect(java.util.stream.Collectors.toSet());
-        assertTrue(names.containsAll(java.util.Set.of("read-file", "write-file", "shell-cmd")),
+        Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
+        assertTrue(names.containsAll(Set.of("read-file", "write-file", "shell-cmd")),
                 "missing builtin tool types; got " + names);
     }
 
@@ -112,12 +98,12 @@ class FactoriesControllerFlowTest {
 
     @Test
     void skillRepoTypesReturnsBuiltins() {
-        List<TypeMeta> types = client.get().uri("/api/factories/skill-repo-types")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
-                .returnResult().getResponseBody();
+        List<TypeMeta> types = TestR.data(
+                client.get().uri("/api/factories/skill-repo-types")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<TypeMeta>>>() {});
 
         assertNotNull(types);
         Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
@@ -127,12 +113,12 @@ class FactoriesControllerFlowTest {
 
     @Test
     void middlewareTypesReturnsBuiltins() {
-        List<TypeMeta> types = client.get().uri("/api/factories/middleware-types")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<TypeMeta>>() {})
-                .returnResult().getResponseBody();
+        List<TypeMeta> types = TestR.data(
+                client.get().uri("/api/factories/middleware-types")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<TypeMeta>>>() {});
 
         assertNotNull(types);
         Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());

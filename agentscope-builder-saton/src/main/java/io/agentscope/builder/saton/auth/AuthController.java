@@ -4,6 +4,7 @@ import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
 import io.agentscope.builder.saton.auth.dto.LoginResponse;
 import io.agentscope.builder.saton.auth.dto.MeResponse;
+import io.agentscope.builder.saton.common.R;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,11 +24,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Mono<LoginResponse> login(@RequestBody LoginRequest req, ServerWebExchange exchange) {
+    public Mono<R<LoginResponse>> login(@RequestBody LoginRequest req, ServerWebExchange exchange) {
         return Mono.fromCallable(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
-                return userService.login(req);
+                return R.ok(userService.login(req));
             } finally {
                 SaReactorSyncHolder.clearContext();
             }
@@ -35,11 +36,11 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public Mono<MeResponse> me(ServerWebExchange exchange) {
+    public Mono<R<MeResponse>> me(ServerWebExchange exchange) {
         return Mono.fromCallable(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
-                return userService.currentUser();
+                return R.ok(userService.currentUser());
             } finally {
                 SaReactorSyncHolder.clearContext();
             }

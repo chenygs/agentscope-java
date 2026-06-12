@@ -1,6 +1,7 @@
 package io.agentscope.builder.saton.resource.mcp;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.resource.mcp.dto.McpServerUpsertReq;
 import io.agentscope.builder.saton.resource.mcp.dto.McpServerVO;
 import org.springframework.web.bind.annotation.*;
@@ -20,31 +21,31 @@ public class McpServerController {
     }
 
     @GetMapping
-    public Mono<List<McpServerVO>> list(ServerWebExchange exchange) {
-        return inSaContext(exchange, service::list);
+    public Mono<R<List<McpServerVO>>> list(ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.okList(service.list()));
     }
 
     @GetMapping("/{id}")
-    public Mono<McpServerVO> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.get(id));
+    public Mono<R<McpServerVO>> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.get(id)));
     }
 
     @PostMapping
-    public Mono<McpServerVO> create(@RequestBody McpServerUpsertReq req,
-                                    ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.create(req));
+    public Mono<R<McpServerVO>> create(@RequestBody McpServerUpsertReq req,
+                                       ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.create(req)));
     }
 
     @PutMapping("/{id}")
-    public Mono<McpServerVO> update(@PathVariable("id") Long id,
-                                    @RequestBody McpServerUpsertReq req,
-                                    ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.update(id, req));
+    public Mono<R<McpServerVO>> update(@PathVariable("id") Long id,
+                                       @RequestBody McpServerUpsertReq req,
+                                       ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.update(id, req)));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> { service.delete(id); return null; });
+    public Mono<R<Void>> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> { service.delete(id); return R.ok(); });
     }
 
     private <T> Mono<T> inSaContext(ServerWebExchange exchange,

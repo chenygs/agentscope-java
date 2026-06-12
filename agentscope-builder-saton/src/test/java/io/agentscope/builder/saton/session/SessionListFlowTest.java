@@ -4,8 +4,8 @@ import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import io.agentscope.builder.saton.session.dto.ResetResp;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -38,24 +39,24 @@ class SessionListFlowTest {
     void setUp() {
         client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(30)).build();
-        token = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange().expectStatus().isOk()
-                .expectBody(LoginResponse.class).returnResult().getResponseBody().token();
-        ModelProviderVO mp = client.post().uri("/api/models")
-                .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("ses-list-" + System.nanoTime(),
-                        "test-stub", Map.of()))
-                .exchange().expectStatus().isOk()
-                .expectBody(ModelProviderVO.class).returnResult().getResponseBody();
-        AgentVO ag = client.post().uri("/api/agents")
-                .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "session-list-agent-" + System.nanoTime(),
-                        "list", null, "hi", AgentType.REACT, mp.id(), 3, null))
-                .exchange().expectStatus().isOk()
-                .expectBody(AgentVO.class).returnResult().getResponseBody();
+        token = TestR.login(client);
+
+        ModelProviderVO mp = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("ses-list-" + System.nanoTime(),
+                                "test-stub", Map.of()))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
+
+        AgentVO ag = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "session-list-agent-" + System.nanoTime(),
+                                "list", null, "hi", AgentType.REACT, mp.id(), 3, null))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
         agentId = ag.id();
     }
 
@@ -73,9 +74,10 @@ class SessionListFlowTest {
     void chatThenListShowsSession() {
         String key = "lk-" + System.nanoTime();
         chat(key, "hi");
-        List<SessionVO> sessions = client.get().uri("/api/agents/" + agentId + "/sessions")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBodyList(SessionVO.class).returnResult().getResponseBody();
+        List<SessionVO> sessions = TestR.data(
+                client.get().uri("/api/agents/" + agentId + "/sessions")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<List<SessionVO>>>() {});
         assertNotNull(sessions);
         assertTrue(sessions.stream().anyMatch(s -> s.sessionKey().equals(key)),
                 "expected sessionKey " + key + " in " +
@@ -86,24 +88,27 @@ class SessionListFlowTest {
     void resetReturnsTrueThenListNoLongerShows() {
         String key = "lk-" + System.nanoTime();
         chat(key, "hi");
-        ResetResp r = client.post().uri("/api/agents/" + agentId + "/sessions/" + key + "/reset")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBody(ResetResp.class).returnResult().getResponseBody();
+        ResetResp r = TestR.data(
+                client.post().uri("/api/agents/" + agentId + "/sessions/" + key + "/reset")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<ResetResp>>() {});
         assertNotNull(r);
         assertTrue(r.removed());
-        List<SessionVO> sessions = client.get().uri("/api/agents/" + agentId + "/sessions")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBodyList(SessionVO.class).returnResult().getResponseBody();
+        List<SessionVO> sessions = TestR.data(
+                client.get().uri("/api/agents/" + agentId + "/sessions")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<List<SessionVO>>>() {});
         assertNotNull(sessions);
         assertTrue(sessions.stream().noneMatch(s -> s.sessionKey().equals(key)));
     }
 
     @Test
     void resetNonexistentReturnsFalse() {
-        ResetResp r = client.post()
-                .uri("/api/agents/" + agentId + "/sessions/never-existed/reset")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBody(ResetResp.class).returnResult().getResponseBody();
+        ResetResp r = TestR.data(
+                client.post()
+                        .uri("/api/agents/" + agentId + "/sessions/never-existed/reset")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<ResetResp>>() {});
         assertNotNull(r);
         assertFalse(r.removed());
     }
@@ -127,9 +132,7 @@ class SessionListFlowTest {
         // delete agent
         client.delete().uri("/api/agents/" + agentId)
                 .header("satoken", token).exchange().expectStatus().isOk();
-        // recreate same id then list — should be empty (sessions were purged)
-        // Skip: agent_id is per-owner unique and we don't reuse; just verify GET on the deleted
-        // agent's sessions 404s (because it doesn't exist).
+        // GET on the deleted agent's sessions 404s
         client.get().uri("/api/agents/" + agentId + "/sessions")
                 .header("satoken", token).exchange().expectStatus().isNotFound();
     }

@@ -3,8 +3,8 @@ package io.agentscope.builder.saton.skill;
 import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import io.agentscope.builder.saton.skill.dto.InstallFromRepoReq;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -39,42 +40,33 @@ class AgentSkillsFlowTest {
                 .responseTimeout(Duration.ofSeconds(30))
                 .build();
 
-        // Login
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        assertNotNull(login);
-        token = login.token();
+        token = TestR.login(client);
 
         // Seed a stub model provider
-        ModelProviderVO mp = client.post().uri("/api/models")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq(
-                        "skill-flow-stub-" + System.nanoTime(), "dashscope",
-                        Map.of("apiKey", "sk-not-real", "modelName", "qwen-max")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ModelProviderVO.class)
-                .returnResult().getResponseBody();
+        ModelProviderVO mp = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq(
+                                "skill-flow-stub-" + System.nanoTime(), "dashscope",
+                                Map.of("apiKey", "sk-not-real", "modelName", "qwen-max")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
         assertNotNull(mp);
         modelId = mp.id();
 
         // Seed an agent
-        AgentVO ag = client.post().uri("/api/agents")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "skill-flow-agent-" + System.nanoTime(), "test", null,
-                        "you are helpful", AgentType.REACT, modelId, 3, null))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(AgentVO.class)
-                .returnResult().getResponseBody();
+        AgentVO ag = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "skill-flow-agent-" + System.nanoTime(), "test", null,
+                                "you are helpful", AgentType.REACT, modelId, 3, null))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
         assertNotNull(ag);
         agentId = ag.id();
     }
@@ -104,13 +96,13 @@ class AgentSkillsFlowTest {
     // Test 3: list workspace skills returns 200 + body (empty list)
     @Test
     void listWorkspaceSkillsReturnsOk() {
-        List<WorkspaceSkillVO> skills = client.get()
-                .uri("/api/agents/" + agentId + "/skills/workspace")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(WorkspaceSkillVO.class)
-                .returnResult().getResponseBody();
+        List<WorkspaceSkillVO> skills = TestR.data(
+                client.get()
+                        .uri("/api/agents/" + agentId + "/skills/workspace")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<WorkspaceSkillVO>>>() {});
         assertNotNull(skills);
     }
 

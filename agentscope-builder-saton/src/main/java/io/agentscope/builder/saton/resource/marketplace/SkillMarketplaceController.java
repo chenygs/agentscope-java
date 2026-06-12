@@ -1,6 +1,7 @@
 package io.agentscope.builder.saton.resource.marketplace;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillSummaryVO;
 import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillVO;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceUpsertReq;
@@ -22,45 +23,45 @@ public class SkillMarketplaceController {
     }
 
     @GetMapping
-    public Mono<List<SkillMarketplaceVO>> list(ServerWebExchange exchange) {
-        return inSaContext(exchange, service::list);
+    public Mono<R<List<SkillMarketplaceVO>>> list(ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.okList(service.list()));
     }
 
     @GetMapping("/{id}")
-    public Mono<SkillMarketplaceVO> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.get(id));
+    public Mono<R<SkillMarketplaceVO>> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.get(id)));
     }
 
     @PostMapping
-    public Mono<SkillMarketplaceVO> create(@RequestBody SkillMarketplaceUpsertReq req,
-                                           ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.create(req));
+    public Mono<R<SkillMarketplaceVO>> create(@RequestBody SkillMarketplaceUpsertReq req,
+                                              ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.create(req)));
     }
 
     @PutMapping("/{id}")
-    public Mono<SkillMarketplaceVO> update(@PathVariable("id") Long id,
-                                           @RequestBody SkillMarketplaceUpsertReq req,
-                                           ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.update(id, req));
+    public Mono<R<SkillMarketplaceVO>> update(@PathVariable("id") Long id,
+                                              @RequestBody SkillMarketplaceUpsertReq req,
+                                              ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.update(id, req)));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> { service.delete(id); return null; });
+    public Mono<R<Void>> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> { service.delete(id); return R.ok(); });
     }
 
     @GetMapping("/{id}/skills")
-    public Mono<List<MarketSkillSummaryVO>> listSkills(
+    public Mono<R<List<MarketSkillSummaryVO>>> listSkills(
             @PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.listSkills(id));
+        return inSaContext(exchange, () -> R.okList(service.listSkills(id)));
     }
 
     @GetMapping("/{id}/skills/{name}")
-    public Mono<MarketSkillVO> getSkill(
+    public Mono<R<MarketSkillVO>> getSkill(
             @PathVariable("id") Long id,
             @PathVariable("name") String name,
             ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.getSkill(id, name));
+        return inSaContext(exchange, () -> R.ok(service.getSkill(id, name)));
     }
 
     private <T> Mono<T> inSaContext(ServerWebExchange exchange,

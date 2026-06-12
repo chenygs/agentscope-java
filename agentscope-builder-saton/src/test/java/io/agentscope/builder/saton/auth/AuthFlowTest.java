@@ -3,11 +3,14 @@ package io.agentscope.builder.saton.auth;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
 import io.agentscope.builder.saton.auth.dto.LoginResponse;
 import io.agentscope.builder.saton.auth.dto.MeResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -32,28 +35,15 @@ class AuthFlowTest {
 
     @Test
     void loginThenMe() {
-        LoginResponse login = client.post()
-                .uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult()
-                .getResponseBody();
+        String token = TestR.login(client);
 
-        assertNotNull(login);
-        assertNotNull(login.token());
-        assertEquals("admin", login.userId());
-
-        MeResponse me = client.get()
-                .uri("/api/auth/me")
-                .header("satoken", login.token())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(MeResponse.class)
-                .returnResult()
-                .getResponseBody();
+        MeResponse me = TestR.data(
+                client.get()
+                        .uri("/api/auth/me")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<MeResponse>>() {});
 
         assertNotNull(me);
         assertEquals("admin", me.userId());

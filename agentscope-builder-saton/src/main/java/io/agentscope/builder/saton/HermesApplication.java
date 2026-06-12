@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BuilderApp {
+public class HermesApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BuilderApp.class, args);
+        SpringApplication.run(HermesApplication.class, args);
     }
 }

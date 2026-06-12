@@ -7,7 +7,9 @@ import io.agentscope.builder.saton.agent.dto.AgentShareVO;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
 import io.agentscope.builder.saton.agent.dto.CloneReq;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.common.error.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -16,62 +18,55 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/agents")
+@RequiredArgsConstructor
 public class AgentController {
 
     private final AgentService service;
     private final AgentAccessGuard accessGuard;
     private final AgentShareRepository shareRepo;
 
-    public AgentController(AgentService service,
-                           AgentAccessGuard accessGuard,
-                           AgentShareRepository shareRepo) {
-        this.service = service;
-        this.accessGuard = accessGuard;
-        this.shareRepo = shareRepo;
-    }
-
     @GetMapping
-    public Mono<List<AgentVO>> list(ServerWebExchange exchange) {
-        return inSaContext(exchange, service::list);
+    public Mono<R<List<AgentVO>>> list(ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.okList(service.list()));
     }
 
     @GetMapping("/{id}")
-    public Mono<AgentVO> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.get(id));
+    public Mono<R<AgentVO>> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.get(id)));
     }
 
     @PostMapping
-    public Mono<AgentVO> create(@RequestBody AgentUpsertReq req, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.create(req));
+    public Mono<R<AgentVO>> create(@RequestBody AgentUpsertReq req, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.create(req)));
     }
 
     @PutMapping("/{id}")
-    public Mono<AgentVO> update(@PathVariable("id") Long id,
-                                @RequestBody AgentUpsertReq req,
-                                ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.update(id, req));
+    public Mono<R<AgentVO>> update(@PathVariable("id") Long id,
+                                   @RequestBody AgentUpsertReq req,
+                                   ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.update(id, req)));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> { service.delete(id); return null; });
+    public Mono<R<Void>> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> { service.delete(id); return R.ok(); });
     }
 
     // -- Share CRUD --
 
     @GetMapping("/{id}/shares")
-    public Mono<List<AgentShareVO>> listShares(@PathVariable("id") Long id, ServerWebExchange exchange) {
+    public Mono<R<List<AgentShareVO>>> listShares(@PathVariable("id") Long id, ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.requireOwner(id, me);
-            return shareRepo.findByAgentDefId(id).stream().map(AgentShareVO::from).toList();
+            return R.okList(shareRepo.findByAgentDefId(id).stream().map(AgentShareVO::from).toList());
         });
     }
 
     @PostMapping("/{id}/shares")
-    public Mono<AgentShareVO> createShare(@PathVariable("id") Long id,
-                                           @RequestBody AgentShareUpsertReq req,
-                                           ServerWebExchange exchange) {
+    public Mono<R<AgentShareVO>> createShare(@PathVariable("id") Long id,
+                                             @RequestBody AgentShareUpsertReq req,
+                                             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.requireOwner(id, me);
@@ -79,32 +74,32 @@ public class AgentController {
                     || req.tier() == null || req.tier().isBlank()) {
                 throw new IllegalArgumentException("granteeId and tier required");
             }
-            return service.createShare(id, req.granteeId(), req.tier(), me);
+            return R.ok(service.createShare(id, req.granteeId(), req.tier(), me));
         });
     }
 
     @DeleteMapping("/{id}/shares/{shareId}")
-    public Mono<Void> deleteShare(@PathVariable("id") Long id,
-                                   @PathVariable("shareId") Long shareId,
-                                   ServerWebExchange exchange) {
+    public Mono<R<Void>> deleteShare(@PathVariable("id") Long id,
+                                     @PathVariable("shareId") Long shareId,
+                                     ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.requireOwner(id, me);
             service.deleteShare(id, shareId);
-            return null;
+            return R.ok();
         });
     }
 
     // -- Clone --
 
     @PostMapping("/{id}/clone")
-    public Mono<AgentVO> cloneAgent(@PathVariable("id") Long id,
-                                     @RequestBody CloneReq req,
-                                     ServerWebExchange exchange) {
+    public Mono<R<AgentVO>> cloneAgent(@PathVariable("id") Long id,
+                                       @RequestBody CloneReq req,
+                                       ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(id, me, Tier.CLONE);
-            return service.clone(id, req, me);
+            return R.ok(service.clone(id, req, me));
         });
     }
 

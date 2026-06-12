@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.resource.model;
 
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -33,62 +33,53 @@ class ModelProviderFlowTest {
                 .baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(10))
                 .build();
-
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        assertNotNull(login);
-        this.token = login.token();
+        this.token = TestR.login(client);
     }
 
     @Test
     void createListGetUpdateDeleteCycle() {
-        ModelProviderVO created = client.post().uri("/api/models")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("my-qwen", "dashscope",
-                        Map.of("apiKey", "sk-12345", "modelName", "qwen-max")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ModelProviderVO.class)
-                .returnResult().getResponseBody();
+        ModelProviderVO created = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("my-qwen", "dashscope",
+                                Map.of("apiKey", "sk-12345", "modelName", "qwen-max")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
         assertNotNull(created);
         assertNotNull(created.id());
         assertEquals("my-qwen", created.name());
         assertEquals("***", created.props().get("apiKey"), "apiKey must be masked");
         assertEquals("qwen-max", created.props().get("modelName"));
 
-        List<ModelProviderVO> list = client.get().uri("/api/models")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<ModelProviderVO>>() {})
-                .returnResult().getResponseBody();
+        List<ModelProviderVO> list = TestR.data(
+                client.get().uri("/api/models")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<ModelProviderVO>>>() {});
         assertNotNull(list);
         assertTrue(list.stream().anyMatch(v -> "my-qwen".equals(v.name())));
 
-        ModelProviderVO got = client.get().uri("/api/models/" + created.id())
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ModelProviderVO.class)
-                .returnResult().getResponseBody();
+        ModelProviderVO got = TestR.data(
+                client.get().uri("/api/models/" + created.id())
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
         assertNotNull(got);
         assertEquals("***", got.props().get("apiKey"));
 
-        ModelProviderVO updated = client.put().uri("/api/models/" + created.id())
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("my-qwen", "dashscope",
-                        Map.of("apiKey", "***", "modelName", "qwen-plus")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ModelProviderVO.class)
-                .returnResult().getResponseBody();
+        ModelProviderVO updated = TestR.data(
+                client.put().uri("/api/models/" + created.id())
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("my-qwen", "dashscope",
+                                Map.of("apiKey", "***", "modelName", "qwen-plus")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
         assertNotNull(updated);
         assertEquals("qwen-plus", updated.props().get("modelName"));
         assertEquals("***", updated.props().get("apiKey"));

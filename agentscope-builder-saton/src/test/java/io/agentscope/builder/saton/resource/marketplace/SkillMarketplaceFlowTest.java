@@ -1,8 +1,7 @@
 package io.agentscope.builder.saton.resource.marketplace;
 
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
-import io.agentscope.builder.saton.marketplace.UserMarketplaceRegistry;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceUpsertReq;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceVO;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -28,69 +27,59 @@ class SkillMarketplaceFlowTest {
     WebTestClient client;
     String token;
 
-
     @BeforeEach
     void setUp() {
         client = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(10))
                 .build();
-
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        assertNotNull(login);
-        this.token = login.token();
+        this.token = TestR.login(client);
     }
 
     @Test
     void createListGetUpdateDeleteCycle() {
-        SkillMarketplaceVO created = client.post().uri("/api/skill-marketplaces")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new SkillMarketplaceUpsertReq("my-skills", "git",
-                        Map.of("url", "git@github.com:me/x.git", "token", "tok-12345")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(SkillMarketplaceVO.class)
-                .returnResult().getResponseBody();
+        SkillMarketplaceVO created = TestR.data(
+                client.post().uri("/api/skill-marketplaces")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new SkillMarketplaceUpsertReq("my-skills", "git",
+                                Map.of("url", "git@github.com:me/x.git", "token", "tok-12345")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<SkillMarketplaceVO>>() {});
         assertNotNull(created);
         assertNotNull(created.id());
         assertEquals("my-skills", created.marketplaceId());
         assertEquals("***", created.props().get("token"), "token must be masked");
         assertEquals("git@github.com:me/x.git", created.props().get("url"));
 
-        List<SkillMarketplaceVO> list = client.get().uri("/api/skill-marketplaces")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<SkillMarketplaceVO>>() {})
-                .returnResult().getResponseBody();
+        List<SkillMarketplaceVO> list = TestR.data(
+                client.get().uri("/api/skill-marketplaces")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<SkillMarketplaceVO>>>() {});
         assertNotNull(list);
         assertTrue(list.stream().anyMatch(v -> "my-skills".equals(v.marketplaceId())));
 
-        SkillMarketplaceVO got = client.get().uri("/api/skill-marketplaces/" + created.id())
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(SkillMarketplaceVO.class)
-                .returnResult().getResponseBody();
+        SkillMarketplaceVO got = TestR.data(
+                client.get().uri("/api/skill-marketplaces/" + created.id())
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<SkillMarketplaceVO>>() {});
         assertNotNull(got);
         assertEquals("***", got.props().get("token"));
 
-        SkillMarketplaceVO updated = client.put().uri("/api/skill-marketplaces/" + created.id())
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new SkillMarketplaceUpsertReq("my-skills", "git",
-                        Map.of("token", "***", "url", "git@github.com:me/x-v2.git")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(SkillMarketplaceVO.class)
-                .returnResult().getResponseBody();
+        SkillMarketplaceVO updated = TestR.data(
+                client.put().uri("/api/skill-marketplaces/" + created.id())
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new SkillMarketplaceUpsertReq("my-skills", "git",
+                                Map.of("token", "***", "url", "git@github.com:me/x-v2.git")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<SkillMarketplaceVO>>() {});
         assertNotNull(updated);
         assertEquals("git@github.com:me/x-v2.git", updated.props().get("url"));
         assertEquals("***", updated.props().get("token"));
@@ -128,17 +117,15 @@ class SkillMarketplaceFlowTest {
 
     @Test
     void listSkillsReturnsOk() {
-
-        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("browse-stub", "test-stub",
-                Map.of());
-        SkillMarketplaceVO created = client.post().uri("/api/skill-marketplaces")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(req)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(SkillMarketplaceVO.class)
-                .returnResult().getResponseBody();
+        SkillMarketplaceVO created = TestR.data(
+                client.post().uri("/api/skill-marketplaces")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new SkillMarketplaceUpsertReq("browse-stub", "test-stub",
+                                Map.of()))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<SkillMarketplaceVO>>() {});
 
         client.get().uri("/api/skill-marketplaces/" + created.id() + "/skills")
                 .header("satoken", token)
@@ -148,17 +135,15 @@ class SkillMarketplaceFlowTest {
 
     @Test
     void getSkillNonExistentReturns404() {
-
-        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("fetch-stub", "test-stub",
-                Map.of());
-        SkillMarketplaceVO created = client.post().uri("/api/skill-marketplaces")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(req)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(SkillMarketplaceVO.class)
-                .returnResult().getResponseBody();
+        SkillMarketplaceVO created = TestR.data(
+                client.post().uri("/api/skill-marketplaces")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new SkillMarketplaceUpsertReq("fetch-stub", "test-stub",
+                                Map.of()))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<SkillMarketplaceVO>>() {});
 
         client.get().uri("/api/skill-marketplaces/" + created.id() + "/skills/missing-skill")
                 .header("satoken", token)

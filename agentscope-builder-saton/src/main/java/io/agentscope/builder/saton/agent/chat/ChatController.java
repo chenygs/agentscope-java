@@ -3,6 +3,7 @@ package io.agentscope.builder.saton.agent.chat;
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendResp;
+import io.agentscope.builder.saton.common.R;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -19,13 +20,13 @@ public class ChatController {
     }
 
     @PostMapping("/{id}/chat/send")
-    public Mono<ChatSendResp> send(@PathVariable("id") Long id,
-                                   @RequestBody ChatSendReq req,
-                                   ServerWebExchange exchange) {
+    public Mono<R<ChatSendResp>> send(@PathVariable("id") Long id,
+                                      @RequestBody ChatSendReq req,
+                                      ServerWebExchange exchange) {
         return Mono.fromCallable(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
-                return service.send(id, req);
+                return R.ok(service.send(id, req));
             } finally {
                 SaReactorSyncHolder.clearContext();
             }
@@ -42,6 +43,7 @@ public class ChatController {
             stream(@PathVariable("id") Long id,
                    @RequestBody ChatSendReq req,
                    ServerWebExchange exchange) {
+        // SSE streaming endpoint — NOT wrapped in R<T> because SSE has its own framing protocol.
         // subscribeOn(boundedElastic) is required because ReActAgent internally calls
         // Mono.block() in applySystemPromptMiddlewares() and MemoryMaintenanceMiddleware's
         // doOnComplete(). Running on the Netty event-loop would deadlock.

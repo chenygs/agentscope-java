@@ -195,9 +195,17 @@ export interface JsonSchemaProperty {
   default?: unknown
   enum?: string[]
   format?: string
+  secret?: boolean
   properties?: Record<string, JsonSchemaProperty>
   items?: JsonSchemaProperty
   required?: string[]
+}
+
+// ── Resource Upsert Requests ──
+export interface ModelProviderUpsertReq {
+  name: string
+  type: string
+  props: Record<string, unknown>
 }
 
 // ── Activity ──

@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.resource.mcp;
 
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.mcp.dto.McpServerUpsertReq;
 import io.agentscope.builder.saton.resource.mcp.dto.McpServerVO;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -33,62 +33,53 @@ class McpServerFlowTest {
                 .baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(10))
                 .build();
-
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        assertNotNull(login);
-        this.token = login.token();
+        this.token = TestR.login(client);
     }
 
     @Test
     void createListGetUpdateDeleteCycle() {
-        McpServerVO created = client.post().uri("/api/mcp-servers")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new McpServerUpsertReq("my-playwright", "stdio",
-                        Map.of("command", "npx playwright-mcp", "token", "tok-12345")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(McpServerVO.class)
-                .returnResult().getResponseBody();
+        McpServerVO created = TestR.data(
+                client.post().uri("/api/mcp-servers")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new McpServerUpsertReq("my-playwright", "stdio",
+                                Map.of("command", "npx playwright-mcp", "token", "tok-12345")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<McpServerVO>>() {});
         assertNotNull(created);
         assertNotNull(created.id());
         assertEquals("my-playwright", created.name());
         assertEquals("***", created.props().get("token"), "token must be masked");
         assertEquals("npx playwright-mcp", created.props().get("command"));
 
-        List<McpServerVO> list = client.get().uri("/api/mcp-servers")
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<McpServerVO>>() {})
-                .returnResult().getResponseBody();
+        List<McpServerVO> list = TestR.data(
+                client.get().uri("/api/mcp-servers")
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<List<McpServerVO>>>() {});
         assertNotNull(list);
         assertTrue(list.stream().anyMatch(v -> "my-playwright".equals(v.name())));
 
-        McpServerVO got = client.get().uri("/api/mcp-servers/" + created.id())
-                .header("satoken", token)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(McpServerVO.class)
-                .returnResult().getResponseBody();
+        McpServerVO got = TestR.data(
+                client.get().uri("/api/mcp-servers/" + created.id())
+                        .header("satoken", token)
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<McpServerVO>>() {});
         assertNotNull(got);
         assertEquals("***", got.props().get("token"));
 
-        McpServerVO updated = client.put().uri("/api/mcp-servers/" + created.id())
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new McpServerUpsertReq("my-playwright", "stdio",
-                        Map.of("token", "***", "command", "npx playwright-mcp-v2")))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(McpServerVO.class)
-                .returnResult().getResponseBody();
+        McpServerVO updated = TestR.data(
+                client.put().uri("/api/mcp-servers/" + created.id())
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new McpServerUpsertReq("my-playwright", "stdio",
+                                Map.of("token", "***", "command", "npx playwright-mcp-v2")))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<McpServerVO>>() {});
         assertNotNull(updated);
         assertEquals("npx playwright-mcp-v2", updated.props().get("command"));
         assertEquals("***", updated.props().get("token"));

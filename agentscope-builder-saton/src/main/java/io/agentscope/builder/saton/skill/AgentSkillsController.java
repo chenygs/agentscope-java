@@ -4,6 +4,7 @@ import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.agent.AgentAccessGuard;
 import io.agentscope.builder.saton.agent.Tier;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.skill.dto.InstallFromRepoReq;
 import io.agentscope.builder.saton.skill.dto.MarketplaceInstallReq;
 import io.agentscope.builder.saton.skill.dto.WorkspaceSkillVO;
@@ -27,17 +28,17 @@ public class AgentSkillsController {
     }
 
     @GetMapping("/workspace")
-    public Mono<List<WorkspaceSkillVO>> listWorkspaceSkills(
+    public Mono<R<List<WorkspaceSkillVO>>> listWorkspaceSkills(
             @PathVariable("agentId") Long agentDefId, ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(agentDefId, me, Tier.RUN);
-            return skillService.listWorkspaceSkills(me, agentDefId);
+            return R.okList(skillService.listWorkspaceSkills(me, agentDefId));
         });
     }
 
     @DeleteMapping("/workspace/{name}")
-    public Mono<Void> deleteWorkspaceSkill(
+    public Mono<R<Void>> deleteWorkspaceSkill(
             @PathVariable("agentId") Long agentDefId,
             @PathVariable("name") String name,
             ServerWebExchange exchange) {
@@ -45,31 +46,31 @@ public class AgentSkillsController {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(agentDefId, me, Tier.EDIT);
             skillService.deleteWorkspaceSkill(me, agentDefId, name);
-            return null;
-        }).then(Mono.empty());
+            return R.ok();
+        });
     }
 
     @PostMapping("/workspace/install")
-    public Mono<WorkspaceSkillVO> installFromRepository(
+    public Mono<R<WorkspaceSkillVO>> installFromRepository(
             @PathVariable("agentId") Long agentDefId,
             @RequestBody InstallFromRepoReq req,
             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(agentDefId, me, Tier.RUN);
-            return skillService.installFromRepository(me, agentDefId, req);
+            return R.ok(skillService.installFromRepository(me, agentDefId, req));
         });
     }
 
     @PostMapping("/workspace/marketplace-install")
-    public Mono<WorkspaceSkillVO> installFromMarketplace(
+    public Mono<R<WorkspaceSkillVO>> installFromMarketplace(
             @PathVariable("agentId") Long agentDefId,
             @RequestBody MarketplaceInstallReq req,
             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(agentDefId, me, Tier.RUN);
-            return skillService.installFromMarketplace(me, agentDefId, req);
+            return R.ok(skillService.installFromMarketplace(me, agentDefId, req));
         });
     }
 

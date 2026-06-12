@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.template;
 
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.template.dto.TemplateVO;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +21,12 @@ public class TemplateController {
     }
 
     @GetMapping
-    public List<TemplateVO> list() {
-        return registry.list();
+    public R<List<TemplateVO>> list() {
+        return R.okList(registry.list());
     }
 
     @GetMapping("/{id}")
-    public TemplateVO get(@PathVariable("id") String id) {
-        return registry.get(id).orElseThrow(() -> new NotFoundException("template not found: " + id));
+    public R<TemplateVO> get(@PathVariable("id") String id) {
+        return R.ok(registry.get(id).orElseThrow(() -> new NotFoundException("template not found: " + id)));
     }
 }

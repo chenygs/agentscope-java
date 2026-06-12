@@ -1,6 +1,7 @@
 package io.agentscope.builder.saton.resource.repository;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.resource.repository.dto.SkillRepositoryUpsertReq;
 import io.agentscope.builder.saton.resource.repository.dto.SkillRepositoryVO;
 import org.springframework.web.bind.annotation.*;
@@ -20,31 +21,31 @@ public class SkillRepositoryController {
     }
 
     @GetMapping
-    public Mono<List<SkillRepositoryVO>> list(ServerWebExchange exchange) {
-        return inSaContext(exchange, service::list);
+    public Mono<R<List<SkillRepositoryVO>>> list(ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.okList(service.list()));
     }
 
     @GetMapping("/{id}")
-    public Mono<SkillRepositoryVO> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.get(id));
+    public Mono<R<SkillRepositoryVO>> get(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.get(id)));
     }
 
     @PostMapping
-    public Mono<SkillRepositoryVO> create(@RequestBody SkillRepositoryUpsertReq req,
-                                    ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.create(req));
+    public Mono<R<SkillRepositoryVO>> create(@RequestBody SkillRepositoryUpsertReq req,
+                                             ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.create(req)));
     }
 
     @PutMapping("/{id}")
-    public Mono<SkillRepositoryVO> update(@PathVariable("id") Long id,
-                                    @RequestBody SkillRepositoryUpsertReq req,
-                                    ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> service.update(id, req));
+    public Mono<R<SkillRepositoryVO>> update(@PathVariable("id") Long id,
+                                             @RequestBody SkillRepositoryUpsertReq req,
+                                             ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> R.ok(service.update(id, req)));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
-        return inSaContext(exchange, () -> { service.delete(id); return null; });
+    public Mono<R<Void>> delete(@PathVariable("id") Long id, ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> { service.delete(id); return R.ok(); });
     }
 
     private <T> Mono<T> inSaContext(ServerWebExchange exchange,

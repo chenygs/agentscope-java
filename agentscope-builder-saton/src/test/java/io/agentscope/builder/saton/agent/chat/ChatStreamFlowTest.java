@@ -4,8 +4,8 @@ import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -41,37 +42,30 @@ class ChatStreamFlowTest {
                 .responseTimeout(Duration.ofSeconds(30))
                 .build();
 
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(LoginResponse.class)
-                .returnResult().getResponseBody();
-        this.token = login.token();
+        token = TestR.login(client);
 
-        ModelProviderVO mp = client.post().uri("/api/models")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("chat-stub-stream-" + System.nanoTime(),
-                        "test-stub", Map.of()))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ModelProviderVO.class)
-                .returnResult().getResponseBody();
+        ModelProviderVO mp = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("chat-stub-stream-" + System.nanoTime(),
+                                "test-stub", Map.of()))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
         this.modelId = mp.id();
 
-        AgentVO ag = client.post().uri("/api/agents")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "chat-stream-agent-" + System.nanoTime(),
-                        "stream agent", "test", "you are helpful",
-                        AgentType.REACT, modelId, 3, null))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(AgentVO.class)
-                .returnResult().getResponseBody();
+        AgentVO ag = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "chat-stream-agent-" + System.nanoTime(),
+                                "stream agent", "test", "you are helpful",
+                                AgentType.REACT, modelId, 3, null))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
         this.agentId = ag.id();
     }
 
@@ -93,12 +87,10 @@ class ChatStreamFlowTest {
         assertNotNull(events, "events should not be null");
         assertFalse(events.isEmpty(), "expected at least one event");
 
-        // First event must be agent_start
         assertEquals("agent_start", events.get(0).event(),
                 "first event should be agent_start; got events=" +
                 events.stream().map(ServerSentEvent::event).toList());
 
-        // Last event must be agent_end
         assertEquals("agent_end", events.get(events.size() - 1).event(),
                 "last event should be agent_end; got events=" +
                 events.stream().map(ServerSentEvent::event).toList());
@@ -115,7 +107,6 @@ class ChatStreamFlowTest {
 
     @Test
     void streamToOtherUsersAgentReturns4xx() {
-        // SSE error handling: error thrown synchronously in defer surfaces as HTTP error status.
         client.post().uri("/api/agents/999999/chat/stream")
                 .header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -128,19 +119,19 @@ class ChatStreamFlowTest {
 
     @Test
     void streamWithStubToolAttachedBuildsAndCompletes() {
-        AgentVO agWithTool = client.post().uri("/api/agents")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "stream-tool-agent-" + System.nanoTime(),
-                        "stream tool agent", null, "you are helpful",
-                        AgentType.REACT, modelId, 3,
-                        java.util.List.of(new io.agentscope.builder.saton.agent.ToolSpec(
-                                "tool-stub", java.util.Map.of()))))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(AgentVO.class)
-                .returnResult().getResponseBody();
+        AgentVO agWithTool = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "stream-tool-agent-" + System.nanoTime(),
+                                "stream tool agent", null, "you are helpful",
+                                AgentType.REACT, modelId, 3,
+                                List.of(new io.agentscope.builder.saton.agent.ToolSpec(
+                                        "tool-stub", Map.of()))))
+                        .exchange()
+                        .expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
 
         List<ServerSentEvent<String>> events = client.post()
                 .uri("/api/agents/" + agWithTool.id() + "/chat/stream")
@@ -159,7 +150,5 @@ class ChatStreamFlowTest {
         assertFalse(events.isEmpty());
         assertEquals("agent_start", events.get(0).event());
         assertEquals("agent_end", events.get(events.size() - 1).event());
-        // We don't assert tool_call events here because the stub model doesn't trigger tools.
-        // Just verify the agent built and streamed successfully with the tool registered.
     }
 }

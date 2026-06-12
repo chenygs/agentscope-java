@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: jdbc
   application:
     name: agentscope-builder-saton
   datasource:
@@ -19,6 +21,7 @@ spring:
   h2:
     console:
       enabled: false
+
 
 sa-token:
   token-name: satoken

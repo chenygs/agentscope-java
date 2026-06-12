@@ -3,6 +3,7 @@ package io.agentscope.builder.saton.session;
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.session.dto.ResetResp;
 import io.agentscope.builder.saton.session.dto.SessionVO;
@@ -25,13 +26,13 @@ public class SessionController {
     }
 
     @GetMapping("/{id}/sessions")
-    public Mono<List<SessionVO>> list(@PathVariable("id") Long id, ServerWebExchange exchange) {
+    public Mono<R<List<SessionVO>>> list(@PathVariable("id") Long id, ServerWebExchange exchange) {
         return Mono.fromCallable(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
                 String me = StpUtil.getLoginIdAsString();
                 requireOwn(id, me);
-                return sessions.list(me, id);
+                return R.okList(sessions.list(me, id));
             } finally {
                 SaReactorSyncHolder.clearContext();
             }
@@ -39,15 +40,15 @@ public class SessionController {
     }
 
     @PostMapping("/{id}/sessions/{key}/reset")
-    public Mono<ResetResp> reset(@PathVariable("id") Long id,
-                                 @PathVariable("key") String key,
-                                 ServerWebExchange exchange) {
+    public Mono<R<ResetResp>> reset(@PathVariable("id") Long id,
+                                    @PathVariable("key") String key,
+                                    ServerWebExchange exchange) {
         return Mono.fromCallable(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
                 String me = StpUtil.getLoginIdAsString();
                 requireOwn(id, me);
-                return new ResetResp(sessions.reset(me, id, key));
+                return R.ok(new ResetResp(sessions.reset(me, id, key)));
             } finally {
                 SaReactorSyncHolder.clearContext();
             }

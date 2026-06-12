@@ -4,8 +4,8 @@ import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -38,30 +39,27 @@ class SessionFlowTest {
                 .baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(30))
                 .build();
-        LoginResponse login = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange().expectStatus().isOk()
-                .expectBody(LoginResponse.class).returnResult().getResponseBody();
-        this.token = login.token();
+        token = TestR.login(client);
 
-        ModelProviderVO mp = client.post().uri("/api/models")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("session-stub-" + System.nanoTime(),
-                        "test-stub", Map.of()))
-                .exchange().expectStatus().isOk()
-                .expectBody(ModelProviderVO.class).returnResult().getResponseBody();
+        ModelProviderVO mp = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("session-stub-" + System.nanoTime(),
+                                "test-stub", Map.of()))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
 
-        AgentVO ag = client.post().uri("/api/agents")
-                .header("satoken", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "session-agent-" + System.nanoTime(),
-                        "session agent", null, "you are helpful",
-                        AgentType.REACT, mp.id(), 3, null))
-                .exchange().expectStatus().isOk()
-                .expectBody(AgentVO.class).returnResult().getResponseBody();
+        AgentVO ag = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "session-agent-" + System.nanoTime(),
+                                "session agent", null, "you are helpful",
+                                AgentType.REACT, mp.id(), 3, null))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
         this.agentId = ag.id();
     }
 
@@ -94,8 +92,6 @@ class SessionFlowTest {
         assertNotNull(second);
         assertEquals("agent_start", second.get(0).event());
         assertEquals("agent_end", second.get(second.size() - 1).event());
-        // Both turns end cleanly with the same sessionKey: ReActAgent's slot loader picked up the
-        // persisted agent_state. History-level inspection lives in Task 3's SessionService unit test.
     }
 
     @Test

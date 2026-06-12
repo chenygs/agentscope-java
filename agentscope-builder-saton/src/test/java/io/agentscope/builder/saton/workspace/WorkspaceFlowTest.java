@@ -3,8 +3,8 @@ package io.agentscope.builder.saton.workspace;
 import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.common.R;
+import io.agentscope.builder.saton.common.TestR;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderVO;
 import io.agentscope.builder.saton.workspace.dto.FileNodeVO;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import tools.jackson.core.type.TypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -36,24 +37,24 @@ class WorkspaceFlowTest {
     void setUp() {
         client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
                 .responseTimeout(Duration.ofSeconds(30)).build();
-        token = client.post().uri("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginRequest("admin", "admin"))
-                .exchange().expectStatus().isOk()
-                .expectBody(LoginResponse.class).returnResult().getResponseBody().token();
-        ModelProviderVO mp = client.post().uri("/api/models")
-                .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ModelProviderUpsertReq("ws-stub-" + System.nanoTime(),
-                        "test-stub", Map.of()))
-                .exchange().expectStatus().isOk()
-                .expectBody(ModelProviderVO.class).returnResult().getResponseBody();
-        AgentVO ag = client.post().uri("/api/agents")
-                .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new AgentUpsertReq(
-                        "ws-agent-" + System.nanoTime(),
-                        "ws", null, "hi", AgentType.REACT, mp.id(), 3, null))
-                .exchange().expectStatus().isOk()
-                .expectBody(AgentVO.class).returnResult().getResponseBody();
+        token = TestR.login(client);
+
+        ModelProviderVO mp = TestR.data(
+                client.post().uri("/api/models")
+                        .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ModelProviderUpsertReq("ws-stub-" + System.nanoTime(),
+                                "test-stub", Map.of()))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<ModelProviderVO>>() {});
+
+        AgentVO ag = TestR.data(
+                client.post().uri("/api/agents")
+                        .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new AgentUpsertReq(
+                                "ws-agent-" + System.nanoTime(),
+                                "ws", null, "hi", AgentType.REACT, mp.id(), 3, null))
+                        .exchange().expectStatus().isOk(),
+                new TypeReference<R<AgentVO>>() {});
         agentId = ag.id();
     }
 
@@ -65,16 +66,17 @@ class WorkspaceFlowTest {
                 .bodyValue(new WriteFileReq("hello world"))
                 .exchange().expectStatus().isOk();
 
-        // read
+        // read (raw text, not wrapped in R)
         String body = client.get().uri("/api/agents/" + agentId + "/workspace/file?path=notes.md")
                 .header("satoken", token).exchange().expectStatus().isOk()
                 .expectBody(String.class).returnResult().getResponseBody();
         assertEquals("hello world", body);
 
-        // list (top-level)
-        List<FileNodeVO> nodes = client.get().uri("/api/agents/" + agentId + "/workspace/files")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBodyList(FileNodeVO.class).returnResult().getResponseBody();
+        // list
+        List<FileNodeVO> nodes = TestR.data(
+                client.get().uri("/api/agents/" + agentId + "/workspace/files")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<List<FileNodeVO>>>() {});
         assertNotNull(nodes);
         assertTrue(nodes.stream().anyMatch(n -> n.name().equals("notes.md")));
 
@@ -83,9 +85,10 @@ class WorkspaceFlowTest {
                 .header("satoken", token).exchange().expectStatus().isOk();
 
         // list again — empty
-        List<FileNodeVO> after = client.get().uri("/api/agents/" + agentId + "/workspace/files")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBodyList(FileNodeVO.class).returnResult().getResponseBody();
+        List<FileNodeVO> after = TestR.data(
+                client.get().uri("/api/agents/" + agentId + "/workspace/files")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<List<FileNodeVO>>>() {});
         assertNotNull(after);
         assertTrue(after.stream().noneMatch(n -> n.name().equals("notes.md")));
     }
@@ -99,9 +102,10 @@ class WorkspaceFlowTest {
                 .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new WriteFileReq("B")).exchange().expectStatus().isOk();
 
-        WorkspaceSummaryVO sum = client.get().uri("/api/agents/" + agentId + "/workspace")
-                .header("satoken", token).exchange().expectStatus().isOk()
-                .expectBody(WorkspaceSummaryVO.class).returnResult().getResponseBody();
+        WorkspaceSummaryVO sum = TestR.data(
+                client.get().uri("/api/agents/" + agentId + "/workspace")
+                        .header("satoken", token).exchange().expectStatus().isOk(),
+                new TypeReference<R<WorkspaceSummaryVO>>() {});
         assertNotNull(sum);
         assertTrue(sum.fileCount() >= 2,
                 "expected at least 2 files but got " + sum.fileCount() + " (workspace may contain files from other tests)");

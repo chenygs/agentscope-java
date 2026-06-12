@@ -6,3 +6,18 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+import type { MessageApiInjection } from 'naive-ui/lib/message/src/MessageProvider'
+import type { Router } from 'vue-router'
+
+declare global {
+  interface Window {
+    $message: MessageApiInjection
+    $router: Router
+    $authStore: {
+      logout: () => void
+    }
+  }
+}
+
+export {}

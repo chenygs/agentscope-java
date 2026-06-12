@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.factory.api;
 
+import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.factory.core.TypeMeta;
 import io.agentscope.builder.saton.factory.middleware.MiddlewareFactory;
 import io.agentscope.builder.saton.factory.model.ModelFactory;
@@ -41,22 +42,22 @@ public class FactoriesController {
     }
 
     @GetMapping("/model-types")
-    public Mono<List<TypeMeta>> modelTypes() {
-        return Mono.fromCallable(modelFactory::listTypes);
+    public Mono<R<List<TypeMeta>>> modelTypes() {
+        return Mono.fromCallable(() -> R.okList(modelFactory.listTypes()));
     }
 
     @GetMapping("/tool-types")
-    public Mono<List<TypeMeta>> toolTypes() {
-        return Mono.fromCallable(toolFactory::listTypes);
+    public Mono<R<List<TypeMeta>>> toolTypes() {
+        return Mono.fromCallable(() -> R.okList(toolFactory.listTypes()));
     }
 
     @GetMapping("/skill-repo-types")
-    public Mono<List<TypeMeta>> skillRepoTypes() {
-        return Mono.fromCallable(skillFactory::listTypes);
+    public Mono<R<List<TypeMeta>>> skillRepoTypes() {
+        return Mono.fromCallable(() -> R.okList(skillFactory.listTypes()));
     }
 
     @GetMapping("/middleware-types")
-    public Mono<List<TypeMeta>> middlewareTypes() {
-        return Mono.fromCallable(middlewareFactory::listTypes);
+    public Mono<R<List<TypeMeta>>> middlewareTypes() {
+        return Mono.fromCallable(() -> R.okList(middlewareFactory.listTypes()));
     }
 }
