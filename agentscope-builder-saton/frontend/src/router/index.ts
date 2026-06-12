@@ -29,6 +29,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/AgentListView.vue'),
       },
       {
+        path: 'agents/new',
+        name: 'AgentCreate',
+        component: () => import('@/views/AgentEditView.vue'),
+      },
+      {
+        path: 'agents/:id/edit',
+        name: 'AgentEdit',
+        component: () => import('@/views/AgentEditView.vue'),
+      },
+      {
+        path: 'agents/:id/chat',
+        name: 'AgentChat',
+        component: () => import('@/views/ChatView.vue'),
+      },
+      {
         path: 'models',
         name: 'Models',
         component: () => import('@/views/ModelsView.vue'),

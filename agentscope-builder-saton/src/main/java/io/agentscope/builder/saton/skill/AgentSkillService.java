@@ -18,11 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Slf4j
 @Service
@@ -182,6 +186,80 @@ public class AgentSkillService {
                     });
         } catch (java.io.IOException e) {
             throw new RuntimeException("failed to delete workspace skill: " + name, e);
+        }
+    }
+
+    /**
+     * Upload a zip file containing skill files and extract into
+     * {@code <workspace>/skills/<skillName>/}.
+     *
+     * <p>The zip content is extracted directly under the given skill name directory.
+     * The zip should contain the skill files (SKILL.md and optional resources), not
+     * another top-level folder.
+     *
+     * @param ownerId     current user
+     * @param agentDefId  agent definition id
+     * @param skillName   target skill directory name (validated)
+     * @param zipData     raw zip bytes
+     * @param zipName     original file name (for logging)
+     */
+    public void uploadSkill(String ownerId, Long agentDefId, String skillName,
+                            byte[] zipData, String zipName) {
+        validateSkillName(skillName);
+
+        Path workspace = workspaceResolver.agentRoot(ownerId, agentDefId);
+        Path skillDir = workspace.resolve(SKILLS_DIR).resolve(skillName);
+        try {
+            Files.createDirectories(skillDir);
+
+            // Write zip to temp file
+            Path tempZip = Files.createTempFile("skill-upload-", ".zip");
+            try {
+                Files.write(tempZip, zipData);
+
+                // Extract zip directly into skillDir
+                try (ZipInputStream zis = new ZipInputStream(
+                        new BufferedInputStream(Files.newInputStream(tempZip)))) {
+                    ZipEntry entry;
+                    while ((entry = zis.getNextEntry()) != null) {
+                        if (entry.isDirectory()) {
+                            zis.closeEntry();
+                            continue;
+                        }
+                        String entryName = entry.getName();
+                        // Skip macOS metadata and leading slashes
+                        if (entryName.startsWith("/") || entryName.startsWith("__MACOSX/")) {
+                            zis.closeEntry();
+                            continue;
+                        }
+                        // Security: reject path traversal
+                        if (entryName.contains("..")) {
+                            throw new IllegalArgumentException(
+                                    "zip entry contains path traversal: " + entryName);
+                        }
+                        Path target = skillDir.resolve(entryName).normalize();
+                        if (!target.startsWith(skillDir)) {
+                            throw new IllegalArgumentException(
+                                    "zip entry escapes skill directory: " + entryName);
+                        }
+                        Files.createDirectories(target.getParent());
+                        Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
+                        zis.closeEntry();
+                    }
+                }
+            } finally {
+                Files.deleteIfExists(tempZip);
+            }
+
+            // Verify SKILL.md exists
+            if (!Files.exists(skillDir.resolve("SKILL.md"))) {
+                log.warn("Uploaded skill '{}' has no SKILL.md in {}", skillName, skillDir);
+            }
+
+            log.info("Uploaded skill '{}' from zip '{}' to {}", skillName, zipName, skillDir);
+
+        } catch (IOException e) {
+            throw new RuntimeException("failed to extract skill zip: " + e.getMessage(), e);
         }
     }
 

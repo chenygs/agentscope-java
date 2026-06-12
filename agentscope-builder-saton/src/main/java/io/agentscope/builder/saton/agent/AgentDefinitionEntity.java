@@ -52,7 +52,7 @@ public class AgentDefinitionEntity {
     private String description;
 
     @Lob
-    @Column(name = "sys_prompt")
+    @Column(name = "sys_prompt", columnDefinition = "TEXT")
     private String sysPrompt;
 
     @Enumerated(EnumType.STRING)
@@ -68,11 +68,11 @@ public class AgentDefinitionEntity {
     @Column(name = "workspace_path", length = 1024)
     private String workspacePath;
 
-    @Lob @Column(name = "tool_specs_json") private String toolSpecsJson;
-    @Lob @Column(name = "skill_refs_json") private String skillRefsJson;
-    @Lob @Column(name = "hook_specs_json") private String hookSpecsJson;
-    @Lob @Column(name = "subagent_refs_json") private String subagentRefsJson;
-    @Lob @Column(name = "skill_repositories_json") private String skillRepositoriesJson;
+    @Lob @Column(name = "tool_specs_json" , columnDefinition = "JSON") private String toolSpecsJson;
+    @Lob @Column(name = "skill_refs_json", columnDefinition = "JSON") private String skillRefsJson;
+    @Lob @Column(name = "hook_specs_json", columnDefinition = "JSON") private String hookSpecsJson;
+    @Lob @Column(name = "subagent_refs_json", columnDefinition = "JSON") private String subagentRefsJson;
+    @Lob @Column(name = "skill_repositories_json", columnDefinition = "JSON") private String skillRepositoriesJson;
 
     @Column(name = "sandbox_mode", length = 16)
     private String sandboxMode;

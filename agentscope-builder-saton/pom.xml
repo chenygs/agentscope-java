@@ -100,6 +100,13 @@
             <version>${agentscope.version}</version>
         </dependency>
 
+        <!-- Git skill repository support -->
+        <dependency>
+            <groupId>io.agentscope</groupId>
+            <artifactId>agentscope-extensions-skill-git-repository</artifactId>
+            <version>${agentscope.version}</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

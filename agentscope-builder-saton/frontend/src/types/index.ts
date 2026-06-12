@@ -18,63 +18,29 @@ export interface ModelProvider {
 
 export interface McpServer {
   id: number
-  ownerId: string
   name: string
-  transport: 'stdio' | 'sse' | 'http'
+  type: string
   props: Record<string, unknown>
-  enabled: boolean
   createdAt: number
   updatedAt: number
 }
 
-export interface MySkill {
+export interface SkillRepository {
   id: number
-  ownerId: string
-  name: string
-  sourceMarketplaceId?: string
-  version?: string
-  props: Record<string, unknown>
-  enabled: boolean
-  createdAt: number
-}
-
-export interface MyTool {
-  id: number
-  ownerId: string
-  type: string
-  props: Record<string, unknown>
-  enabled: boolean
-  createdAt: number
-  updatedAt: number
-}
-
-export interface MemoryProvider {
-  id: number
-  ownerId: string
   name: string
   type: string
   props: Record<string, unknown>
-  enabled: boolean
   createdAt: number
   updatedAt: number
 }
 
 export interface SkillMarketplace {
   id: number
-  ownerId: string
   marketplaceId: string
   type: string
   props: Record<string, unknown>
   createdAt: number
-}
-
-export interface SkillRepository {
-  id: number
-  ownerId: string
-  name: string
-  type: string
-  props: Record<string, unknown>
-  createdAt: number
+  updatedAt: number
 }
 
 // ── Agent ──
@@ -83,12 +49,25 @@ export interface ToolSpec {
   props?: Record<string, unknown>
 }
 
-export interface SkillRef {
-  repoId: number
-  name: string
+export interface SkillRepoSpec {
+  type: string
+  props?: Record<string, unknown>
 }
 
-export interface HookSpec {
+export interface WorkspaceSkill {
+  name: string
+  description: string
+  source: string
+  installTime: number
+}
+
+export interface ChatSendReq {
+  message: string
+  overrideModelProviderId?: number
+  sessionKey?: string
+}
+
+export interface MiddlewareSpec {
   type: string
   props?: Record<string, unknown>
 }
@@ -99,12 +78,9 @@ export interface AgentSummary {
   ownerId: string
   name: string
   description: string
-  icon?: string
-  agentType: string
+  agentType: 'REACT' | 'HARNESS'
   defaultModelProviderId: number
-  defaultModelName?: string
-  toolCount?: number
-  sessionCount?: number
+  maxIters: number
   createdAt: number
   updatedAt: number
 }
@@ -115,32 +91,35 @@ export interface AgentDetail {
   ownerId: string
   name: string
   description: string
-  icon?: string
   sysPrompt: string
-  agentType: string
+  agentType: 'REACT' | 'HARNESS'
   defaultModelProviderId: number
-  defaultModelName?: string
   maxIters: number
-  workspacePath: string
   toolSpecs: ToolSpec[]
-  skillRefs: SkillRef[]
-  hookSpecs: HookSpec[]
+  skillRepositories: SkillRepoSpec[]
+  middlewareSpecs: MiddlewareSpec[]
   subagentRefs: string[]
-  skillRepositoryIds: number[]
-  sandboxMode: string
-  sandboxScope: string
-  runAs: string
-  forkOf?: string
-  memoryProviderId?: number
-  memoryMode?: string
   createdAt: number
   updatedAt: number
+}
+
+export interface AgentUpsertReq {
+  agentId: string
+  name: string
+  description?: string
+  sysPrompt?: string
+  agentType: 'REACT' | 'HARNESS'
+  defaultModelProviderId: number
+  maxIters?: number
+  toolSpecs?: ToolSpec[]
+  skillRepositories?: SkillRepoSpec[]
+  middlewareSpecs?: MiddlewareSpec[]
+  subagentRefs?: string[]
 }
 
 export interface AgentShare {
   id: number
   agentDefId: number
-  granteeType: string
   granteeId: string
   tier: 'EDIT' | 'RUN' | 'CLONE'
   createdBy: string
@@ -204,6 +183,24 @@ export interface JsonSchemaProperty {
 // ── Resource Upsert Requests ──
 export interface ModelProviderUpsertReq {
   name: string
+  type: string
+  props: Record<string, unknown>
+}
+
+export interface McpServerUpsertReq {
+  name: string
+  type: string
+  props: Record<string, unknown>
+}
+
+export interface SkillRepositoryUpsertReq {
+  name: string
+  type: string
+  props: Record<string, unknown>
+}
+
+export interface SkillMarketplaceUpsertReq {
+  marketplaceId: string
   type: string
   props: Record<string, unknown>
 }

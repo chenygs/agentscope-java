@@ -40,6 +40,11 @@ export const useFactoriesStore = defineStore('factories', () => {
     return toolTypes.value.find((t) => t.type === type)
   }
 
+  /** 根据 type 查找技能仓库类型元信息 */
+  function getSkillRepoType(type: string): ProviderMeta | undefined {
+    return skillRepoTypes.value.find((t) => t.type === type)
+  }
+
   return {
     modelTypes,
     toolTypes,
@@ -49,5 +54,6 @@ export const useFactoriesStore = defineStore('factories', () => {
     loadAll,
     getModelType,
     getToolType,
+    getSkillRepoType,
   }
 })

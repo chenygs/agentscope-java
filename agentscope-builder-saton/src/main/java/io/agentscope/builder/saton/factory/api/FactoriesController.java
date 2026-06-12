@@ -51,6 +51,11 @@ public class FactoriesController {
         return Mono.fromCallable(() -> R.okList(toolFactory.listTypes()));
     }
 
+    @GetMapping("/builtin-tools")
+    public Mono<R<List<TypeMeta>>> builtinTools() {
+        return Mono.fromCallable(() -> R.okList(toolFactory.listBuiltinTools()));
+    }
+
     @GetMapping("/skill-repo-types")
     public Mono<R<List<TypeMeta>>> skillRepoTypes() {
         return Mono.fromCallable(() -> R.okList(skillFactory.listTypes()));

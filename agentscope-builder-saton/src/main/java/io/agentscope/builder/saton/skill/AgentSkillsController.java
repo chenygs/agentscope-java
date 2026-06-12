@@ -8,6 +8,9 @@ import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.skill.dto.InstallFromRepoReq;
 import io.agentscope.builder.saton.skill.dto.MarketplaceInstallReq;
 import io.agentscope.builder.saton.skill.dto.WorkspaceSkillVO;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -71,6 +74,36 @@ public class AgentSkillsController {
             String me = StpUtil.getLoginIdAsString();
             accessGuard.require(agentDefId, me, Tier.RUN);
             return R.ok(skillService.installFromMarketplace(me, agentDefId, req));
+        });
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<R<Void>> uploadSkills(
+            @PathVariable("agentId") Long agentDefId,
+            @RequestPart("file") Part file,
+            @RequestPart("skillName") String skillName,
+            ServerWebExchange exchange) {
+        return inSaContext(exchange, () -> {
+            String me = StpUtil.getLoginIdAsString();
+            accessGuard.require(agentDefId, me, Tier.EDIT);
+            byte[] zipData;
+            try {
+                zipData = DataBufferUtils.join(file.content())
+                        .map(dataBuffer -> {
+                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                            dataBuffer.read(bytes);
+                            DataBufferUtils.release(dataBuffer);
+                            return bytes;
+                        })
+                        .block();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("failed to read uploaded file: " + e.getMessage());
+            }
+            skillService.uploadSkill(me, agentDefId, skillName,
+                    zipData != null ? zipData : new byte[0],
+                    file.headers().getContentDisposition() != null
+                            ? file.headers().getContentDisposition().getFilename() : "upload.zip");
+            return R.ok();
         });
     }
 

@@ -82,7 +82,11 @@ public class AgentBuildOrchestrator {
 
         Toolkit toolkit = new Toolkit();
         for (ToolSpec spec : parseToolSpecs(def.getToolSpecsJson())) {
-            toolkit.registerTool(toolFactory.instantiate(spec.type(), spec.props()));
+            try {
+                toolkit.registerTool(toolFactory.instantiate(spec.type(), spec.props()));
+            } catch (RuntimeException e) {
+                log.warn("skip tool type={} due to {}", spec.type(), e.getMessage());
+            }
         }
 
         Path workspace = workspaceResolver.agentRoot(ownerId, def.getId());
