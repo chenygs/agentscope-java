@@ -68,7 +68,7 @@ public final class ResourceCommon {
             JsonNode val = entry.getValue();
             if (val.isObject() && val instanceof ObjectNode child) {
                 walk(child);
-            } else if (val.isTextual() && SensitiveFields.KEYS.contains(key)) {
+            } else if (val.isString() && SensitiveFields.KEYS.contains(key)) {
                 obj.put(key, SensitiveFields.MASKED_VALUE);
             }
         }

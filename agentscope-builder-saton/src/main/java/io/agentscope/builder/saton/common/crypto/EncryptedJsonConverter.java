@@ -67,7 +67,7 @@ public class EncryptedJsonConverter implements AttributeConverter<String, String
             JsonNode val = entry.getValue();
             if (val.isObject() && val instanceof ObjectNode child) {
                 walk(child, encrypt);
-            } else if (val.isTextual() && SensitiveFields.KEYS.contains(key)) {
+            } else if (val.isString() && SensitiveFields.KEYS.contains(key)) {
                 String s = val.asString();
                 String out = encrypt ? cipher.encrypt(s) : cipher.decrypt(s);
                 obj.put(key, out);

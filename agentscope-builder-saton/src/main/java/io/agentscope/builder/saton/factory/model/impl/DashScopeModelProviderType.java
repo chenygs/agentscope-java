@@ -62,7 +62,7 @@ public class DashScopeModelProviderType implements ModelProviderType {
 
     static String requireString(JsonNode node, String field) {
         JsonNode v = node.get(field);
-        if (v == null || !v.isTextual() || v.asString().isBlank()) {
+        if (v == null || !v.isString() || v.asString().isBlank()) {
             throw new IllegalArgumentException("model props missing required field: " + field);
         }
         return v.asString();
@@ -70,6 +70,6 @@ public class DashScopeModelProviderType implements ModelProviderType {
 
     static String optionalString(JsonNode node, String field) {
         JsonNode v = node.get(field);
-        return (v == null || !v.isTextual() || v.asString().isBlank()) ? null : v.asString();
+        return (v == null || !v.isString() || v.asString().isBlank()) ? null : v.asString();
     }
 }
