@@ -67,7 +67,7 @@ public class AgentService {
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
         e.setSkillRepositoriesJson(serializeJson(req.skillRepositories()));
-        e.setHookSpecsJson(serializeJson(req.hookSpecs()));
+        e.setHookSpecsJson(serializeJson(req.middlewareSpecs()));
         e.setSubagentRefsJson(serializeJson(req.subagentRefs()));
         e.setCreatedAt(now);
         e.setUpdatedAt(now);
@@ -93,7 +93,7 @@ public class AgentService {
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
         e.setSkillRepositoriesJson(serializeJson(req.skillRepositories()));
-        e.setHookSpecsJson(serializeJson(req.hookSpecs()));
+        e.setHookSpecsJson(serializeJson(req.middlewareSpecs()));
         e.setSubagentRefsJson(serializeJson(req.subagentRefs()));
         e.setUpdatedAt(System.currentTimeMillis());
         runtimeResolver.invalidateByAgent(e.getId());

@@ -2,7 +2,7 @@ package io.agentscope.builder.saton.agent.dto;
 
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentType;
-import io.agentscope.builder.saton.agent.HookSpec;
+import io.agentscope.builder.saton.agent.MiddlewareSpec;
 import io.agentscope.builder.saton.agent.SkillRepoSpec;
 import io.agentscope.builder.saton.agent.ToolSpec;
 import io.agentscope.builder.saton.common.json.JsonUtil;
@@ -21,7 +21,7 @@ public record AgentVO(Long id,
                       Integer maxIters,
                       List<ToolSpec> toolSpecs,
                       List<SkillRepoSpec> skillRepositories,
-                      List<HookSpec> hookSpecs,
+                      List<MiddlewareSpec> middlewareSpecs,
                       List<String> subagentRefs,
                       long createdAt,
                       long updatedAt) {
@@ -33,7 +33,7 @@ public record AgentVO(Long id,
                 e.getDefaultModelProviderId(), e.getMaxIters(),
                 parseList(e.getToolSpecsJson(), new TypeReference<List<ToolSpec>>() {}),
                 parseList(e.getSkillRepositoriesJson(), new TypeReference<List<SkillRepoSpec>>() {}),
-                parseList(e.getHookSpecsJson(), new TypeReference<List<HookSpec>>() {}),
+                parseList(e.getHookSpecsJson(), new TypeReference<List<MiddlewareSpec>>() {}),
                 parseList(e.getSubagentRefsJson(), new TypeReference<List<String>>() {}),
                 e.getCreatedAt(), e.getUpdatedAt());
     }

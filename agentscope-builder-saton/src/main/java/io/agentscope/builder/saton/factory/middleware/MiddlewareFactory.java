@@ -1,8 +1,8 @@
-package io.agentscope.builder.saton.factory.hook;
+package io.agentscope.builder.saton.factory.middleware;
 
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.factory.core.TypeMeta;
-import io.agentscope.core.hook.Hook;
+import io.agentscope.core.middleware.MiddlewareBase;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -11,18 +11,17 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Facade for instantiating {@link Hook} by type string + props + activityDir.
+ * Facade for instantiating {@link MiddlewareBase} by type string + props + activityDir.
  *
- * <p>Unknown hook type → {@link NotFoundException} (HTTP 404), consistent with
+ * <p>Unknown middleware type → {@link NotFoundException} (HTTP 404), consistent with
  * {@code ToolFactory} / {@code ModelFactory} / {@code SkillFactory} siblings.
  */
 @Component
-@SuppressWarnings("deprecation")
-public class HookFactory {
+public class MiddlewareFactory {
 
-    private final HookTypeRegistry registry;
+    private final MiddlewareTypeRegistry registry;
 
-    public HookFactory(HookTypeRegistry registry) {
+    public MiddlewareFactory(MiddlewareTypeRegistry registry) {
         this.registry = registry;
     }
 
@@ -30,12 +29,12 @@ public class HookFactory {
         return registry.listMetas();
     }
 
-    public Hook instantiate(String type, Map<String, Object> props, Path activityDir) {
-        HookType impl;
+    public MiddlewareBase instantiate(String type, Map<String, Object> props, Path activityDir) {
+        MiddlewareType impl;
         try {
             impl = registry.get(type);
         } catch (NoSuchElementException e) {
-            throw new NotFoundException("unknown hook type: " + type);
+            throw new NotFoundException("unknown middleware type: " + type);
         }
         return impl.instantiate(props == null ? Map.of() : props, activityDir);
     }

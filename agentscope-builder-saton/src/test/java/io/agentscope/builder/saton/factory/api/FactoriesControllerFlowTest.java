@@ -126,8 +126,8 @@ class FactoriesControllerFlowTest {
     }
 
     @Test
-    void hookTypesReturnsBuiltins() {
-        List<TypeMeta> types = client.get().uri("/api/factories/hook-types")
+    void middlewareTypesReturnsBuiltins() {
+        List<TypeMeta> types = client.get().uri("/api/factories/middleware-types")
                 .header("satoken", token)
                 .exchange()
                 .expectStatus().isOk()
@@ -137,6 +137,6 @@ class FactoriesControllerFlowTest {
         assertNotNull(types);
         Set<String> names = types.stream().map(TypeMeta::type).collect(Collectors.toSet());
         assertTrue(names.containsAll(Set.of("logging", "audit-jsonl")),
-                "missing builtin hook types; got " + names);
+                "missing builtin middleware types; got " + names);
     }
 }

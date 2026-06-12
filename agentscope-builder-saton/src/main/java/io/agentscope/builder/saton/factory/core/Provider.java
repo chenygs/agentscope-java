@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.factory.core;
 
 /**
- * 所有 SPI 接口（ModelProviderType / 未来的 ToolType / SkillRepoType / HookType / AgentType）
+ * 所有 SPI 接口（ModelProviderType / 未来的 ToolType / SkillRepoType / MiddlewareType / AgentType）
  * 的顶层标记接口。仅用于约束 {@link ProviderRegistry} 的泛型边界。
  */
 public interface Provider {

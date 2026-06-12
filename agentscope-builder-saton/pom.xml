@@ -21,6 +21,7 @@
 
         <spring.boot.version>4.0.2</spring.boot.version>
         <sa.token.version>1.45.0</sa.token.version>
+        <agentscope.version>2.0.0-RC3</agentscope.version>
     </properties>
 
     <dependencyManagement>
@@ -29,6 +30,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.agentscope</groupId>
+                <artifactId>agentscope-dependencies-bom</artifactId>
+                <version>${agentscope.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -73,18 +82,18 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- AgentScope core: Model / Tool / Agent / Hook / Memory abstractions -->
+        <!-- AgentScope core: Model / Tool / Agent / Middleware / Memory abstractions -->
         <dependency>
             <groupId>io.agentscope</groupId>
             <artifactId>agentscope-core</artifactId>
-            <version>2.0.0-RC2</version>
+            <version>${agentscope.version}</version>
         </dependency>
 
         <!-- M7: HarnessAgent for skill repos + subagent factory + workspace context -->
         <dependency>
             <groupId>io.agentscope</groupId>
             <artifactId>agentscope-harness</artifactId>
-            <version>2.0.0-RC2</version>
+            <version>${agentscope.version}</version>
         </dependency>
 
         <!-- Test -->

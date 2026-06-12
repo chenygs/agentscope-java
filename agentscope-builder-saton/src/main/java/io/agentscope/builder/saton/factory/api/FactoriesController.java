@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.factory.api;
 
 import io.agentscope.builder.saton.factory.core.TypeMeta;
-import io.agentscope.builder.saton.factory.hook.HookFactory;
+import io.agentscope.builder.saton.factory.middleware.MiddlewareFactory;
 import io.agentscope.builder.saton.factory.model.ModelFactory;
 import io.agentscope.builder.saton.factory.skill.SkillFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ import java.util.List;
  * （/agent-types），形成统一的 5 大类目录。
  *
  * <p>当前已暴露：{@code /model-types}, {@code /tool-types},
- * {@code /skill-repo-types}, {@code /hook-types}。
+ * {@code /skill-repo-types}, {@code /middleware-types}。
  *
  * <p>所有端点都不调 {@link cn.dev33.satoken.stp.StpUtil}（只读 in-memory 注册表），
  * 因此不需要 {@code SaReactorSyncHolder} 上下文绑定;sa-token 全局过滤器负责"必须登录"。
@@ -28,16 +28,16 @@ public class FactoriesController {
     private final ModelFactory modelFactory;
     private final io.agentscope.builder.saton.factory.tool.ToolFactory toolFactory;
     private final SkillFactory skillFactory;
-    private final HookFactory hookFactory;
+    private final MiddlewareFactory middlewareFactory;
 
     public FactoriesController(ModelFactory modelFactory,
                                io.agentscope.builder.saton.factory.tool.ToolFactory toolFactory,
                                SkillFactory skillFactory,
-                               HookFactory hookFactory) {
+                               MiddlewareFactory middlewareFactory) {
         this.modelFactory = modelFactory;
         this.toolFactory = toolFactory;
         this.skillFactory = skillFactory;
-        this.hookFactory = hookFactory;
+        this.middlewareFactory = middlewareFactory;
     }
 
     @GetMapping("/model-types")
@@ -55,8 +55,8 @@ public class FactoriesController {
         return Mono.fromCallable(skillFactory::listTypes);
     }
 
-    @GetMapping("/hook-types")
-    public Mono<List<TypeMeta>> hookTypes() {
-        return Mono.fromCallable(hookFactory::listTypes);
+    @GetMapping("/middleware-types")
+    public Mono<List<TypeMeta>> middlewareTypes() {
+        return Mono.fromCallable(middlewareFactory::listTypes);
     }
 }

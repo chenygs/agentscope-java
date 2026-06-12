@@ -1,7 +1,7 @@
-package io.agentscope.builder.saton.factory.hook;
+package io.agentscope.builder.saton.factory.middleware;
 
 import io.agentscope.builder.saton.common.error.NotFoundException;
-import io.agentscope.core.hook.Hook;
+import io.agentscope.core.middleware.MiddlewareBase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,24 +12,23 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("deprecation")
 @SpringBootTest
-class HookFactoryTest {
+class MiddlewareFactoryTest {
 
-    @Autowired HookFactory factory;
+    @Autowired MiddlewareFactory factory;
 
     @TempDir Path activityDir;
 
     @Test
     void instantiateLogging() {
-        Hook hook = factory.instantiate("logging", Map.of(), activityDir);
-        assertNotNull(hook);
+        MiddlewareBase mw = factory.instantiate("logging", Map.of(), activityDir);
+        assertNotNull(mw);
     }
 
     @Test
     void instantiateAuditJsonl() {
-        Hook hook = factory.instantiate("audit-jsonl", Map.of(), activityDir);
-        assertNotNull(hook);
+        MiddlewareBase mw = factory.instantiate("audit-jsonl", Map.of(), activityDir);
+        assertNotNull(mw);
     }
 
     @Test
