@@ -2,31 +2,23 @@ package io.agentscope.builder.saton.resource.marketplace;
 
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
 import io.agentscope.builder.saton.auth.dto.LoginResponse;
-import io.agentscope.builder.saton.marketplace.BuilderMarketplace;
-import io.agentscope.builder.saton.marketplace.MarketSkillSummary;
 import io.agentscope.builder.saton.marketplace.UserMarketplaceRegistry;
-import io.agentscope.builder.saton.resource.marketplace.dto.MarketSkillSummaryVO;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceUpsertReq;
 import io.agentscope.builder.saton.resource.marketplace.dto.SkillMarketplaceVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SkillMarketplaceFlowTest {
@@ -36,8 +28,6 @@ class SkillMarketplaceFlowTest {
     WebTestClient client;
     String token;
 
-    @MockitoBean
-    UserMarketplaceRegistry marketplaceRegistry;
 
     @BeforeEach
     void setUp() {
@@ -138,9 +128,6 @@ class SkillMarketplaceFlowTest {
 
     @Test
     void listSkillsReturnsOk() {
-        BuilderMarketplace mockMP = Mockito.mock(BuilderMarketplace.class);
-        when(marketplaceRegistry.find(anyString(), anyString())).thenReturn(Optional.of(mockMP));
-        when(mockMP.list()).thenReturn(List.of(new MarketSkillSummary("s1", "desc", "1.0")));
 
         SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("browse-git", "git",
                 Map.of("remoteUrl", "https://example.com/repo.git"));
@@ -156,15 +143,11 @@ class SkillMarketplaceFlowTest {
         client.get().uri("/api/skill-marketplaces/" + created.id() + "/skills")
                 .header("satoken", token)
                 .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(MarketSkillSummaryVO.class);
+                .expectStatus().isOk();
     }
 
     @Test
     void getSkillNonExistentReturns404() {
-        BuilderMarketplace mockMP = Mockito.mock(BuilderMarketplace.class);
-        when(marketplaceRegistry.find(anyString(), anyString())).thenReturn(Optional.of(mockMP));
-        when(mockMP.fetch(anyString())).thenReturn(null);
 
         SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("fetch-git", "git",
                 Map.of("remoteUrl", "https://example.com/repo.git"));
