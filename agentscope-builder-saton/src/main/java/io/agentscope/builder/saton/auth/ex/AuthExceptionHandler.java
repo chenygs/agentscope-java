@@ -36,6 +36,13 @@ public class AuthExceptionHandler {
                 .body(ApiError.of(409, e.getMessage()));
     }
 
+    @ExceptionHandler(io.agentscope.builder.saton.common.error.ForbiddenException.class)
+    public ResponseEntity<ApiError> handleForbidden(
+            io.agentscope.builder.saton.common.error.ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiError.of(403, e.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
