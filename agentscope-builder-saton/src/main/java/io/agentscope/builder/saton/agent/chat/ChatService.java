@@ -1,8 +1,10 @@
 package io.agentscope.builder.saton.agent.chat;
 
 import cn.dev33.satoken.stp.StpUtil;
+import io.agentscope.builder.saton.agent.AgentAccessGuard;
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
+import io.agentscope.builder.saton.agent.Tier;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendResp;
 import io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver;
@@ -27,19 +29,21 @@ public class ChatService {
     private final AgentDefinitionRepository agentRepo;
     private final ModelProviderRepository modelRepo;
     private final AgentRuntimeResolver runtimeResolver;
+    private final AgentAccessGuard accessGuard;
 
     public ChatService(AgentDefinitionRepository agentRepo,
                        ModelProviderRepository modelRepo,
-                       AgentRuntimeResolver runtimeResolver) {
+                       AgentRuntimeResolver runtimeResolver,
+                       AgentAccessGuard accessGuard) {
         this.agentRepo = agentRepo;
         this.modelRepo = modelRepo;
         this.runtimeResolver = runtimeResolver;
+        this.accessGuard = accessGuard;
     }
 
     public ChatSendResp send(Long agentDefId, ChatSendReq req) {
         String me = StpUtil.getLoginIdAsString();
-        AgentDefinitionEntity def = agentRepo.findByIdAndOwnerId(agentDefId, me)
-                .orElseThrow(() -> new NotFoundException("agent not found: " + agentDefId));
+        AgentDefinitionEntity def = accessGuard.require(agentDefId, me, Tier.RUN);
         Long effectiveModelId = req.overrideModelProviderId() != null
                 ? req.overrideModelProviderId()
                 : def.getDefaultModelProviderId();
@@ -65,8 +69,7 @@ public class ChatService {
         // spec §12.14 — capture loginId BEFORE Flux.defer (sa-token context gone by inner subscribe)
         String me = StpUtil.getLoginIdAsString();
         return reactor.core.publisher.Flux.defer(() -> {
-            AgentDefinitionEntity def = agentRepo.findByIdAndOwnerId(agentDefId, me)
-                    .orElseThrow(() -> new NotFoundException("agent not found: " + agentDefId));
+            AgentDefinitionEntity def = accessGuard.require(agentDefId, me, Tier.RUN);
             Long effectiveModelId = req.overrideModelProviderId() != null
                     ? req.overrideModelProviderId()
                     : def.getDefaultModelProviderId();

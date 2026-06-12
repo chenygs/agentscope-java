@@ -2,8 +2,8 @@ package io.agentscope.builder.saton.skill;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
-import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
-import io.agentscope.builder.saton.common.error.NotFoundException;
+import io.agentscope.builder.saton.agent.AgentAccessGuard;
+import io.agentscope.builder.saton.agent.Tier;
 import io.agentscope.builder.saton.skill.dto.InstallFromRepoReq;
 import io.agentscope.builder.saton.skill.dto.MarketplaceInstallReq;
 import io.agentscope.builder.saton.skill.dto.WorkspaceSkillVO;
@@ -18,12 +18,12 @@ import java.util.List;
 public class AgentSkillsController {
 
     private final AgentSkillService skillService;
-    private final AgentDefinitionRepository agentRepo;
+    private final AgentAccessGuard accessGuard;
 
     public AgentSkillsController(AgentSkillService skillService,
-                                  AgentDefinitionRepository agentRepo) {
+                                  AgentAccessGuard accessGuard) {
         this.skillService = skillService;
-        this.agentRepo = agentRepo;
+        this.accessGuard = accessGuard;
     }
 
     @GetMapping("/workspace")
@@ -31,7 +31,7 @@ public class AgentSkillsController {
             @PathVariable("agentId") Long agentDefId, ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
-            assertOwns(agentDefId, me);
+            accessGuard.require(agentDefId, me, Tier.RUN);
             return skillService.listWorkspaceSkills(me, agentDefId);
         });
     }
@@ -43,7 +43,7 @@ public class AgentSkillsController {
             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
-            assertOwns(agentDefId, me);
+            accessGuard.require(agentDefId, me, Tier.EDIT);
             skillService.deleteWorkspaceSkill(me, agentDefId, name);
             return null;
         }).then(Mono.empty());
@@ -56,7 +56,7 @@ public class AgentSkillsController {
             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
-            assertOwns(agentDefId, me);
+            accessGuard.require(agentDefId, me, Tier.RUN);
             return skillService.installFromRepository(me, agentDefId, req);
         });
     }
@@ -68,15 +68,9 @@ public class AgentSkillsController {
             ServerWebExchange exchange) {
         return inSaContext(exchange, () -> {
             String me = StpUtil.getLoginIdAsString();
-            assertOwns(agentDefId, me);
+            accessGuard.require(agentDefId, me, Tier.RUN);
             return skillService.installFromMarketplace(me, agentDefId, req);
         });
-    }
-
-    private void assertOwns(Long agentDefId, String userId) {
-        if (!agentRepo.existsByIdAndOwnerId(agentDefId, userId)) {
-            throw new NotFoundException("agent not found: " + agentDefId);
-        }
     }
 
     private <T> Mono<T> inSaContext(ServerWebExchange exchange,
