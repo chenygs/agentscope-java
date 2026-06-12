@@ -43,10 +43,10 @@ import java.util.List;
  * <p>@Lazy on AgentDefinitionRepository + ModelProviderRepository 避免 Spring 启动期
  * DI 死循环（orchestrator → resolver → AgentService → orchestrator 之类）。
  *
- * <p>Spec §12.18: HarnessAgent default middlewares (HarnessSkillMiddleware +
- * WorkspaceContextMiddleware) call {@code Mono.block()} on the Netty event loop;
- * incompatible with WebFlux. Disable via {@code .disableDynamicSkills()
- * .disableWorkspaceContext()} until upstream is fixed.
+ * <p>MemoryMaintenanceMiddleware.doOnComplete() calls {@code consolidator.consolidate().block()}
+ * which deadlocks on the Netty event-loop. Suppressed via {@code .disableMemoryHooks()} until
+ * upstream switches to a non-blocking consolidation API. All other default middlewares
+ * (WorkspaceContextMiddleware, HarnessSkillMiddleware, etc.) are safe to keep enabled.
  */
 @Slf4j
 @Component
@@ -124,9 +124,10 @@ public class AgentBuildOrchestrator {
                 .stateStore(stateStore)
                 .defaultSessionId("agent_" + def.getId() + "_default")
                 .workspace(workspace)
-                // spec §12.18: WebFlux + HarnessAgent middleware Mono.block() workaround
-                .disableDynamicSkills()
-                .disableWorkspaceContext();
+                // MemoryMaintenanceMiddleware.doOnComplete() calls consolidator.consolidate().block()
+                // which deadlocks on the Netty event-loop. Suppress memory hooks until upstream
+                // switches to a non-blocking consolidation API.
+                .disableMemoryHooks();
 
         if (!skillRepos.isEmpty()) {
             b.skillRepositories(skillRepos);

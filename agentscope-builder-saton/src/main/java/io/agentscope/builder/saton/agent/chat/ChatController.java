@@ -42,8 +42,11 @@ public class ChatController {
             stream(@PathVariable("id") Long id,
                    @RequestBody ChatSendReq req,
                    ServerWebExchange exchange) {
-        // Bind sa-token context for the Flux.defer's resolve() call below (it calls StpUtil).
-        // Because defer subscribes lazily, this binding must apply on subscribe.
+        // subscribeOn(boundedElastic) is required because ReActAgent internally calls
+        // Mono.block() in applySystemPromptMiddlewares() and MemoryMaintenanceMiddleware's
+        // doOnComplete(). Running on the Netty event-loop would deadlock.
+        // SaReactorSyncHolder.setContext(exchange) MUST be inside the lambda (executes on
+        // the boundedElastic thread) so the ThreadLocal binding lives where StpUtil is called.
         return reactor.core.publisher.Flux.defer(() -> {
             SaReactorSyncHolder.setContext(exchange);
             try {
@@ -51,7 +54,7 @@ public class ChatController {
             } finally {
                 SaReactorSyncHolder.clearContext();
             }
-        }).map(this::toSse);
+        }).subscribeOn(Schedulers.boundedElastic()).map(this::toSse);
     }
 
     private org.springframework.http.codec.ServerSentEvent<String> toSse(
