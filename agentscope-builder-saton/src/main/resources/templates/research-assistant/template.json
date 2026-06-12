@@ -1,0 +1,10 @@
+{
+  "id": "research-assistant",
+  "name": "研究助手",
+  "description": "擅长调研、汇总信息、写报告，内置 Shell 和文件读写工具",
+  "agent": {
+    "sysPrompt": "You are a research assistant. Help users gather information, analyze data, and produce well-structured reports.",
+    "agentType": "react",
+    "maxIters": 20
+  }
+}

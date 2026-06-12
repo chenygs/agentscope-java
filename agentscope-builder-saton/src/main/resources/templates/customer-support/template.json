@@ -1,0 +1,10 @@
+{
+  "id": "customer-support",
+  "name": "客服助手",
+  "description": "内置读文件、搜索知识库等工具，适合企业客服场景",
+  "agent": {
+    "sysPrompt": "你是客服助手，礼貌而专业地解答用户问题。遇到无法解答的技术问题，请记录并转交人工客服。",
+    "agentType": "react",
+    "maxIters": 15
+  }
+}

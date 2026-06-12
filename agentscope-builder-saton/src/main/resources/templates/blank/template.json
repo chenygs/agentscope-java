@@ -1,0 +1,10 @@
+{
+  "id": "blank",
+  "name": "空白 Agent",
+  "description": "从零开始配置，不含任何预设工具",
+  "agent": {
+    "sysPrompt": "You are a helpful assistant.",
+    "agentType": "react",
+    "maxIters": 10
+  }
+}
