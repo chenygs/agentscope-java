@@ -1,0 +1,28 @@
+# Build
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Local data (H2 file db, workspace)
+data/
+.agentscope/
+
+# Env
+.env
+.env.local

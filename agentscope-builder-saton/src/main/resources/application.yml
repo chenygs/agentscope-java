@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: agentscope-builder-saton
+  datasource:
+    url: jdbc:h2:file:./data/builderdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+  h2:
+    console:
+      enabled: false
+
+sa-token:
+  token-name: satoken
+  timeout: 604800            # 7 days
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: random-32
+  is-log: false
+
+app:
+  session:
+    root: ./data/sessions
+  workspace:
+    root: ./data/workspaces
