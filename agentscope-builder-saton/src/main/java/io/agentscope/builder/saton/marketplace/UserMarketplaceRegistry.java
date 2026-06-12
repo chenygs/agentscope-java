@@ -113,8 +113,24 @@ public class UserMarketplaceRegistry {
                     stringProp(props, "accessKey"),
                     null  // secretKey — optional
             );
+            case "test-stub" -> createTestStub(entity.getMarketplaceId());
             default -> throw new IllegalArgumentException("unsupported marketplace type: " + type);
         };
+    }
+
+    /**
+     * Reflectively create TestStubBuilderMarketplace (in src/test) so main code
+     * has no compile dependency on test classes.
+     */
+    private BuilderMarketplace createTestStub(String marketplaceId) {
+        try {
+            Class<?> cls = Class.forName(
+                    "io.agentscope.builder.saton.marketplace.TestStubBuilderMarketplace");
+            return (BuilderMarketplace) cls.getConstructor(String.class).newInstance(marketplaceId);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    "test-stub marketplace not available (only in test classpath)", e);
+        }
     }
 
     private static String stringProp(Map<String, Object> props, String key) {

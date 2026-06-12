@@ -54,7 +54,9 @@ public class SkillMarketplaceService {
         e.setPropsJson(ResourceCommon.mapToJson(req.props()));
         e.setCreatedAt(now);
         e.setUpdatedAt(now);
-        return SkillMarketplaceVO.maskedFrom(repo.save(e));
+        SkillMarketplaceVO result = SkillMarketplaceVO.maskedFrom(repo.save(e));
+        marketplaceRegistry.invalidate(me);
+        return result;
     }
 
     @Transactional
@@ -73,7 +75,9 @@ public class SkillMarketplaceService {
         String merged = ResourceCommon.mergeKeepMasked(incoming, e.getPropsJson());
         e.setPropsJson(merged);
         e.setUpdatedAt(System.currentTimeMillis());
-        return SkillMarketplaceVO.maskedFrom(e);
+        SkillMarketplaceVO result = SkillMarketplaceVO.maskedFrom(e);
+        marketplaceRegistry.invalidate(me);
+        return result;
     }
 
     @Transactional
@@ -83,6 +87,7 @@ public class SkillMarketplaceService {
         if (n == 0) {
             throw new NotFoundException("skill marketplace not found: " + id);
         }
+        marketplaceRegistry.invalidate(me);
     }
 
     public List<MarketSkillSummaryVO> listSkills(Long marketplaceId) {

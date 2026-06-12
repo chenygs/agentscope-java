@@ -129,8 +129,8 @@ class SkillMarketplaceFlowTest {
     @Test
     void listSkillsReturnsOk() {
 
-        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("browse-git", "git",
-                Map.of("remoteUrl", "https://example.com/repo.git"));
+        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("browse-stub", "test-stub",
+                Map.of());
         SkillMarketplaceVO created = client.post().uri("/api/skill-marketplaces")
                 .header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -149,8 +149,8 @@ class SkillMarketplaceFlowTest {
     @Test
     void getSkillNonExistentReturns404() {
 
-        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("fetch-git", "git",
-                Map.of("remoteUrl", "https://example.com/repo.git"));
+        SkillMarketplaceUpsertReq req = new SkillMarketplaceUpsertReq("fetch-stub", "test-stub",
+                Map.of());
         SkillMarketplaceVO created = client.post().uri("/api/skill-marketplaces")
                 .header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
