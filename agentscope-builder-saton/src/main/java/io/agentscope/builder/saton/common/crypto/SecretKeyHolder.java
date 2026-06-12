@@ -1,8 +1,7 @@
 package io.agentscope.builder.saton.common.crypto;
 
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -14,12 +13,11 @@ import java.util.Base64;
  * 启动期解析 AES-256 主密钥。优先从环境变量 {@code AGENTSCOPE_BUILDER_SECRET_KEY}
  * 读取 32 字节 base64；缺失时降级到固定开发密钥并打 WARN（仅 dev 用，不要在生产依赖）。
  */
+@Slf4j
 @Component
 public class SecretKeyHolder {
 
     public static final String ENV = "AGENTSCOPE_BUILDER_SECRET_KEY";
-
-    private static final Logger log = LoggerFactory.getLogger(SecretKeyHolder.class);
 
     private SecretKeySpec key;
 

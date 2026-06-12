@@ -22,7 +22,7 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class LoggingHookType implements HookType {
 
-    private static final Logger AGENT_LOG = LoggerFactory.getLogger("io.agentscope.builder.saton.agent");
+    private static final Logger AGENT_LOG = LoggerFactory.getLogger("io.agentscope.builder.saton.agent"); // custom logger name, cannot use @Slf4j
 
     @Override
     public String type() {

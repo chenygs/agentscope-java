@@ -2,8 +2,7 @@ package io.agentscope.builder.saton.session;
 
 import io.agentscope.builder.saton.session.dto.SessionVO;
 import io.agentscope.core.state.AgentStateStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,10 +25,9 @@ import java.util.stream.Stream;
  * {@code sessionId = "agent_" + agentDefId + "_" + sessionKey}（见
  * {@link io.agentscope.builder.saton.agent.chat.ChatService}）。
  */
+@Slf4j
 @Service
 public class SessionService {
-
-    private static final Logger log = LoggerFactory.getLogger(SessionService.class);
 
     private final Path root;
     @SuppressWarnings("unused") // held for parity / future use

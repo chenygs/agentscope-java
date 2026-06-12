@@ -6,8 +6,7 @@ import io.agentscope.builder.saton.marketplace.impl.NacosBuilderMarketplace;
 import io.agentscope.builder.saton.resource.marketplace.SkillMarketplaceEntity;
 import io.agentscope.builder.saton.resource.marketplace.SkillMarketplaceRepository;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
 
@@ -23,10 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * and silently skipped — the affected marketplace is unavailable but doesn't
  * block the rest.
  */
+@Slf4j
 @Component
 public class UserMarketplaceRegistry {
-
-    private static final Logger log = LoggerFactory.getLogger(UserMarketplaceRegistry.class);
 
     private final SkillMarketplaceRepository repo;
     private final ConcurrentHashMap<String, Map<String, BuilderMarketplace>> cache = new ConcurrentHashMap<>();

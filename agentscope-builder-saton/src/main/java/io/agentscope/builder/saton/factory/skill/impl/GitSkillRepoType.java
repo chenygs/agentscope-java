@@ -3,8 +3,7 @@ package io.agentscope.builder.saton.factory.skill.impl;
 import io.agentscope.builder.saton.factory.core.TypeMeta;
 import io.agentscope.builder.saton.factory.skill.SkillRepoType;
 import io.agentscope.core.skill.repository.AgentSkillRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
@@ -21,9 +20,9 @@ import java.util.Map;
  * 配置错误，500 比 400 更对。
  */
 @Component
+@Slf4j
 public class GitSkillRepoType implements SkillRepoType {
 
-    private static final Logger log = LoggerFactory.getLogger(GitSkillRepoType.class);
     private static final String GIT_REPO_CLASS = "io.agentscope.core.skill.repository.GitSkillRepository";
 
     @Override

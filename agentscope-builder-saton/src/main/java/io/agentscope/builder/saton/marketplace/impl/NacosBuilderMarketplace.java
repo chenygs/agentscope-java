@@ -3,8 +3,7 @@ package io.agentscope.builder.saton.marketplace.impl;
 import io.agentscope.builder.saton.marketplace.BuilderMarketplace;
 import io.agentscope.builder.saton.marketplace.MarketSkillContent;
 import io.agentscope.builder.saton.marketplace.MarketSkillSummary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,9 +24,8 @@ import java.util.Properties;
  *
  * <p>Missing dependency surfaces as {@link IllegalStateException} at construction time.
  */
+@Slf4j
 public class NacosBuilderMarketplace implements BuilderMarketplace {
-
-    private static final Logger log = LoggerFactory.getLogger(NacosBuilderMarketplace.class);
 
     // Fully-qualified Nacos class names (never loaded at compile time)
     private static final String CLASS_AI_MAINTAINER_FACTORY =

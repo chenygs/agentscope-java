@@ -2,6 +2,10 @@ package io.agentscope.builder.saton.agent;
 
 import jakarta.persistence.*;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Agent 配置。表 {@code agent_definition}。
  *
@@ -23,6 +27,9 @@ import jakarta.persistence.*;
                 @Index(name = "ix_agent_definition_agent_id", columnList = "agent_id")
         }
 )
+@Getter
+@Setter
+@NoArgsConstructor
 public class AgentDefinitionEntity {
 
     @Id
@@ -84,51 +91,4 @@ public class AgentDefinitionEntity {
 
     @Column(name = "updated_at", nullable = false)
     private long updatedAt;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getOwnerId() { return ownerId; }
-    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
-    public String getAgentId() { return agentId; }
-    public void setAgentId(String agentId) { this.agentId = agentId; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getSysPrompt() { return sysPrompt; }
-    public void setSysPrompt(String sysPrompt) { this.sysPrompt = sysPrompt; }
-    public String getAgentType() { return agentType; }
-    public void setAgentType(String agentType) { this.agentType = agentType; }
-    public Long getDefaultModelProviderId() { return defaultModelProviderId; }
-    public void setDefaultModelProviderId(Long defaultModelProviderId) {
-        this.defaultModelProviderId = defaultModelProviderId;
-    }
-    public Integer getMaxIters() { return maxIters; }
-    public void setMaxIters(Integer maxIters) { this.maxIters = maxIters; }
-    public String getWorkspacePath() { return workspacePath; }
-    public void setWorkspacePath(String workspacePath) { this.workspacePath = workspacePath; }
-    public String getToolSpecsJson() { return toolSpecsJson; }
-    public void setToolSpecsJson(String toolSpecsJson) { this.toolSpecsJson = toolSpecsJson; }
-    public String getSkillRefsJson() { return skillRefsJson; }
-    public void setSkillRefsJson(String skillRefsJson) { this.skillRefsJson = skillRefsJson; }
-    public String getHookSpecsJson() { return hookSpecsJson; }
-    public void setHookSpecsJson(String hookSpecsJson) { this.hookSpecsJson = hookSpecsJson; }
-    public String getSubagentRefsJson() { return subagentRefsJson; }
-    public void setSubagentRefsJson(String subagentRefsJson) { this.subagentRefsJson = subagentRefsJson; }
-    public String getSkillRepositoriesJson() { return skillRepositoriesJson; }
-    public void setSkillRepositoriesJson(String skillRepositoriesJson) {
-        this.skillRepositoriesJson = skillRepositoriesJson;
-    }
-    public String getSandboxMode() { return sandboxMode; }
-    public void setSandboxMode(String sandboxMode) { this.sandboxMode = sandboxMode; }
-    public String getSandboxScope() { return sandboxScope; }
-    public void setSandboxScope(String sandboxScope) { this.sandboxScope = sandboxScope; }
-    public String getRunAs() { return runAs; }
-    public void setRunAs(String runAs) { this.runAs = runAs; }
-    public String getForkOf() { return forkOf; }
-    public void setForkOf(String forkOf) { this.forkOf = forkOf; }
-    public long getCreatedAt() { return createdAt; }
-    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
-    public long getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
 }

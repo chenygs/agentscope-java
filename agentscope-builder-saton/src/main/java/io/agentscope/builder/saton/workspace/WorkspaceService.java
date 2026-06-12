@@ -3,8 +3,7 @@ package io.agentscope.builder.saton.workspace;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.workspace.dto.FileNodeVO;
 import io.agentscope.builder.saton.workspace.dto.WorkspaceSummaryVO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,10 +22,10 @@ import java.util.stream.Stream;
  * <p>所有路径校验通过 {@link WorkspacePathResolver} 完成；越界请求抛
  * {@link IllegalArgumentException}。
  */
+@Slf4j
 @Service
 public class WorkspaceService {
 
-    private static final Logger log = LoggerFactory.getLogger(WorkspaceService.class);
     /** 单文件最大 512 KB；超过返回截断提示(参照原 builder)。 */
     private static final int MAX_READ = 512 * 1024;
 

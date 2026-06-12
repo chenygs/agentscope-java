@@ -14,8 +14,7 @@ import io.agentscope.builder.saton.workspace.WorkspacePathResolver;
 import io.agentscope.builder.saton.workspace.WorkspaceService;
 import io.agentscope.core.skill.AgentSkill;
 import io.agentscope.core.skill.repository.AgentSkillRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
 
@@ -25,10 +24,10 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 
+@Slf4j
 @Service
 public class AgentSkillService {
 
-    private static final Logger log = LoggerFactory.getLogger(AgentSkillService.class);
     private static final String SKILLS_DIR = "skills";
 
     private final AgentDefinitionRepository agentRepo;

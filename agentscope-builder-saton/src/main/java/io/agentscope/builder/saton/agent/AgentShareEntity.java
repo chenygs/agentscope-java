@@ -7,10 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "agent_share",
        indexes = @Index(name = "ix_agent_share_grantee", columnList = "grantee_id"))
+@Getter
+@Setter
+@NoArgsConstructor
 public class AgentShareEntity {
 
     @Id
@@ -34,19 +40,4 @@ public class AgentShareEntity {
 
     @Column(name = "created_at", nullable = false)
     private long createdAt;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getAgentDefId() { return agentDefId; }
-    public void setAgentDefId(Long agentDefId) { this.agentDefId = agentDefId; }
-    public String getGranteeType() { return granteeType; }
-    public void setGranteeType(String granteeType) { this.granteeType = granteeType; }
-    public String getGranteeId() { return granteeId; }
-    public void setGranteeId(String granteeId) { this.granteeId = granteeId; }
-    public String getTier() { return tier; }
-    public void setTier(String tier) { this.tier = tier; }
-    public String getCreatedBy() { return createdBy; }
-    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public long getCreatedAt() { return createdAt; }
-    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 }

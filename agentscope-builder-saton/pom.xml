@@ -66,6 +66,13 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
+        <!-- Lombok: @Getter/@Setter on entities, @Slf4j on services -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- AgentScope core: Model / Tool / Agent / Hook / Memory abstractions -->
         <dependency>
             <groupId>io.agentscope</groupId>

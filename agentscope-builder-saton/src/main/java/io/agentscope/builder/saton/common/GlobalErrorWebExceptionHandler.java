@@ -1,8 +1,7 @@
 package io.agentscope.builder.saton.common;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,10 @@ import java.nio.charset.StandardCharsets;
  * {@code NotLoginException}, raised by {@code SaReactorFilter} before any
  * controller is reached). {@code @RestControllerAdvice} cannot see these.
  */
+@Slf4j
 @Component
 @Order(-2)
 public class GlobalErrorWebExceptionHandler implements WebExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalErrorWebExceptionHandler.class);
 
     private final ObjectMapper objectMapper;
 

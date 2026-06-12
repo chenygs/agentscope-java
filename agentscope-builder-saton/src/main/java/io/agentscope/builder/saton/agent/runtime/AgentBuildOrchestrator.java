@@ -19,8 +19,7 @@ import io.agentscope.core.skill.repository.AgentSkillRepository;
 import io.agentscope.core.state.AgentStateStore;
 import io.agentscope.core.tool.Toolkit;
 import io.agentscope.harness.agent.HarnessAgent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
@@ -49,11 +48,10 @@ import java.util.List;
  * incompatible with WebFlux. Disable via {@code .disableDynamicSkills()
  * .disableWorkspaceContext()} until upstream is fixed.
  */
+@Slf4j
 @Component
 @SuppressWarnings("deprecation") // Hook is deprecated but still used by HarnessAgent.Builder
 public class AgentBuildOrchestrator {
-
-    private static final Logger log = LoggerFactory.getLogger(AgentBuildOrchestrator.class);
 
     private final ModelFactory modelFactory;
     private final ToolFactory toolFactory;

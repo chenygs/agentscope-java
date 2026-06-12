@@ -3,8 +3,7 @@ package io.agentscope.builder.saton.marketplace.impl;
 import io.agentscope.builder.saton.marketplace.BuilderMarketplace;
 import io.agentscope.builder.saton.marketplace.MarketSkillContent;
 import io.agentscope.builder.saton.marketplace.MarketSkillSummary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -19,9 +18,9 @@ import java.util.Map;
  *
  * <p>Missing dependency surfaces as {@link IllegalStateException} at construction time.
  */
+@Slf4j
 public class GitBuilderMarketplace implements BuilderMarketplace {
 
-    private static final Logger log = LoggerFactory.getLogger(GitBuilderMarketplace.class);
     private static final String GIT_REPO_CLASS = "io.agentscope.core.skill.repository.GitSkillRepository";
 
     private final String id;

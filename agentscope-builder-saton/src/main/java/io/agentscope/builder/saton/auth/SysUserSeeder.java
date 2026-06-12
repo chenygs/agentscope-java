@@ -1,15 +1,13 @@
 package io.agentscope.builder.saton.auth;
 
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class SysUserSeeder {
-
-    private static final Logger log = LoggerFactory.getLogger(SysUserSeeder.class);
 
     private final SysUserRepository repo;
     private final PasswordEncoder encoder;

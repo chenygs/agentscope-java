@@ -2,6 +2,9 @@ package io.agentscope.builder.saton.resource.mcp;
 
 import io.agentscope.builder.saton.common.crypto.EncryptedJsonConverter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -11,6 +14,9 @@ import jakarta.persistence.*;
                 columnNames = {"owner_id", "name"}),
         indexes = @Index(name = "ix_mcp_server_owner", columnList = "owner_id")
 )
+@Getter
+@Setter
+@NoArgsConstructor
 public class McpServerEntity {
 
     @Id
@@ -38,25 +44,4 @@ public class McpServerEntity {
 
     @Column(name = "updated_at", nullable = false)
     private long updatedAt;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getOwnerId() { return ownerId; }
-    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
-    public String getPropsJson() { return propsJson; }
-    public void setPropsJson(String propsJson) { this.propsJson = propsJson; }
-
-    public long getCreatedAt() { return createdAt; }
-    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
-
-    public long getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
 }

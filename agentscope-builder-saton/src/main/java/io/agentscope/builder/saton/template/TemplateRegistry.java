@@ -3,8 +3,7 @@ package io.agentscope.builder.saton.template;
 import io.agentscope.builder.saton.common.json.JsonUtil;
 import io.agentscope.builder.saton.template.dto.TemplateVO;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -12,10 +11,10 @@ import tools.jackson.core.type.TypeReference;
 
 import java.util.*;
 
+@Slf4j
 @Component
 public class TemplateRegistry {
 
-    private static final Logger log = LoggerFactory.getLogger(TemplateRegistry.class);
     private static final String LOCATION = "classpath:templates/*/template.json";
 
     private final List<TemplateVO> templates = new ArrayList<>();

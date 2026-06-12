@@ -6,8 +6,7 @@ import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
 import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
 import io.agentscope.harness.agent.HarnessAgent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -21,10 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * （HarnessAgent 需要 workspace 路径，路径取决于 ownerId）；cache key 仍是 (defId, modelId)，
  * 因为 agent 本身已经隐含 ownership。
  */
+@Slf4j
 @Component
 public class AgentRuntimeResolver {
-
-    private static final Logger log = LoggerFactory.getLogger(AgentRuntimeResolver.class);
 
     private final AgentDefinitionRepository agentRepo;
     private final ModelProviderRepository modelRepo;

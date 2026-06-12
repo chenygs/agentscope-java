@@ -6,8 +6,7 @@ import io.agentscope.builder.saton.factory.hook.HookType;
 import io.agentscope.core.hook.Hook;
 import io.agentscope.core.hook.HookEvent;
 import io.agentscope.core.hook.PostCallEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -27,9 +26,9 @@ import java.util.Map;
  */
 @Component
 @SuppressWarnings("deprecation")
+@Slf4j
 public class AuditJsonlHookType implements HookType {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditJsonlHookType.class);
     private static final String DEFAULT_LOG_DIR = "activity";
     private static final String JSONL_FILE = "activity.jsonl";
 
