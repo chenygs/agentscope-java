@@ -55,9 +55,9 @@ public class AgentDefinitionEntity {
     @Column(name = "sys_prompt")
     private String sysPrompt;
 
-    /** "react"（M4 默认）/ "harness"（M6+）。 */
+    @Enumerated(EnumType.STRING)
     @Column(name = "agent_type", length = 50, nullable = false)
-    private String agentType;
+    private AgentType agentType;
 
     @Column(name = "default_model_provider_id", nullable = false)
     private Long defaultModelProviderId;

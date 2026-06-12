@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -51,7 +52,7 @@ class AgentDefinitionRepositoryTest {
         e.setAgentId(agentId);
         e.setName(agentId);
         e.setSysPrompt("you are a helpful assistant");
-        e.setAgentType("react");
+        e.setAgentType(AgentType.REACT);
         e.setDefaultModelProviderId(7L);
         e.setMaxIters(10);
         long now = System.currentTimeMillis();

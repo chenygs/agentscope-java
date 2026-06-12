@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.runtime;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
@@ -36,7 +37,7 @@ class SubagentTreeTest {
         child.setAgentId("child-" + System.nanoTime());
         child.setName("child");
         child.setSysPrompt("I am child");
-        child.setAgentType("react");
+        child.setAgentType(AgentType.REACT);
         child.setDefaultModelProviderId(model.getId());
         child.setMaxIters(3);
         child.setCreatedAt(System.currentTimeMillis());
@@ -48,7 +49,7 @@ class SubagentTreeTest {
         parent.setAgentId("parent-" + System.nanoTime());
         parent.setName("parent");
         parent.setSysPrompt("I am parent");
-        parent.setAgentType("react");
+        parent.setAgentType(AgentType.REACT);
         parent.setDefaultModelProviderId(model.getId());
         parent.setMaxIters(3);
         parent.setSubagentRefsJson("[\"" + child.getAgentId() + "\"]");

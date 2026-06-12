@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.dto;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.HookSpec;
 import io.agentscope.builder.saton.agent.SkillRepoSpec;
 import io.agentscope.builder.saton.agent.ToolSpec;
@@ -16,7 +17,7 @@ public record AgentUpsertReq(String agentId,
                              String name,
                              String description,
                              String sysPrompt,
-                             String agentType,
+                             AgentType agentType,
                              Long defaultModelProviderId,
                              Integer maxIters,
                              List<ToolSpec> toolSpecs,
@@ -29,7 +30,7 @@ public record AgentUpsertReq(String agentId,
                           String name,
                           String description,
                           String sysPrompt,
-                          String agentType,
+                          AgentType agentType,
                           Long defaultModelProviderId,
                           Integer maxIters,
                           List<ToolSpec> toolSpecs) {

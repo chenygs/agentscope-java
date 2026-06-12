@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.workspace;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
@@ -50,7 +51,7 @@ class WorkspaceFlowTest {
                 .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         "ws-agent-" + System.nanoTime(),
-                        "ws", null, "hi", "react", mp.id(), 3, null))
+                        "ws", null, "hi", AgentType.REACT, mp.id(), 3, null))
                 .exchange().expectStatus().isOk()
                 .expectBody(AgentVO.class).returnResult().getResponseBody();
         agentId = ag.id();

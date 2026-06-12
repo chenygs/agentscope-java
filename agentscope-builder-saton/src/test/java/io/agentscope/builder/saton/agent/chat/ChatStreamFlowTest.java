@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.chat;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
@@ -66,7 +67,7 @@ class ChatStreamFlowTest {
                 .bodyValue(new AgentUpsertReq(
                         "chat-stream-agent-" + System.nanoTime(),
                         "stream agent", "test", "you are helpful",
-                        "react", modelId, 3, null))
+                        AgentType.REACT, modelId, 3, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)
@@ -133,7 +134,7 @@ class ChatStreamFlowTest {
                 .bodyValue(new AgentUpsertReq(
                         "stream-tool-agent-" + System.nanoTime(),
                         "stream tool agent", null, "you are helpful",
-                        "react", modelId, 3,
+                        AgentType.REACT, modelId, 3,
                         java.util.List.of(new io.agentscope.builder.saton.agent.ToolSpec(
                                 "tool-stub", java.util.Map.of()))))
                 .exchange()

@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.skill;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
@@ -69,7 +70,7 @@ class AgentSkillsFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         "skill-flow-agent-" + System.nanoTime(), "test", null,
-                        "you are helpful", "react", modelId, 3, null))
+                        "you are helpful", AgentType.REACT, modelId, 3, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)

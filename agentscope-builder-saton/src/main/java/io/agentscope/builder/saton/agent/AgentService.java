@@ -62,7 +62,7 @@ public class AgentService {
         e.setName(req.name() != null ? req.name() : req.agentId());
         e.setDescription(req.description());
         e.setSysPrompt(req.sysPrompt());
-        e.setAgentType(req.agentType() != null ? req.agentType() : "react");
+        e.setAgentType(req.agentType() != null ? req.agentType() : AgentType.REACT);
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));
@@ -88,7 +88,7 @@ public class AgentService {
         e.setName(req.name() != null ? req.name() : req.agentId());
         e.setDescription(req.description());
         e.setSysPrompt(req.sysPrompt());
-        e.setAgentType(req.agentType() != null ? req.agentType() : "react");
+        e.setAgentType(req.agentType() != null ? req.agentType() : AgentType.REACT);
         e.setDefaultModelProviderId(req.defaultModelProviderId());
         e.setMaxIters(req.maxIters() != null ? req.maxIters() : 10);
         e.setToolSpecsJson(serializeToolSpecs(req.toolSpecs()));

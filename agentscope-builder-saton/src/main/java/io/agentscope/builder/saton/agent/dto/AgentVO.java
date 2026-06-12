@@ -1,6 +1,7 @@
 package io.agentscope.builder.saton.agent.dto;
 
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.HookSpec;
 import io.agentscope.builder.saton.agent.SkillRepoSpec;
 import io.agentscope.builder.saton.agent.ToolSpec;
@@ -15,7 +16,7 @@ public record AgentVO(Long id,
                       String name,
                       String description,
                       String sysPrompt,
-                      String agentType,
+                      AgentType agentType,
                       Long defaultModelProviderId,
                       Integer maxIters,
                       List<ToolSpec> toolSpecs,

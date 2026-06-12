@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,7 +49,7 @@ class AgentAclServiceTest {
         a.setOwnerId(ownerId);
         a.setAgentId("agent-" + ownerId);
         a.setName("Test Agent for " + ownerId);
-        a.setAgentType("react");
+        a.setAgentType(AgentType.REACT);
         a.setDefaultModelProviderId(1L);
         a.setMaxIters(10);
         a.setSysPrompt("test");

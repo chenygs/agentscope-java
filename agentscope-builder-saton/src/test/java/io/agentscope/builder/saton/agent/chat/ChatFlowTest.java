@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.chat;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendResp;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
@@ -64,7 +65,7 @@ class ChatFlowTest {
                 .bodyValue(new AgentUpsertReq(
                         "chat-agent-" + System.nanoTime(),
                         "chat agent", "test", "you are helpful",
-                        "react", modelId, 3, null))
+                        AgentType.REACT, modelId, 3, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)

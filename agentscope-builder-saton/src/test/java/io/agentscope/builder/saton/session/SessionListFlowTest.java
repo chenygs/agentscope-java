@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.session;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.chat.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
@@ -52,7 +53,7 @@ class SessionListFlowTest {
                 .header("satoken", token).contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         "session-list-agent-" + System.nanoTime(),
-                        "list", null, "hi", "react", mp.id(), 3, null))
+                        "list", null, "hi", AgentType.REACT, mp.id(), 3, null))
                 .exchange().expectStatus().isOk()
                 .expectBody(AgentVO.class).returnResult().getResponseBody();
         agentId = ag.id();

@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.dto.AgentShareUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentShareVO;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
@@ -72,7 +73,7 @@ class AgentFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         agentBizId, "My Agent", "test", "you are helpful",
-                        "react", modelId, 5, null))
+                        AgentType.REACT, modelId, 5, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)
@@ -109,7 +110,7 @@ class AgentFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(
                         agentBizId, "Renamed", "x", "you are now strict",
-                        "react", modelId, 8, null))
+                        AgentType.REACT, modelId, 8, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)
@@ -137,12 +138,12 @@ class AgentFlowTest {
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(dupId, null, null, null,
-                        "react", modelId, null, null))
+                        AgentType.REACT, modelId, null, null))
                 .exchange().expectStatus().isOk();
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(dupId, null, null, null,
-                        "react", modelId, null, null))
+                        AgentType.REACT, modelId, null, null))
                 .exchange().expectStatus().is4xxClientError();   // 409
     }
 
@@ -151,7 +152,7 @@ class AgentFlowTest {
         client.post().uri("/api/agents").header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq("bad-agent-" + System.nanoTime(), null, null, null,
-                        "react", 999999L, null, null))
+                        AgentType.REACT, 999999L, null, null))
                 .exchange().expectStatus().isNotFound();
     }
 
@@ -169,7 +170,7 @@ class AgentFlowTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new io.agentscope.builder.saton.agent.dto.AgentUpsertReq(
                         agentBizId, "T", null, "you are helpful",
-                        "react", modelId, 3,
+                        AgentType.REACT, modelId, 3,
                         java.util.List.of(
                                 new io.agentscope.builder.saton.agent.ToolSpec("read-file", java.util.Map.of()),
                                 new io.agentscope.builder.saton.agent.ToolSpec("shell-cmd",
@@ -310,7 +311,7 @@ class AgentFlowTest {
                 .header("satoken", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new AgentUpsertReq(agentId, "Test", null, "prompt",
-                        "react", modelId, 10, null))
+                        AgentType.REACT, modelId, 10, null))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AgentVO.class)

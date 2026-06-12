@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.runtime;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
@@ -38,7 +39,7 @@ class AgentRuntimeResolverTest {
         AgentDefinitionEntity a = new AgentDefinitionEntity();
         a.setOwnerId("admin");
         a.setAgentId("rrt-agent-" + System.nanoTime());
-        a.setAgentType("react");
+        a.setAgentType(AgentType.REACT);
         a.setSysPrompt("hi");
         a.setDefaultModelProviderId(modelId);
         a.setMaxIters(5);

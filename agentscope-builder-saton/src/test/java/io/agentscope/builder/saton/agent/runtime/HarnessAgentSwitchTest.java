@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.runtime;
 
+import io.agentscope.builder.saton.agent.AgentType;
 import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.resource.model.ModelProviderEntity;
 import io.agentscope.harness.agent.HarnessAgent;
@@ -21,7 +22,7 @@ class HarnessAgentSwitchTest {
         def.setAgentId("switch-test-" + System.nanoTime());
         def.setName("switch");
         def.setSysPrompt("hi");
-        def.setAgentType("react");
+        def.setAgentType(AgentType.REACT);
         def.setMaxIters(3);
 
         ModelProviderEntity model = new ModelProviderEntity();
