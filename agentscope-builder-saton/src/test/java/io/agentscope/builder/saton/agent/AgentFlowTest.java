@@ -1,7 +1,10 @@
 package io.agentscope.builder.saton.agent;
 
+import io.agentscope.builder.saton.agent.dto.AgentShareUpsertReq;
+import io.agentscope.builder.saton.agent.dto.AgentShareVO;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
+import io.agentscope.builder.saton.agent.dto.CloneReq;
 import io.agentscope.builder.saton.auth.dto.LoginRequest;
 import io.agentscope.builder.saton.auth.dto.LoginResponse;
 import io.agentscope.builder.saton.resource.model.dto.ModelProviderUpsertReq;
@@ -190,5 +193,127 @@ class AgentFlowTest {
                 .returnResult().getResponseBody();
         assertNotNull(got);
         assertEquals(2, got.toolSpecs().size());
+    }
+
+    // -- Share tests --
+
+    @Test
+    void createShareSuccess() {
+        AgentVO agent = createAgent("share-agent-" + System.nanoTime());
+
+        AgentShareVO share = client.post().uri("/api/agents/" + agent.id() + "/shares")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new AgentShareUpsertReq("user2", "RUN"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AgentShareVO.class)
+                .returnResult().getResponseBody();
+        assertNotNull(share);
+        assertEquals("user2", share.granteeId());
+        assertEquals("RUN", share.tier());
+    }
+
+    @Test
+    void listSharesReturnsShares() {
+        AgentVO agent = createAgent("share-list-agent-" + System.nanoTime());
+
+        // Create a share first
+        client.post().uri("/api/agents/" + agent.id() + "/shares")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new AgentShareUpsertReq("user3", "CLONE"))
+                .exchange()
+                .expectStatus().isOk();
+
+        // List shares
+        List<AgentShareVO> shares = client.get().uri("/api/agents/" + agent.id() + "/shares")
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<AgentShareVO>>() {})
+                .returnResult().getResponseBody();
+        assertNotNull(shares);
+        assertFalse(shares.isEmpty());
+    }
+
+    @Test
+    void deleteShareRemovesShare() {
+        AgentVO agent = createAgent("share-del-agent-" + System.nanoTime());
+
+        AgentShareVO share = client.post().uri("/api/agents/" + agent.id() + "/shares")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new AgentShareUpsertReq("user4", "RUN"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AgentShareVO.class)
+                .returnResult().getResponseBody();
+        assertNotNull(share);
+
+        // Delete the share
+        client.delete().uri("/api/agents/" + agent.id() + "/shares/" + share.id())
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk();
+
+        // List should be empty now
+        List<AgentShareVO> shares = client.get().uri("/api/agents/" + agent.id() + "/shares")
+                .header("satoken", token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<AgentShareVO>>() {})
+                .returnResult().getResponseBody();
+        assertNotNull(shares);
+        assertTrue(shares.isEmpty());
+    }
+
+    // -- Clone tests --
+
+    @Test
+    void cloneCreatesNewAgent() {
+        AgentVO source = createAgent("clone-source-" + System.nanoTime());
+
+        String cloneAgentId = "clone-of-" + System.nanoTime();
+        AgentVO cloned = client.post().uri("/api/agents/" + source.id() + "/clone")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CloneReq(cloneAgentId, "Cloned Agent"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AgentVO.class)
+                .returnResult().getResponseBody();
+        assertNotNull(cloned);
+        assertNotEquals(source.id(), cloned.id());
+        assertEquals(cloneAgentId, cloned.agentId());
+        assertEquals("Cloned Agent", cloned.name());
+        assertEquals(source.sysPrompt(), cloned.sysPrompt());
+    }
+
+    @Test
+    void cloneWithDuplicateAgentIdReturns409() {
+        AgentVO source = createAgent("clone-dup-source-" + System.nanoTime());
+
+        // Try cloning with the same agentId as source
+        client.post().uri("/api/agents/" + source.id() + "/clone")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CloneReq(source.agentId(), "Dup"))
+                .exchange()
+                .expectStatus().is4xxClientError();  // 409
+    }
+
+    // -- Helper --
+
+    private AgentVO createAgent(String agentId) {
+        return client.post().uri("/api/agents")
+                .header("satoken", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new AgentUpsertReq(agentId, "Test", null, "prompt",
+                        "react", modelId, 10, null))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AgentVO.class)
+                .returnResult().getResponseBody();
     }
 }

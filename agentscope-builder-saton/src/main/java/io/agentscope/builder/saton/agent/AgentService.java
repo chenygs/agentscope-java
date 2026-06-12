@@ -1,8 +1,10 @@
 package io.agentscope.builder.saton.agent;
 
 import cn.dev33.satoken.stp.StpUtil;
+import io.agentscope.builder.saton.agent.dto.AgentShareVO;
 import io.agentscope.builder.saton.agent.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.dto.AgentVO;
+import io.agentscope.builder.saton.agent.dto.CloneReq;
 import io.agentscope.builder.saton.common.error.ConflictException;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import io.agentscope.builder.saton.resource.model.ModelProviderRepository;
@@ -18,25 +20,31 @@ public class AgentService {
     private final ModelProviderRepository modelRepo;
     private final io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver;
     private final io.agentscope.builder.saton.session.SessionService sessionService;
+    private final AgentAccessGuard accessGuard;
+    private final AgentShareRepository shareRepo;
 
     public AgentService(AgentDefinitionRepository repo,
                         ModelProviderRepository modelRepo,
                         io.agentscope.builder.saton.agent.runtime.AgentRuntimeResolver runtimeResolver,
-                        io.agentscope.builder.saton.session.SessionService sessionService) {
+                        io.agentscope.builder.saton.session.SessionService sessionService,
+                        AgentAccessGuard accessGuard,
+                        AgentShareRepository shareRepo) {
         this.repo = repo;
         this.modelRepo = modelRepo;
         this.runtimeResolver = runtimeResolver;
         this.sessionService = sessionService;
+        this.accessGuard = accessGuard;
+        this.shareRepo = shareRepo;
     }
 
     public List<AgentVO> list() {
         String me = StpUtil.getLoginIdAsString();
-        return repo.findByOwnerIdOrderByCreatedAtDesc(me).stream().map(AgentVO::from).toList();
+        return repo.findByOwnerIdOrGranteeId(me).stream().map(AgentVO::from).toList();
     }
 
     public AgentVO get(Long id) {
         String me = StpUtil.getLoginIdAsString();
-        return AgentVO.from(loadMine(id, me));
+        return AgentVO.from(accessGuard.require(id, me, Tier.RUN));
     }
 
     @Transactional
@@ -71,7 +79,7 @@ public class AgentService {
         String me = StpUtil.getLoginIdAsString();
         requireFields(req);
         requireModelOwned(req.defaultModelProviderId(), me);
-        AgentDefinitionEntity e = loadMine(id, me);
+        AgentDefinitionEntity e = accessGuard.requireOwner(id, me);
         if (!e.getAgentId().equals(req.agentId())
                 && repo.existsByOwnerIdAndAgentId(me, req.agentId())) {
             throw new ConflictException("agentId already exists: " + req.agentId());
@@ -95,17 +103,70 @@ public class AgentService {
     @Transactional
     public void delete(Long id) {
         String me = StpUtil.getLoginIdAsString();
+        accessGuard.requireOwner(id, me);
         long n = repo.deleteByIdAndOwnerId(id, me);
         if (n == 0) {
             throw new NotFoundException("agent not found: " + id);
         }
+        shareRepo.deleteByAgentDefId(id);
         runtimeResolver.invalidateByAgent(id);
         sessionService.purgeAgent(me, id);
     }
 
-    private AgentDefinitionEntity loadMine(Long id, String me) {
-        return repo.findByIdAndOwnerId(id, me)
-                .orElseThrow(() -> new NotFoundException("agent not found: " + id));
+    @Transactional
+    public void deleteShare(Long agentDefId, Long shareId) {
+        long n = shareRepo.deleteByIdAndAgentDefId(shareId, agentDefId);
+        if (n == 0) throw new NotFoundException("share not found: " + shareId);
+        runtimeResolver.invalidateByAgent(agentDefId);
+    }
+
+    @Transactional
+    public AgentShareVO createShare(Long agentDefId, String granteeId, String tier, String createdBy) {
+        Tier.valueOf(tier); // validates tier value
+        long now = System.currentTimeMillis();
+        AgentShareEntity e = new AgentShareEntity();
+        e.setAgentDefId(agentDefId);
+        e.setGranteeType("USER");
+        e.setGranteeId(granteeId);
+        e.setTier(tier);
+        e.setCreatedBy(createdBy);
+        e.setCreatedAt(now);
+        AgentShareVO result = AgentShareVO.from(shareRepo.save(e));
+        runtimeResolver.invalidateByAgent(agentDefId);
+        return result;
+    }
+
+    @Transactional
+    public AgentVO clone(Long sourceId, CloneReq req, String ownerId) {
+        AgentDefinitionEntity source = repo.findById(sourceId)
+                .orElseThrow(() -> new NotFoundException("source agent not found: " + sourceId));
+
+        if (req.newAgentId() == null || req.newAgentId().isBlank()) {
+            throw new IllegalArgumentException("newAgentId required");
+        }
+        if (repo.existsByOwnerIdAndAgentId(ownerId, req.newAgentId())) {
+            throw new ConflictException("agentId already exists: " + req.newAgentId());
+        }
+
+        long now = System.currentTimeMillis();
+        AgentDefinitionEntity clone = new AgentDefinitionEntity();
+        clone.setOwnerId(ownerId);
+        clone.setAgentId(req.newAgentId());
+        clone.setName(req.name() != null ? req.name() : source.getName());
+        clone.setDescription(source.getDescription());
+        clone.setSysPrompt(source.getSysPrompt());
+        clone.setAgentType(source.getAgentType());
+        clone.setDefaultModelProviderId(source.getDefaultModelProviderId());
+        clone.setMaxIters(source.getMaxIters());
+        clone.setToolSpecsJson(source.getToolSpecsJson());
+        clone.setSkillRepositoriesJson(source.getSkillRepositoriesJson());
+        clone.setHookSpecsJson(source.getHookSpecsJson());
+        clone.setSubagentRefsJson(source.getSubagentRefsJson());
+        clone.setForkOf(source.getAgentId());
+        clone.setCreatedAt(now);
+        clone.setUpdatedAt(now);
+
+        return AgentVO.from(repo.save(clone));
     }
 
     private void requireFields(AgentUpsertReq req) {
