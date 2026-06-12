@@ -26,6 +26,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@SuppressWarnings("deprecation") // AgentSkill deprecated in core but still returned by AgentSkillRepository
 public class AgentSkillService {
 
     private static final String SKILLS_DIR = "skills";
