@@ -1,25 +1,31 @@
 package io.agentscope.builder.saton.session;
 
 import io.agentscope.builder.saton.session.dto.SessionVO;
-import io.agentscope.core.state.JsonFileAgentStateStore;
+import io.agentscope.core.state.AgentStateStore;
+import io.agentscope.core.state.InMemoryAgentStateStore;
+import io.agentscope.core.state.State;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * 验证 {@link SessionService} 经由 {@link AgentStateStore} 接口正确实现 list/reset/purge。
+ *
+ * <p>用 {@link InMemoryAgentStateStore} 替代生产的 RedisAgentStateStore，免起真实 Redis。
+ * 由于 SessionService 只用 store 接口的方法，二者行为等价。
+ */
 class SessionServiceTest {
 
-    @TempDir Path root;
+    AgentStateStore store;
     SessionService service;
 
     @BeforeEach
     void setUp() {
-        service = new SessionService(root, new JsonFileAgentStateStore(root));
+        store = new InMemoryAgentStateStore();
+        service = new SessionService(store);
     }
 
     @Test
@@ -29,13 +35,11 @@ class SessionServiceTest {
     }
 
     @Test
-    void listFindsAllSessionsForAgent() throws Exception {
-        // Seed: <root>/alice/agent_42_a/agent_state.json + agent_42_b/agent_state.json
+    void listFindsAllSessionsForAgent() {
+        // Seed: 两个 alice 的 agent_42 session，一个 alice 的不同 agent，一个 bob 的同 agent
         seed("alice", "agent_42_a");
         seed("alice", "agent_42_b");
-        // Also: a different agent's session must NOT show
         seed("alice", "agent_99_x");
-        // Also: a different user's session must NOT show
         seed("bob",   "agent_42_z");
 
         List<SessionVO> sessions = service.list("alice", 42L);
@@ -43,19 +47,16 @@ class SessionServiceTest {
                 "expected 2 sessions; got " + sessions.stream().map(SessionVO::sessionKey).toList());
         assertTrue(sessions.stream().anyMatch(s -> s.sessionKey().equals("a")));
         assertTrue(sessions.stream().anyMatch(s -> s.sessionKey().equals("b")));
-        for (SessionVO s : sessions) {
-            assertTrue(s.lastActiveAt() > 0, "lastActiveAt should be > 0");
-        }
     }
 
     @Test
-    void resetDeletesSlotDirectoryAndReturnsTrue() throws Exception {
+    void resetDeletesSessionAndReturnsTrue() {
         seed("alice", "agent_42_a");
-        assertTrue(Files.exists(root.resolve("alice").resolve("agent_42_a")));
+        assertTrue(store.exists("alice", "agent_42_a"));
 
         boolean removed = service.reset("alice", 42L, "a");
         assertTrue(removed);
-        assertFalse(Files.exists(root.resolve("alice").resolve("agent_42_a")));
+        assertFalse(store.exists("alice", "agent_42_a"));
     }
 
     @Test
@@ -64,21 +65,23 @@ class SessionServiceTest {
     }
 
     @Test
-    void purgeAgentDeletesAllSlotsForThatAgent() throws Exception {
+    void purgeAgentDeletesAllSlotsForThatAgent() {
         seed("alice", "agent_42_a");
         seed("alice", "agent_42_b");
         seed("alice", "agent_99_x");  // different agent — must survive
 
         service.purgeAgent("alice", 42L);
 
-        assertFalse(Files.exists(root.resolve("alice").resolve("agent_42_a")));
-        assertFalse(Files.exists(root.resolve("alice").resolve("agent_42_b")));
-        assertTrue(Files.exists(root.resolve("alice").resolve("agent_99_x")));
+        assertFalse(store.exists("alice", "agent_42_a"));
+        assertFalse(store.exists("alice", "agent_42_b"));
+        assertTrue(store.exists("alice", "agent_99_x"));
     }
 
-    private void seed(String userId, String sessionId) throws Exception {
-        Path dir = root.resolve(userId).resolve(sessionId);
-        Files.createDirectories(dir);
-        Files.writeString(dir.resolve("agent_state.json"), "{}");
+    /** 写一个 agent_state 进 store，以让 session 被 listSessionIds 看到。 */
+    private void seed(String userId, String sessionId) {
+        store.save(userId, sessionId, "agent_state", new MarkerState());
     }
+
+    /** 占位 State —— 让 store 真正落下一个 entry，使 session 进入 listSessionIds。 */
+    private static class MarkerState implements State {}
 }

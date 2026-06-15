@@ -1,27 +1,27 @@
 package io.agentscope.builder.saton.session;
 
 import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.core.state.JsonFileAgentStateStore;
-import org.springframework.beans.factory.annotation.Value;
+import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import org.redisson.api.RedissonClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 /**
- * 暴露进程级 {@link AgentStateStore}，由 ReActAgent 用作 {@code agent_state} 持久化后端。
+ * 暴露进程级 {@link AgentStateStore}，由 ReActAgent / HarnessAgent 用作
+ * {@code agent_state} 等状态的持久化后端。
  *
- * <p>根目录由 {@code app.session.root} 配置（默认 {@code ./data/sessions}）；
- * 测试 profile 通过 {@code application.yml} 覆盖到临时目录。
+ * <p>后端走 Redis（通过 Redisson）。{@link RedissonClient} 由
+ * {@code redisson-spring-boot-starter} 根据 {@code spring.data.redis.*} 自动装配。
+ *
+ * <p>Key 前缀使用 {@link RedisAgentStateStore} 默认值 {@code agentscope:session:}。
  */
 @Configuration
 public class SessionStoreConfig {
 
     @Bean
-    public AgentStateStore agentStateStore(
-            @Value("${app.session.root:./data/sessions}") String root) {
-        Path rootPath = Paths.get(root).toAbsolutePath().normalize();
-        return new JsonFileAgentStateStore(rootPath);
+    public AgentStateStore agentStateStore(RedissonClient redisson) {
+        return RedisAgentStateStore.builder()
+                .redissonClient(redisson)
+                .build();
     }
 }

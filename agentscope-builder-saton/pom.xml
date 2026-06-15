@@ -22,6 +22,9 @@
         <spring.boot.version>4.0.2</spring.boot.version>
         <sa.token.version>1.45.0</sa.token.version>
         <agentscope.version>2.0.0-RC3</agentscope.version>
+        <!-- Override BOM's redisson 4.2.0 to 4.5.0 to align with redisson-spring-boot-starter 4.5.0,
+             which is the first starter version compiled against Spring Boot 4.x. -->
+        <redisson.version>4.5.0</redisson.version>
     </properties>
 
     <dependencyManagement>
@@ -40,6 +43,14 @@
                 <version>${agentscope.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Override BOM's redisson 4.2.0 to align with redisson-spring-boot-starter 4.5.0
+                 (the first starter version compiled against Spring Boot 4.x). -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -105,6 +116,31 @@
             <groupId>io.agentscope</groupId>
             <artifactId>agentscope-extensions-skill-git-repository</artifactId>
             <version>${agentscope.version}</version>
+        </dependency>
+
+        <!-- AgentStateStore: Redis-backed implementation (走 Redisson 路径) -->
+        <dependency>
+            <groupId>io.agentscope</groupId>
+            <artifactId>agentscope-extensions-redis</artifactId>
+            <version>${agentscope.version}</version>
+            <exclusions>
+                <!-- 我们只通过 Redisson 用，排掉 jedis / lettuce 减少 classpath 噪音 -->
+                <exclusion>
+                    <groupId>redis.clients</groupId>
+                    <artifactId>jedis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Redisson Spring Boot Starter: 自动装配 RedissonClient bean，读取 spring.data.redis.* -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- Test -->
