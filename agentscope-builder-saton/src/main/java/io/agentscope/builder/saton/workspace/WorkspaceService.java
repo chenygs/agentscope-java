@@ -49,10 +49,21 @@ public class WorkspaceService {
     }
 
     public List<FileNodeVO> list(String ownerId, Long agentDefId) {
+        return listAt(ownerId, agentDefId, null);
+    }
+
+    /**
+     * 列出某个相对子目录下的第一层文件/目录。{@code subPath} 为 null 或空时等价于根目录。
+     * 越界 / 不存在 / 不是目录 → 抛 {@link IllegalArgumentException} 或返回空列表。
+     */
+    public List<FileNodeVO> listAt(String ownerId, Long agentDefId, String subPath) {
         Path root = resolver.agentRoot(ownerId, agentDefId);
-        if (!Files.isDirectory(root)) return List.of();
+        Path target = (subPath == null || subPath.isBlank())
+                ? root
+                : resolver.resolve(ownerId, agentDefId, subPath);
+        if (!Files.isDirectory(target)) return List.of();
         List<FileNodeVO> out = new ArrayList<>();
-        try (Stream<Path> children = Files.list(root)) {
+        try (Stream<Path> children = Files.list(target)) {
             children.sorted(Comparator.comparing(p -> p.getFileName().toString()))
                     .forEach(p -> out.add(toNode(p, root)));
         } catch (IOException e) {

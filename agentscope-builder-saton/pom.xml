@@ -69,6 +69,23 @@
             <version>${sa.token.version}</version>
         </dependency>
 
+        <!-- sa-token Redis 持久层(官方 RedisTemplate 实现,版本与 core 严格对齐 1.45.0)。
+             不接 Redis 时,sa-token 用进程内 Map 存 token,服务一重启所有人 401。
+             这里用 RedisTemplate 而不是 sa-token-redisson-jackson —— 后者最新只发到 1.40.0,
+             1.45 给 SaTokenDao 接口加了新 abstract 方法,1.40 的实现类跑起来会 AbstractMethodError。 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+            <version>${sa.token.version}</version>
+        </dependency>
+
+        <!-- 上面 sa-token-redis-template 需要 RedisConnectionFactory 注入,这个 starter 提供 Lettuce 客户端
+             + 自动装配。RedissonClient 仍然存在,二者各自独立连接 Redis。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- JPA + H2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -124,14 +141,12 @@
             <artifactId>agentscope-extensions-redis</artifactId>
             <version>${agentscope.version}</version>
             <exclusions>
-                <!-- 我们只通过 Redisson 用，排掉 jedis / lettuce 减少 classpath 噪音 -->
+                <!-- 我们只通过 Redisson 用,排掉 jedis 减少 classpath 噪音。
+                     lettuce 现在被 sa-token-redis-template 经 spring-boot-starter-data-redis 用,
+                     不能再排。 -->
                 <exclusion>
                     <groupId>redis.clients</groupId>
                     <artifactId>jedis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.lettuce</groupId>
-                    <artifactId>lettuce-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

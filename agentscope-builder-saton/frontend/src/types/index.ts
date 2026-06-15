@@ -214,12 +214,19 @@ export interface ActivityEntry {
 }
 
 // ── Workspace ──
-export interface WorkspaceFile {
+/** 后端 FileNodeVO: type 是 "file" | "dir",size 单位 byte */
+export interface FileNode {
   name: string
   path: string
-  type: 'file' | 'directory'
-  size?: number
-  children?: WorkspaceFile[]
+  type: 'file' | 'dir'
+  size: number
+}
+
+export interface WorkspaceSummary {
+  /** 工作区绝对路径(后端 Path.toString,Windows 下含反斜杠) */
+  root: string
+  /** 文件总数,递归计 */
+  fileCount: number
 }
 
 // ── Factory response ──

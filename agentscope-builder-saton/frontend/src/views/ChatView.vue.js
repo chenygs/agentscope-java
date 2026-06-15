@@ -1,6 +1,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { NButton, NSpace, NH3, NText, NSelect, NDivider, NLayout, NLayoutSider, NLayoutContent, useDialog, useMessage, useThemeVars, } from 'naive-ui';
+import { NButton, NSpace, NH3, NText, NSelect, NDivider, NDrawer, NDrawerContent, NLayout, NLayoutSider, NLayoutContent, useDialog, useMessage, useThemeVars, } from 'naive-ui';
 import { useI18n } from 'vue-i18n';
 import { useChat } from '@/composables/useChat';
 import * as agentApi from '@/api/agent';
@@ -9,6 +9,7 @@ import * as sessionApi from '@/api/session';
 import MessageList from '@/components/chat/MessageList.vue';
 import Composer from '@/components/chat/Composer.vue';
 import SessionList from '@/components/chat/SessionList.vue';
+import WorkspacePanel from '@/components/chat/WorkspacePanel.vue';
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
@@ -20,6 +21,9 @@ const agent = ref(null);
 const models = ref([]);
 const sessions = ref([]);
 const sessionsLoading = ref(false);
+/** 工作空间抽屉开关。默认关闭,点头部按钮才滑出。 */
+const workspaceOpen = ref(false);
+const workspacePanelRef = ref(null);
 const { messages, isStreaming, isLoadingHistory, streamingText, streamingToolCalls, overrideModelId, sessionKey, send, abort, clearMessages, loadSession, newSession, } = useChat(agentId.value);
 // 拉取一次会话列表
 async function refreshSessions() {
@@ -367,6 +371,33 @@ const { default: __VLS_80 } = __VLS_76.slots;
 [t, t, overrideModelId, modelOptions, isStreaming, clearMessages,];
 var __VLS_76;
 var __VLS_77;
+let __VLS_81;
+/** @ts-ignore @type { | typeof __VLS_components.NButton | typeof __VLS_components.NButton} */
+NButton;
+// @ts-ignore
+const __VLS_82 = __VLS_asFunctionalComponent1(__VLS_81, new __VLS_81({
+    ...{ 'onClick': {} },
+    size: "small",
+}));
+const __VLS_83 = __VLS_82({
+    ...{ 'onClick': {} },
+    size: "small",
+}, ...__VLS_functionalComponentArgsRest(__VLS_82));
+let __VLS_86;
+const __VLS_87 = {
+    ...{ click: {} },
+    onClick: (...[$event]) => {
+        __VLS_ctx.workspaceOpen = true;
+        // @ts-ignore
+        [workspaceOpen,];
+    },
+};
+const { default: __VLS_88 } = __VLS_84.slots;
+(__VLS_ctx.t('chat.workspaceOpen'));
+// @ts-ignore
+[t,];
+var __VLS_84;
+var __VLS_85;
 // @ts-ignore
 [];
 var __VLS_65;
@@ -379,51 +410,105 @@ if (__VLS_ctx.isLoadingHistory) {
     (__VLS_ctx.t('chat.loadingHistory'));
 }
 else {
-    const __VLS_81 = MessageList;
+    const __VLS_89 = MessageList;
     // @ts-ignore
-    const __VLS_82 = __VLS_asFunctionalComponent1(__VLS_81, new __VLS_81({
+    const __VLS_90 = __VLS_asFunctionalComponent1(__VLS_89, new __VLS_89({
         messages: (__VLS_ctx.messages),
         isStreaming: (__VLS_ctx.isStreaming),
         streamingText: (__VLS_ctx.streamingText),
         streamingToolCalls: (__VLS_ctx.streamingToolCalls),
         ...{ class: "chat-messages" },
     }));
-    const __VLS_83 = __VLS_82({
+    const __VLS_91 = __VLS_90({
         messages: (__VLS_ctx.messages),
         isStreaming: (__VLS_ctx.isStreaming),
         streamingText: (__VLS_ctx.streamingText),
         streamingToolCalls: (__VLS_ctx.streamingToolCalls),
         ...{ class: "chat-messages" },
-    }, ...__VLS_functionalComponentArgsRest(__VLS_82));
+    }, ...__VLS_functionalComponentArgsRest(__VLS_90));
     /** @type {__VLS_StyleScopedClasses['chat-messages']} */ ;
 }
-const __VLS_86 = Composer;
+const __VLS_94 = Composer;
 // @ts-ignore
-const __VLS_87 = __VLS_asFunctionalComponent1(__VLS_86, new __VLS_86({
+const __VLS_95 = __VLS_asFunctionalComponent1(__VLS_94, new __VLS_94({
     ...{ 'onSend': {} },
     ...{ 'onAbort': {} },
     isStreaming: (__VLS_ctx.isStreaming),
 }));
-const __VLS_88 = __VLS_87({
+const __VLS_96 = __VLS_95({
     ...{ 'onSend': {} },
     ...{ 'onAbort': {} },
     isStreaming: (__VLS_ctx.isStreaming),
-}, ...__VLS_functionalComponentArgsRest(__VLS_87));
-let __VLS_91;
-const __VLS_92 = {
+}, ...__VLS_functionalComponentArgsRest(__VLS_95));
+let __VLS_99;
+const __VLS_100 = {
     ...{ send: {} },
     onSend: (__VLS_ctx.onSend),
     ...{ abort: {} },
     onAbort: (__VLS_ctx.abort),
 };
-var __VLS_89;
-var __VLS_90;
+var __VLS_97;
+var __VLS_98;
 // @ts-ignore
 [t, isStreaming, isStreaming, isLoadingHistory, themeVars, messages, streamingText, streamingToolCalls, onSend, abort,];
 var __VLS_22;
 // @ts-ignore
 [];
 var __VLS_3;
+let __VLS_101;
+/** @ts-ignore @type { | typeof __VLS_components.NDrawer | typeof __VLS_components.NDrawer} */
+NDrawer;
+// @ts-ignore
+const __VLS_102 = __VLS_asFunctionalComponent1(__VLS_101, new __VLS_101({
+    show: (__VLS_ctx.workspaceOpen),
+    width: (400),
+    placement: "right",
+    trapFocus: (false),
+    blockScroll: (false),
+}));
+const __VLS_103 = __VLS_102({
+    show: (__VLS_ctx.workspaceOpen),
+    width: (400),
+    placement: "right",
+    trapFocus: (false),
+    blockScroll: (false),
+}, ...__VLS_functionalComponentArgsRest(__VLS_102));
+const { default: __VLS_106 } = __VLS_104.slots;
+let __VLS_107;
+/** @ts-ignore @type { | typeof __VLS_components.NDrawerContent | typeof __VLS_components.NDrawerContent} */
+NDrawerContent;
+// @ts-ignore
+const __VLS_108 = __VLS_asFunctionalComponent1(__VLS_107, new __VLS_107({
+    title: (__VLS_ctx.t('chat.workspaceTitle')),
+    closable: true,
+    nativeScrollbar: (false),
+}));
+const __VLS_109 = __VLS_108({
+    title: (__VLS_ctx.t('chat.workspaceTitle')),
+    closable: true,
+    nativeScrollbar: (false),
+}, ...__VLS_functionalComponentArgsRest(__VLS_108));
+const { default: __VLS_112 } = __VLS_110.slots;
+const __VLS_113 = WorkspacePanel;
+// @ts-ignore
+const __VLS_114 = __VLS_asFunctionalComponent1(__VLS_113, new __VLS_113({
+    ref: "workspacePanelRef",
+    agentId: (__VLS_ctx.agentId),
+}));
+const __VLS_115 = __VLS_114({
+    ref: "workspacePanelRef",
+    agentId: (__VLS_ctx.agentId),
+}, ...__VLS_functionalComponentArgsRest(__VLS_114));
+var __VLS_118;
+var __VLS_116;
+// @ts-ignore
+[t, workspaceOpen, agentId,];
+var __VLS_110;
+// @ts-ignore
+[];
+var __VLS_104;
+// @ts-ignore
+var __VLS_119 = __VLS_118;
 // @ts-ignore
 [];
 const __VLS_export = (await import('vue')).defineComponent({});

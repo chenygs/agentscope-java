@@ -24,6 +24,14 @@ spring:
 
 ---
 spring:
+  # spring-data-redis(Lettuce)的连接配置 —— 给 sa-token-redis-template 用。
+  # 这是与 Redisson 各自独立的连接通道:Redisson 自己读下面的 redisson 配置块。
+  # 同一个 Redis 实例,但用不同 database 隔离,避免 sa-token 的 key 被运维误删时影响业务。
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 2
   redis:
     redisson:
       config: |

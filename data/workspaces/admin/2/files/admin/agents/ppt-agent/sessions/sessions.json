@@ -1,16 +1,8 @@
 {
   "sessions" : {
-    "agent_2_default" : {
+    "agent_2_s_02r6e8s2" : {
       "summary" : "conversation offloaded",
-      "updatedAt" : "2026-06-15T06:46:41.624504800Z"
-    },
-    "agent_2_s-16302195098300" : {
-      "summary" : "conversation offloaded",
-      "updatedAt" : "2026-06-15T06:46:55.390841800Z"
-    },
-    "agent_2_s_1ienhikl" : {
-      "summary" : "conversation offloaded",
-      "updatedAt" : "2026-06-15T08:15:29.122958800Z"
+      "updatedAt" : "2026-06-15T09:10:32.364724500Z"
     }
   },
   "version" : 1

@@ -8,6 +8,8 @@ import {
   NText,
   NSelect,
   NDivider,
+  NDrawer,
+  NDrawerContent,
   NLayout,
   NLayoutSider,
   NLayoutContent,
@@ -24,6 +26,7 @@ import type { AgentDetail, ModelProvider, Session } from '@/types'
 import MessageList from '@/components/chat/MessageList.vue'
 import Composer from '@/components/chat/Composer.vue'
 import SessionList from '@/components/chat/SessionList.vue'
+import WorkspacePanel from '@/components/chat/WorkspacePanel.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -37,6 +40,9 @@ const agent = ref<AgentDetail | null>(null)
 const models = ref<ModelProvider[]>([])
 const sessions = ref<Session[]>([])
 const sessionsLoading = ref(false)
+/** 工作空间抽屉开关。默认关闭,点头部按钮才滑出。 */
+const workspaceOpen = ref(false)
+const workspacePanelRef = ref<InstanceType<typeof WorkspacePanel> | null>(null)
 
 const {
   messages,
@@ -196,6 +202,9 @@ async function onSend(text: string) {
             <NButton size="small" @click="clearMessages" :disabled="isStreaming">
               {{ t('common.refresh') }}
             </NButton>
+            <NButton size="small" @click="workspaceOpen = true">
+              📁 {{ t('chat.workspaceOpen') }}
+            </NButton>
           </NSpace>
         </div>
 
@@ -220,6 +229,26 @@ async function onSend(text: string) {
         />
       </NLayoutContent>
     </NLayout>
+
+    <!-- 工作空间抽屉 -->
+    <NDrawer
+      v-model:show="workspaceOpen"
+      :width="400"
+      placement="right"
+      :trap-focus="false"
+      :block-scroll="false"
+    >
+      <NDrawerContent
+        :title="t('chat.workspaceTitle')"
+        closable
+        :native-scrollbar="false"
+      >
+        <WorkspacePanel
+          ref="workspacePanelRef"
+          :agent-id="agentId"
+        />
+      </NDrawerContent>
+    </NDrawer>
   </div>
 </template>
 

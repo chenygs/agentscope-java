@@ -36,10 +36,12 @@ public class WorkspaceController {
     }
 
     @GetMapping("/files")
-    public Mono<R<List<FileNodeVO>>> list(@PathVariable("id") Long id, ServerWebExchange ex) {
+    public Mono<R<List<FileNodeVO>>> list(@PathVariable("id") Long id,
+                                          @RequestParam(value = "path", required = false) String path,
+                                          ServerWebExchange ex) {
         return scoped(ex, me -> {
             requireOwn(id, me);
-            return R.okList(workspace.list(me, id));
+            return R.okList(workspace.listAt(me, id, path));
         });
     }
 

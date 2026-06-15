@@ -78,4 +78,30 @@ class WorkspaceServiceTest {
     void listReturnsEmptyForUnusedAgent() {
         assertTrue(service.list("alice", 999L).isEmpty());
     }
+
+    @Test
+    void listAtDescendsIntoSubdirectory() {
+        service.write("alice", 7L, "x.txt", "X");
+        service.write("alice", 7L, "sub/y.txt", "Y");
+        service.write("alice", 7L, "sub/nested/z.txt", "Z");
+
+        List<FileNodeVO> children = service.listAt("alice", 7L, "sub");
+        assertEquals(2, children.size());
+        // path 字段应是相对 agent root 的相对路径,而不是仅文件名
+        assertTrue(children.stream().anyMatch(n -> n.name().equals("y.txt") && n.path().equals("sub/y.txt")));
+        assertTrue(children.stream().anyMatch(n -> n.name().equals("nested") && n.type().equals("dir") && n.path().equals("sub/nested")));
+    }
+
+    @Test
+    void listAtNullPathFallsBackToRoot() {
+        service.write("alice", 7L, "a.txt", "A");
+        assertEquals(service.list("alice", 7L), service.listAt("alice", 7L, null));
+        assertEquals(service.list("alice", 7L), service.listAt("alice", 7L, ""));
+    }
+
+    @Test
+    void listAtRejectsPathTraversal() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.listAt("alice", 7L, "../escape"));
+    }
 }
