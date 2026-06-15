@@ -89,7 +89,9 @@ public class AgentBuildOrchestrator {
             }
         }
 
-        Path workspace = workspaceResolver.agentRoot(ownerId, def.getId());
+        // Harness 自己会在 workspace 下挂 agents/<id>/sessions/ 这层,我们传 user 级根 —
+        // 这样 MEMORY.md / AGENTS.md / skills/ 自然落在 <userId>/ 根下,跨 agent 共享。
+        Path workspace = workspaceResolver.userRoot(ownerId);
         try {
             Files.createDirectories(workspace);
         } catch (IOException e) {

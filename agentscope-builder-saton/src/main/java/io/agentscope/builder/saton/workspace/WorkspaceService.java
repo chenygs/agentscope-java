@@ -98,6 +98,17 @@ public class WorkspaceService {
         }
     }
 
+    /** 写 user 级共享文件(skills/ AGENTS.md MEMORY.md 等),跨 agent 共享。 */
+    public void writeUser(String ownerId, String relPath, String content) {
+        Path p = resolver.resolveUser(ownerId, relPath);
+        try {
+            Files.createDirectories(p.getParent());
+            Files.writeString(p, content == null ? "" : content, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("user-level write failed: " + relPath, e);
+        }
+    }
+
     /** Returns true if the file existed and was removed. */
     public boolean delete(String ownerId, Long agentDefId, String relPath) {
         Path p = resolver.resolve(ownerId, agentDefId, relPath);

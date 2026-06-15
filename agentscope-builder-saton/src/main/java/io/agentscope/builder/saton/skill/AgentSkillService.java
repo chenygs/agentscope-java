@@ -53,9 +53,11 @@ public class AgentSkillService {
         this.marketplaceRegistry = marketplaceRegistry;
     }
 
-    /** List skills installed in the agent's workspace skills/ directory. */
+    /** List skills installed in the user's workspace skills/ directory (跨 agent 共享). */
     public List<WorkspaceSkillVO> listWorkspaceSkills(String ownerId, Long agentDefId) {
-        Path skillsDir = workspaceResolver.agentRoot(ownerId, agentDefId).resolve(SKILLS_DIR);
+        // agentDefId 形参保留,只用于权限校验语义对齐(目前未真正校验)。
+        // 物理上 skills/ 是 user 级共享,不分 agent。
+        Path skillsDir = workspaceResolver.userRoot(ownerId).resolve(SKILLS_DIR);
         if (!Files.isDirectory(skillsDir)) return List.of();
 
         File[] dirs = skillsDir.toFile().listFiles(File::isDirectory);
@@ -100,7 +102,7 @@ public class AgentSkillService {
         }
         SkillRepoSpec spec = repos.get(req.repoIndex());
 
-        Path workspace = workspaceResolver.agentRoot(ownerId, agentDefId);
+        Path workspace = workspaceResolver.userRoot(ownerId);
         AgentSkillRepository repo = skillFactory.instantiate(spec.type(), spec.props(), workspace);
 
         AgentSkill skill = repo.getSkill(req.skillName());
@@ -113,7 +115,7 @@ public class AgentSkillService {
         validateSkillName(targetName);
 
         String skillDir = SKILLS_DIR + "/" + targetName;
-        Path skillMarkdown = workspaceResolver.resolve(ownerId, agentDefId, skillDir + "/SKILL.md");
+        Path skillMarkdown = workspaceResolver.resolveUser(ownerId, skillDir + "/SKILL.md");
         boolean exists = java.nio.file.Files.exists(skillMarkdown);
         if (exists && !Boolean.TRUE.equals(req.overwrite())) {
             throw new IllegalArgumentException("workspace skill already exists: " + targetName
@@ -124,16 +126,16 @@ public class AgentSkillService {
         if (markdown == null || markdown.isBlank()) {
             throw new IllegalStateException("repository returned empty SKILL.md for: " + req.skillName());
         }
-        workspaceService.write(ownerId, agentDefId, skillDir + "/SKILL.md", markdown);
+        workspaceService.writeUser(ownerId, skillDir + "/SKILL.md", markdown);
 
         Map<String, String> resources = skill.getResources();
         if (resources != null) {
             for (Map.Entry<String, String> entry : resources.entrySet()) {
-                workspaceService.write(ownerId, agentDefId, skillDir + "/" + entry.getKey(), entry.getValue());
+                workspaceService.writeUser(ownerId, skillDir + "/" + entry.getKey(), entry.getValue());
             }
         }
 
-        writeInstallMeta(ownerId, agentDefId, skillDir, "repository", spec.type(), skill.getName());
+        writeInstallMeta(ownerId, skillDir, "repository", spec.type(), skill.getName());
         return new WorkspaceSkillVO(targetName, skill.getDescription(), "repository", System.currentTimeMillis());
     }
 
@@ -152,27 +154,28 @@ public class AgentSkillService {
         validateSkillName(targetName);
 
         String skillDir = SKILLS_DIR + "/" + targetName;
-        Path skillMarkdown = workspaceResolver.resolve(ownerId, agentDefId, skillDir + "/SKILL.md");
+        Path skillMarkdown = workspaceResolver.resolveUser(ownerId, skillDir + "/SKILL.md");
         boolean exists = java.nio.file.Files.exists(skillMarkdown);
         if (exists && !Boolean.TRUE.equals(req.overwrite())) {
             throw new IllegalArgumentException("workspace skill already exists: " + targetName);
         }
 
-        workspaceService.write(ownerId, agentDefId, skillDir + "/SKILL.md", content.markdown());
+        workspaceService.writeUser(ownerId, skillDir + "/SKILL.md", content.markdown());
         if (content.resources() != null) {
             for (Map.Entry<String, String> entry : content.resources().entrySet()) {
-                workspaceService.write(ownerId, agentDefId, skillDir + "/" + entry.getKey(), entry.getValue());
+                workspaceService.writeUser(ownerId, skillDir + "/" + entry.getKey(), entry.getValue());
             }
         }
 
-        writeInstallMeta(ownerId, agentDefId, skillDir, "marketplace", mp.type(), content.name());
+        writeInstallMeta(ownerId, skillDir, "marketplace", mp.type(), content.name());
         return new WorkspaceSkillVO(targetName, content.description(), "marketplace", System.currentTimeMillis());
     }
 
     /** Delete a workspace skill (recursively removes the entire skill directory). */
     public void deleteWorkspaceSkill(String ownerId, Long agentDefId, String name) {
         validateSkillName(name);
-        Path skillDir = workspaceResolver.agentRoot(ownerId, agentDefId)
+        // skills/ 是 user 级共享,与 agentDefId 无关 — 形参留作未来权限校验。
+        Path skillDir = workspaceResolver.userRoot(ownerId)
                 .resolve(SKILLS_DIR).resolve(name);
         if (!java.nio.file.Files.exists(skillDir)) {
             throw new NotFoundException("workspace skill not found: " + name);
@@ -207,7 +210,8 @@ public class AgentSkillService {
                             byte[] zipData, String zipName) {
         validateSkillName(skillName);
 
-        Path workspace = workspaceResolver.agentRoot(ownerId, agentDefId);
+        // skills/ 是 user 级共享,agentDefId 形参保留。
+        Path workspace = workspaceResolver.userRoot(ownerId);
         Path skillDir = workspace.resolve(SKILLS_DIR).resolve(skillName);
         try {
             Files.createDirectories(skillDir);
@@ -263,7 +267,7 @@ public class AgentSkillService {
         }
     }
 
-    private void writeInstallMeta(String ownerId, Long agentDefId, String skillDir,
+    private void writeInstallMeta(String ownerId, String skillDir,
                                    String source, String sourceType, String originalName) {
         Map<String, Object> meta = new LinkedHashMap<>();
         meta.put("source", source);
@@ -272,7 +276,7 @@ public class AgentSkillService {
         meta.put("installedAt", Instant.now().toString());
         try {
             String json = JsonUtil.mapper().writeValueAsString(meta);
-            workspaceService.write(ownerId, agentDefId, skillDir + "/_install.meta.json", json);
+            workspaceService.writeUser(ownerId, skillDir + "/_install.meta.json", json);
         } catch (Exception e) {
             log.warn("failed to write install meta for {}", skillDir, e);
         }
