@@ -41,7 +41,7 @@ spring:
           subscriptionConnectionPoolSize: 50
           connectionMinimumIdleSize: 24
           connectionPoolSize: 64
-          database: 0
+          database: 1
           dnsMonitoringInterval: 5000
           dnsMonitoringTimes: 1
         password: null

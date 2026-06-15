@@ -1,7 +1,12 @@
 import { ref } from 'vue';
 import { streamChat } from '@/api/chat';
+import { loadHistory } from '@/api/session';
 let _msgCounter = 0;
 function nextId() { return `msg_${++_msgCounter}_${Date.now()}`; }
+/** 生成新会话 key —— 短随机串足够区分本人下的会话。 */
+function genSessionKey() {
+    return 's_' + Math.random().toString(36).slice(2, 10);
+}
 /**
  * useChat composable — manages SSE streaming state for one agent conversation.
  */
@@ -12,6 +17,8 @@ export function useChat(agentId) {
     const streamingToolCalls = ref([]);
     const overrideModelId = ref();
     const sessionKey = ref();
+    /** 是否正在加载历史消息（切换会话时显示 loading）。 */
+    const isLoadingHistory = ref(false);
     let ctrl = null;
     // Current assistant message being built (not yet in messages array until finalized)
     let currentAssistant = null;
@@ -187,9 +194,43 @@ export function useChat(agentId) {
     function clearMessages() {
         messages.value = [];
     }
+    /**
+     * 切换到指定 sessionKey 并拉取历史消息覆盖当前 messages。
+     * 不传 key 时只清空（用于"开始新会话"前的 UI 状态）。
+     */
+    async function loadSession(key) {
+        if (isStreaming.value)
+            abort();
+        sessionKey.value = key;
+        isLoadingHistory.value = true;
+        try {
+            const resp = await loadHistory(agentId, key);
+            messages.value = resp.data.data ?? [];
+        }
+        catch {
+            // 拉取失败时清空，避免残留上一会话内容
+            messages.value = [];
+        }
+        finally {
+            isLoadingHistory.value = false;
+        }
+    }
+    /**
+     * 开新会话：生成新 key、清空消息。第一次发消息时后端会自动创建对应 session。
+     * 返回新 key，调用方可立即把它选中。
+     */
+    function newSession() {
+        if (isStreaming.value)
+            abort();
+        const key = genSessionKey();
+        sessionKey.value = key;
+        messages.value = [];
+        return key;
+    }
     return {
         messages,
         isStreaming,
+        isLoadingHistory,
         streamingText,
         streamingToolCalls,
         overrideModelId,
@@ -197,5 +238,7 @@ export function useChat(agentId) {
         send,
         abort,
         clearMessages,
+        loadSession,
+        newSession,
     };
 }

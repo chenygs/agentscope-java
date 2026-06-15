@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.common.error.NotFoundException;
+import io.agentscope.builder.saton.session.dto.ChatMessageVO;
 import io.agentscope.builder.saton.session.dto.ResetResp;
 import io.agentscope.builder.saton.session.dto.SessionVO;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,22 @@ public class SessionController {
                 String me = StpUtil.getLoginIdAsString();
                 requireOwn(id, me);
                 return R.ok(new ResetResp(sessions.reset(me, id, key)));
+            } finally {
+                SaReactorSyncHolder.clearContext();
+            }
+        });
+    }
+
+    @GetMapping("/{id}/sessions/{key}/messages")
+    public Mono<R<List<ChatMessageVO>>> messages(@PathVariable("id") Long id,
+                                                 @PathVariable("key") String key,
+                                                 ServerWebExchange exchange) {
+        return Mono.fromCallable(() -> {
+            SaReactorSyncHolder.setContext(exchange);
+            try {
+                String me = StpUtil.getLoginIdAsString();
+                requireOwn(id, me);
+                return R.okList(sessions.getMessages(me, id, key));
             } finally {
                 SaReactorSyncHolder.clearContext();
             }

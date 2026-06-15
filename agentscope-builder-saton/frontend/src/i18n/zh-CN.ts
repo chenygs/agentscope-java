@@ -156,6 +156,12 @@ export default {
     shares: '分享',
     activity: '活动',
     messageCopied: '消息已复制',
+    newSession: '新建会话',
+    deleteSession: '删除会话',
+    deleteSessionConfirm: '确定要删除会话 "{key}" 吗？此操作不可撤销。',
+    deleteSessionOk: '会话已删除',
+    sessionsEmpty: '暂无历史会话，发送第一条消息即可创建。',
+    loadingHistory: '加载历史中...',
   },
   model: {
     title: '模型管理',

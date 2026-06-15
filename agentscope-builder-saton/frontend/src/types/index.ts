@@ -128,11 +128,12 @@ export interface AgentShare {
 
 // ── Session / Chat ──
 export interface Session {
-  key: string
-  agentId: string
-  messageCount: number
-  createdAt: number
-  updatedAt: number
+  /** 会话标识，对应后端 sessionKey；同 agent 下唯一 */
+  sessionKey: string
+  /** 最近活跃毫秒时间戳；当前 Redis 后端固定返回 0 */
+  lastActiveAt: number
+  /** 会话标题，取自首条 user 消息文本（未截断），后端可能返回空串；前端按 UI 宽度自行截断 */
+  title: string
 }
 
 export interface ChatMessage {

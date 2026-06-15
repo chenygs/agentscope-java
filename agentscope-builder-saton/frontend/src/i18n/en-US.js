@@ -156,6 +156,12 @@ export default {
         shares: 'Shares',
         activity: 'Activity',
         messageCopied: 'Message copied',
+        newSession: 'New Session',
+        deleteSession: 'Delete session',
+        deleteSessionConfirm: 'Delete session "{key}"? This cannot be undone.',
+        deleteSessionOk: 'Session deleted',
+        sessionsEmpty: 'No sessions yet — send your first message to create one.',
+        loadingHistory: 'Loading history...',
     },
     model: {
         title: 'Models',
