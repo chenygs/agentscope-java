@@ -1,0 +1,4 @@
+{"type":"message","id":"fb88c5e0-f7b2-4183-9e9e-2757e2710e23","timestamp":1781590546.377067900,"role":"USER","content":"你是谁"}
+{"type":"message","id":"b8d11b99-a274-4b86-9258-82fddf3be733","parentId":"fb88c5e0-f7b2-4183-9e9e-2757e2710e23","timestamp":1781590546.378069000,"role":"ASSISTANT","content":"你好！我是**小阳**，一个通用类型的AI助手，很高兴认识你！😊\n\n我可以帮你完成各种任务，比如：\n- **代码编写与调试** — 支持多种编程语言\n- **文件操作与搜索** — 读写文件、搜索代码、管理项目\n- **知识检索与记忆** — 长期记忆功能，记住你的偏好和历史\n- **任务分解与并行执行** — 可以同时处理多个独立任务\n- **Git操作、构建测试** 等等\n\n我现在的工作目录是 `agentscope-java` 项目，如果你有任何需要帮忙的地方，尽管告诉我！有什么我可以为你做的吗？"}
+{"type":"message","id":"39c68a30-250d-4e98-9c65-0bf6e93e1d94","parentId":"b8d11b99-a274-4b86-9258-82fddf3be733","timestamp":1781590546.378069000,"role":"USER","content":"你是谁"}
+{"type":"message","id":"eb2abc48-acf7-4a6b-8d96-38351f637fd2","parentId":"39c68a30-250d-4e98-9c65-0bf6e93e1d94","timestamp":1781590546.378069000,"role":"ASSISTANT","content":"我是**小阳**，一个通用型AI助手。😊\n\n有什么可以帮你的吗？"}

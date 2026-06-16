@@ -2,6 +2,7 @@ package io.agentscope.builder.saton.workspace;
 
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
+import io.agentscope.builder.saton.agent.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.AgentDefinitionRepository;
 import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.common.error.NotFoundException;
@@ -30,8 +31,8 @@ public class WorkspaceController {
     @GetMapping
     public Mono<R<WorkspaceSummaryVO>> summary(@PathVariable("id") Long id, ServerWebExchange ex) {
         return scoped(ex, me -> {
-            requireOwn(id, me);
-            return R.ok(workspace.summary(me, id));
+            String agentId = requireOwn(id, me);
+            return R.ok(workspace.summary(me, agentId));
         });
     }
 
@@ -40,8 +41,8 @@ public class WorkspaceController {
                                           @RequestParam(value = "path", required = false) String path,
                                           ServerWebExchange ex) {
         return scoped(ex, me -> {
-            requireOwn(id, me);
-            return R.okList(workspace.listAt(me, id, path));
+            String agentId = requireOwn(id, me);
+            return R.okList(workspace.listAt(me, agentId, path));
         });
     }
 
@@ -51,8 +52,8 @@ public class WorkspaceController {
                              ServerWebExchange ex) {
         // Returns raw text — not wrapped in R<T> because produces=text/plain
         return scoped(ex, me -> {
-            requireOwn(id, me);
-            return workspace.read(me, id, path);
+            String agentId = requireOwn(id, me);
+            return workspace.read(me, agentId, path);
         });
     }
 
@@ -62,8 +63,8 @@ public class WorkspaceController {
                                @RequestBody WriteFileReq req,
                                ServerWebExchange ex) {
         return scoped(ex, me -> {
-            requireOwn(id, me);
-            workspace.write(me, id, path, req == null ? "" : req.content());
+            String agentId = requireOwn(id, me);
+            workspace.write(me, agentId, path, req == null ? "" : req.content());
             return R.ok();
         });
     }
@@ -73,15 +74,19 @@ public class WorkspaceController {
                                    @RequestParam("path") String path,
                                    ServerWebExchange ex) {
         return scoped(ex, me -> {
-            requireOwn(id, me);
-            return R.ok(workspace.delete(me, id, path));
+            String agentId = requireOwn(id, me);
+            return R.ok(workspace.delete(me, agentId, path));
         });
     }
 
-    private void requireOwn(Long agentDefId, String me) {
-        if (agentRepo.findByIdAndOwnerId(agentDefId, me).isEmpty()) {
-            throw new NotFoundException("agent not found: " + agentDefId);
-        }
+    /**
+     * 校验 agent 归属并返回它的业务 {@code agentId}(字符串)—— 这才是 harness
+     * 物理落盘用的目录名。URL 上的 {@code id} 是数据库主键,只用于查表,不直接拼路径。
+     */
+    private String requireOwn(Long agentDefId, String me) {
+        AgentDefinitionEntity def = agentRepo.findByIdAndOwnerId(agentDefId, me)
+                .orElseThrow(() -> new NotFoundException("agent not found: " + agentDefId));
+        return def.getAgentId();
     }
 
     /** Bind sa-token context inside the lambda (spec §12.4) and clear on exit. */

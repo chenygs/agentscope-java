@@ -89,19 +89,25 @@ public class AgentBuildOrchestrator {
             }
         }
 
-        // Harness 自己会在 workspace 下挂 agents/<id>/sessions/ 这层,我们传 user 级根 —
-        // 这样 MEMORY.md / AGENTS.md / skills/ 自然落在 <userId>/ 根下,跨 agent 共享。
-        Path workspace = workspaceResolver.userRoot(ownerId);
+        // 两份 path,语义不同,绝不能复用:
+        //  - harnessWorkspace(全局 root):给 HarnessAgent.workspace() — harness 内部
+        //    NamespaceFactory 会读 RuntimeContext.userId 并自动在 root 下拼一层 userId,
+        //    传 userRoot 会得到 <root>/<userId>/<userId>/... 双重嵌套。
+        //  - userWorkspace(用户根 = root + userId):给 skillFactory / middlewareFactory —
+        //    它们的 instantiate 在 build 期一次性调用,拿不到 RuntimeContext,所以必须由
+        //    调用方把 userId 拼好(否则本地技能仓库、审计 JSONL 等会跨用户串目录)。
+        Path harnessWorkspace = workspaceResolver.root();
+        Path userWorkspace = workspaceResolver.userRoot(ownerId);
         try {
-            Files.createDirectories(workspace);
+            Files.createDirectories(userWorkspace);
         } catch (IOException e) {
-            throw new IllegalStateException("failed to mkdir workspace: " + workspace, e);
+            throw new IllegalStateException("failed to mkdir workspace: " + userWorkspace, e);
         }
 
         List<AgentSkillRepository> skillRepos = new ArrayList<>();
         for (SkillRepoSpec spec : parseSkillRepoSpecs(def.getSkillRepositoriesJson())) {
             try {
-                skillRepos.add(skillFactory.instantiate(spec.type(), spec.props(), workspace));
+                skillRepos.add(skillFactory.instantiate(spec.type(), spec.props(), userWorkspace));
             } catch (RuntimeException e) {
                 log.warn("skip skill repo type={} due to {}", spec.type(), e.getMessage());
             }
@@ -110,7 +116,7 @@ public class AgentBuildOrchestrator {
         List<MiddlewareBase> middlewares = new ArrayList<>();
         for (MiddlewareSpec spec : parseMiddlewareSpecs(def.getHookSpecsJson())) {
             try {
-                middlewares.add(middlewareFactory.instantiate(spec.type(), spec.props(), workspace));
+                middlewares.add(middlewareFactory.instantiate(spec.type(), spec.props(), userWorkspace));
             } catch (RuntimeException e) {
                 log.warn("skip middleware type={} due to {}", spec.type(), e.getMessage());
             }
@@ -124,7 +130,7 @@ public class AgentBuildOrchestrator {
                 .maxIters(maxIters)
                 .stateStore(stateStore)
                 .defaultSessionId("agent_" + def.getId() + "_default")
-                .workspace(workspace);
+                .workspace(harnessWorkspace);
 
         if (!skillRepos.isEmpty()) {
             b.skillRepositories(skillRepos);

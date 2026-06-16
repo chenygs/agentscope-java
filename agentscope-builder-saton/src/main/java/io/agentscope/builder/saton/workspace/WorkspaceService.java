@@ -35,8 +35,8 @@ public class WorkspaceService {
         this.resolver = resolver;
     }
 
-    public WorkspaceSummaryVO summary(String ownerId, Long agentDefId) {
-        Path root = resolver.agentRoot(ownerId, agentDefId);
+    public WorkspaceSummaryVO summary(String ownerId, String agentId) {
+        Path root = resolver.agentRoot(ownerId, agentId);
         int count = 0;
         if (Files.isDirectory(root)) {
             try (Stream<Path> walk = Files.walk(root)) {
@@ -48,19 +48,19 @@ public class WorkspaceService {
         return new WorkspaceSummaryVO(root.toString(), count);
     }
 
-    public List<FileNodeVO> list(String ownerId, Long agentDefId) {
-        return listAt(ownerId, agentDefId, null);
+    public List<FileNodeVO> list(String ownerId, String agentId) {
+        return listAt(ownerId, agentId, null);
     }
 
     /**
      * 列出某个相对子目录下的第一层文件/目录。{@code subPath} 为 null 或空时等价于根目录。
      * 越界 / 不存在 / 不是目录 → 抛 {@link IllegalArgumentException} 或返回空列表。
      */
-    public List<FileNodeVO> listAt(String ownerId, Long agentDefId, String subPath) {
-        Path root = resolver.agentRoot(ownerId, agentDefId);
+    public List<FileNodeVO> listAt(String ownerId, String agentId, String subPath) {
+        Path root = resolver.agentRoot(ownerId, agentId);
         Path target = (subPath == null || subPath.isBlank())
                 ? root
-                : resolver.resolve(ownerId, agentDefId, subPath);
+                : resolver.resolve(ownerId, agentId, subPath);
         if (!Files.isDirectory(target)) return List.of();
         List<FileNodeVO> out = new ArrayList<>();
         try (Stream<Path> children = Files.list(target)) {
@@ -72,8 +72,8 @@ public class WorkspaceService {
         return out;
     }
 
-    public String read(String ownerId, Long agentDefId, String relPath) {
-        Path p = resolver.resolve(ownerId, agentDefId, relPath);
+    public String read(String ownerId, String agentId, String relPath) {
+        Path p = resolver.resolve(ownerId, agentId, relPath);
         if (!Files.isRegularFile(p)) {
             throw new NotFoundException("file not found: " + relPath);
         }
@@ -88,8 +88,8 @@ public class WorkspaceService {
         }
     }
 
-    public void write(String ownerId, Long agentDefId, String relPath, String content) {
-        Path p = resolver.resolve(ownerId, agentDefId, relPath);
+    public void write(String ownerId, String agentId, String relPath, String content) {
+        Path p = resolver.resolve(ownerId, agentId, relPath);
         try {
             Files.createDirectories(p.getParent());
             Files.writeString(p, content == null ? "" : content, StandardCharsets.UTF_8);
@@ -109,9 +109,28 @@ public class WorkspaceService {
         }
     }
 
+    /**
+     * 读 user 级共享文件。文件不存在时返回 {@code null}(由调用方决定降级策略,
+     * 例如 {@code MemoryController} 把 null 转成空串)。超过 {@link #MAX_READ}
+     * 返回截断提示,与 {@link #read(String, String, String)} 行为一致。
+     */
+    public String readUser(String ownerId, String relPath) {
+        Path p = resolver.resolveUser(ownerId, relPath);
+        if (!Files.isRegularFile(p)) return null;
+        try {
+            long size = Files.size(p);
+            if (size > MAX_READ) {
+                return "(file too large to display: " + size + " bytes)";
+            }
+            return Files.readString(p, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("user-level read failed: " + relPath, e);
+        }
+    }
+
     /** Returns true if the file existed and was removed. */
-    public boolean delete(String ownerId, Long agentDefId, String relPath) {
-        Path p = resolver.resolve(ownerId, agentDefId, relPath);
+    public boolean delete(String ownerId, String agentId, String relPath) {
+        Path p = resolver.resolve(ownerId, agentId, relPath);
         try {
             return Files.deleteIfExists(p);
         } catch (IOException e) {

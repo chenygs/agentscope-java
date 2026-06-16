@@ -23,22 +23,22 @@ class WorkspaceServiceTest {
 
     @Test
     void writeThenReadRoundtrips() {
-        service.write("alice", 7L, "notes.md", "hello");
-        assertEquals("hello", service.read("alice", 7L, "notes.md"));
+        service.write("alice", "ppt-agent", "notes.md", "hello");
+        assertEquals("hello", service.read("alice", "ppt-agent", "notes.md"));
     }
 
     @Test
     void writeOverwritesExisting() {
-        service.write("alice", 7L, "a.txt", "v1");
-        service.write("alice", 7L, "a.txt", "v2");
-        assertEquals("v2", service.read("alice", 7L, "a.txt"));
+        service.write("alice", "ppt-agent", "a.txt", "v1");
+        service.write("alice", "ppt-agent", "a.txt", "v2");
+        assertEquals("v2", service.read("alice", "ppt-agent", "a.txt"));
     }
 
     @Test
     void listIncludesCreatedFile() {
-        service.write("alice", 7L, "x.txt", "X");
-        service.write("alice", 7L, "sub/y.txt", "Y");
-        List<FileNodeVO> nodes = service.list("alice", 7L);
+        service.write("alice", "ppt-agent", "x.txt", "X");
+        service.write("alice", "ppt-agent", "sub/y.txt", "Y");
+        List<FileNodeVO> nodes = service.list("alice", "ppt-agent");
         // top-level: x.txt + sub/
         assertEquals(2, nodes.size());
         assertTrue(nodes.stream().anyMatch(n -> n.name().equals("x.txt") && n.type().equals("file")));
@@ -47,23 +47,23 @@ class WorkspaceServiceTest {
 
     @Test
     void deleteFileRemovesIt() {
-        service.write("alice", 7L, "x.txt", "X");
-        assertTrue(service.delete("alice", 7L, "x.txt"));
-        assertFalse(service.delete("alice", 7L, "x.txt"));
+        service.write("alice", "ppt-agent", "x.txt", "X");
+        assertTrue(service.delete("alice", "ppt-agent", "x.txt"));
+        assertFalse(service.delete("alice", "ppt-agent", "x.txt"));
     }
 
     @Test
     void readMissingFileThrows() {
         assertThrows(io.agentscope.builder.saton.common.error.NotFoundException.class,
-                () -> service.read("alice", 7L, "missing.txt"));
+                () -> service.read("alice", "ppt-agent", "missing.txt"));
     }
 
     @Test
     void summaryCountsAllFiles() {
-        service.write("alice", 7L, "a.txt", "A");
-        service.write("alice", 7L, "b/c.txt", "C");
-        service.write("alice", 7L, "b/d.txt", "D");
-        WorkspaceSummaryVO sum = service.summary("alice", 7L);
+        service.write("alice", "ppt-agent", "a.txt", "A");
+        service.write("alice", "ppt-agent", "b/c.txt", "C");
+        service.write("alice", "ppt-agent", "b/d.txt", "D");
+        WorkspaceSummaryVO sum = service.summary("alice", "ppt-agent");
         assertEquals(3, sum.fileCount());
         assertNotNull(sum.root());
     }
@@ -71,21 +71,21 @@ class WorkspaceServiceTest {
     @Test
     void writeRejectsPathTraversal() {
         assertThrows(IllegalArgumentException.class,
-                () -> service.write("alice", 7L, "../escape", "x"));
+                () -> service.write("alice", "ppt-agent", "../escape", "x"));
     }
 
     @Test
     void listReturnsEmptyForUnusedAgent() {
-        assertTrue(service.list("alice", 999L).isEmpty());
+        assertTrue(service.list("alice", "ghost-agent").isEmpty());
     }
 
     @Test
     void listAtDescendsIntoSubdirectory() {
-        service.write("alice", 7L, "x.txt", "X");
-        service.write("alice", 7L, "sub/y.txt", "Y");
-        service.write("alice", 7L, "sub/nested/z.txt", "Z");
+        service.write("alice", "ppt-agent", "x.txt", "X");
+        service.write("alice", "ppt-agent", "sub/y.txt", "Y");
+        service.write("alice", "ppt-agent", "sub/nested/z.txt", "Z");
 
-        List<FileNodeVO> children = service.listAt("alice", 7L, "sub");
+        List<FileNodeVO> children = service.listAt("alice", "ppt-agent", "sub");
         assertEquals(2, children.size());
         // path 字段应是相对 agent root 的相对路径,而不是仅文件名
         assertTrue(children.stream().anyMatch(n -> n.name().equals("y.txt") && n.path().equals("sub/y.txt")));
@@ -94,14 +94,14 @@ class WorkspaceServiceTest {
 
     @Test
     void listAtNullPathFallsBackToRoot() {
-        service.write("alice", 7L, "a.txt", "A");
-        assertEquals(service.list("alice", 7L), service.listAt("alice", 7L, null));
-        assertEquals(service.list("alice", 7L), service.listAt("alice", 7L, ""));
+        service.write("alice", "ppt-agent", "a.txt", "A");
+        assertEquals(service.list("alice", "ppt-agent"), service.listAt("alice", "ppt-agent", null));
+        assertEquals(service.list("alice", "ppt-agent"), service.listAt("alice", "ppt-agent", ""));
     }
 
     @Test
     void listAtRejectsPathTraversal() {
         assertThrows(IllegalArgumentException.class,
-                () -> service.listAt("alice", 7L, "../escape"));
+                () -> service.listAt("alice", "ppt-agent", "../escape"));
     }
 }
