@@ -2,6 +2,7 @@ package io.agentscope.builder.saton.common;
 
 import java.util.List;
 import java.util.Set;
+import io.agentscope.builder.saton.auth.service.ex.AuthExceptionHandler;
 
 /**
  * Unified API response wrapper.

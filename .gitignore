@@ -85,3 +85,7 @@ logs/
 
 ## harness db
 **/*.db
+.qoder/
+.kiro/
+.junie/
+/.codex/

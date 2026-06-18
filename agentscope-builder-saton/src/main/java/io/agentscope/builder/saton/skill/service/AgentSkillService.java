@@ -1,0 +1,299 @@
+package io.agentscope.builder.saton.skill.service;
+
+import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
+import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
+import io.agentscope.builder.saton.agent.orm.entity.SkillRepoSpec;
+import io.agentscope.builder.saton.common.error.NotFoundException;
+import io.agentscope.builder.saton.common.json.JsonUtil;
+import io.agentscope.builder.saton.factory.service.skill.SkillFactory;
+import io.agentscope.builder.saton.marketplace.service.UserMarketplaceRegistry;
+import io.agentscope.builder.saton.skill.orm.dto.InstallFromRepoReq;
+import io.agentscope.builder.saton.skill.orm.dto.MarketplaceInstallReq;
+import io.agentscope.builder.saton.skill.orm.dto.WorkspaceSkillVO;
+import io.agentscope.builder.saton.workspace.service.WorkspacePathResolver;
+import io.agentscope.builder.saton.workspace.service.WorkspaceService;
+import io.agentscope.core.skill.AgentSkill;
+import io.agentscope.core.skill.repository.AgentSkillRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+
+import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+@Slf4j
+@Service
+@SuppressWarnings("deprecation") // AgentSkill deprecated in core but still returned by AgentSkillRepository
+public class AgentSkillService {
+
+    private static final String SKILLS_DIR = "skills";
+
+    private final AgentDefinitionRepository agentRepo;
+    private final SkillFactory skillFactory;
+    private final WorkspaceService workspaceService;
+    private final WorkspacePathResolver workspaceResolver;
+    private final UserMarketplaceRegistry marketplaceRegistry;
+
+    public AgentSkillService(AgentDefinitionRepository agentRepo,
+                             SkillFactory skillFactory,
+                             WorkspaceService workspaceService,
+                             WorkspacePathResolver workspaceResolver,
+                             UserMarketplaceRegistry marketplaceRegistry) {
+        this.agentRepo = agentRepo;
+        this.skillFactory = skillFactory;
+        this.workspaceService = workspaceService;
+        this.workspaceResolver = workspaceResolver;
+        this.marketplaceRegistry = marketplaceRegistry;
+    }
+
+    /** List skills installed in the user's workspace skills/ directory (跨 agent 共享). */
+    public List<WorkspaceSkillVO> listWorkspaceSkills(String ownerId, Long agentDefId) {
+        // agentDefId 形参保留,只用于权限校验语义对齐(目前未真正校验)。
+        // 物理上 skills/ 是 user 级共享,不分 agent。
+        Path skillsDir = workspaceResolver.userRoot(ownerId).resolve(SKILLS_DIR);
+        if (!Files.isDirectory(skillsDir)) return List.of();
+
+        File[] dirs = skillsDir.toFile().listFiles(File::isDirectory);
+        if (dirs == null) return List.of();
+
+        List<WorkspaceSkillVO> result = new ArrayList<>();
+        for (File dir : dirs) {
+            String name = dir.getName();
+            String description = "";
+            String source = "local";
+            long installTime = 0L;
+
+            Path metaFile = skillsDir.resolve(name).resolve("_install.meta.json");
+            if (Files.exists(metaFile)) {
+                try {
+                    String metaContent = Files.readString(metaFile, java.nio.charset.StandardCharsets.UTF_8);
+                    Map<String, Object> meta = JsonUtil.mapper().readValue(metaContent,
+                            new TypeReference<Map<String, Object>>() {});
+                    if (meta.get("source") instanceof String s) source = s;
+                    if (meta.get("installedAt") instanceof String ts) {
+                        try { installTime = java.time.Instant.parse(ts).toEpochMilli(); }
+                        catch (Exception ignored) {}
+                    }
+                    description = String.valueOf(meta.getOrDefault("originalName", ""));
+                } catch (Exception e) {
+                    log.warn("failed to read install meta for skill {}", name, e);
+                }
+            }
+            result.add(new WorkspaceSkillVO(name, description, source, installTime));
+        }
+        return result;
+    }
+
+    /** Install a skill from the agent's configured skill repository by index. */
+    public WorkspaceSkillVO installFromRepository(String ownerId, Long agentDefId, InstallFromRepoReq req) {
+        AgentDefinitionEntity def = agentRepo.findByIdAndOwnerId(agentDefId, ownerId)
+                .orElseThrow(() -> new NotFoundException("agent not found: " + agentDefId));
+
+        List<SkillRepoSpec> repos = parseSkillRepoSpecs(def.getSkillRepositoriesJson());
+        if (req.repoIndex() < 0 || req.repoIndex() >= repos.size()) {
+            throw new IllegalArgumentException("repoIndex out of range: " + req.repoIndex());
+        }
+        SkillRepoSpec spec = repos.get(req.repoIndex());
+
+        Path workspace = workspaceResolver.userRoot(ownerId);
+        AgentSkillRepository repo = skillFactory.instantiate(spec.type(), spec.props(), workspace);
+
+        AgentSkill skill = repo.getSkill(req.skillName());
+        if (skill == null) {
+            throw new NotFoundException("skill not found in repository: " + req.skillName());
+        }
+
+        String targetName = (req.targetName() != null && !req.targetName().isBlank())
+                ? req.targetName() : skill.getName();
+        validateSkillName(targetName);
+
+        String skillDir = SKILLS_DIR + "/" + targetName;
+        Path skillMarkdown = workspaceResolver.resolveUser(ownerId, skillDir + "/SKILL.md");
+        boolean exists = java.nio.file.Files.exists(skillMarkdown);
+        if (exists && !Boolean.TRUE.equals(req.overwrite())) {
+            throw new IllegalArgumentException("workspace skill already exists: " + targetName
+                    + " (set overwrite=true to replace)");
+        }
+
+        String markdown = skill.getSkillContent();
+        if (markdown == null || markdown.isBlank()) {
+            throw new IllegalStateException("repository returned empty SKILL.md for: " + req.skillName());
+        }
+        workspaceService.writeUser(ownerId, skillDir + "/SKILL.md", markdown);
+
+        Map<String, String> resources = skill.getResources();
+        if (resources != null) {
+            for (Map.Entry<String, String> entry : resources.entrySet()) {
+                workspaceService.writeUser(ownerId, skillDir + "/" + entry.getKey(), entry.getValue());
+            }
+        }
+
+        writeInstallMeta(ownerId, skillDir, "repository", spec.type(), skill.getName());
+        return new WorkspaceSkillVO(targetName, skill.getDescription(), "repository", System.currentTimeMillis());
+    }
+
+    /** Install a skill from a user-configured marketplace. */
+    public WorkspaceSkillVO installFromMarketplace(String ownerId, Long agentDefId, MarketplaceInstallReq req) {
+        var mp = marketplaceRegistry.find(ownerId, req.marketplaceId())
+                .orElseThrow(() -> new NotFoundException("marketplace not found: " + req.marketplaceId()));
+
+        var content = mp.fetch(req.skillName());
+        if (content == null) {
+            throw new NotFoundException("skill not found in marketplace: " + req.skillName());
+        }
+
+        String targetName = (req.targetName() != null && !req.targetName().isBlank())
+                ? req.targetName() : content.name();
+        validateSkillName(targetName);
+
+        String skillDir = SKILLS_DIR + "/" + targetName;
+        Path skillMarkdown = workspaceResolver.resolveUser(ownerId, skillDir + "/SKILL.md");
+        boolean exists = java.nio.file.Files.exists(skillMarkdown);
+        if (exists && !Boolean.TRUE.equals(req.overwrite())) {
+            throw new IllegalArgumentException("workspace skill already exists: " + targetName);
+        }
+
+        workspaceService.writeUser(ownerId, skillDir + "/SKILL.md", content.markdown());
+        if (content.resources() != null) {
+            for (Map.Entry<String, String> entry : content.resources().entrySet()) {
+                workspaceService.writeUser(ownerId, skillDir + "/" + entry.getKey(), entry.getValue());
+            }
+        }
+
+        writeInstallMeta(ownerId, skillDir, "marketplace", mp.type(), content.name());
+        return new WorkspaceSkillVO(targetName, content.description(), "marketplace", System.currentTimeMillis());
+    }
+
+    /** Delete a workspace skill (recursively removes the entire skill directory). */
+    public void deleteWorkspaceSkill(String ownerId, Long agentDefId, String name) {
+        validateSkillName(name);
+        // skills/ 是 user 级共享,与 agentDefId 无关 — 形参留作未来权限校验。
+        Path skillDir = workspaceResolver.userRoot(ownerId)
+                .resolve(SKILLS_DIR).resolve(name);
+        if (!java.nio.file.Files.exists(skillDir)) {
+            throw new NotFoundException("workspace skill not found: " + name);
+        }
+        try {
+            java.nio.file.Files.walk(skillDir)
+                    .sorted(java.util.Comparator.reverseOrder())
+                    .forEach(p -> {
+                        try { java.nio.file.Files.deleteIfExists(p); }
+                        catch (java.io.IOException ex) { log.warn("failed to delete {}", p, ex); }
+                    });
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("failed to delete workspace skill: " + name, e);
+        }
+    }
+
+    /**
+     * Upload a zip file containing skill files and extract into
+     * {@code <workspace>/skills/<skillName>/}.
+     *
+     * <p>The zip content is extracted directly under the given skill name directory.
+     * The zip should contain the skill files (SKILL.md and optional resources), not
+     * another top-level folder.
+     *
+     * @param ownerId     current user
+     * @param agentDefId  agent definition id
+     * @param skillName   target skill directory name (validated)
+     * @param zipData     raw zip bytes
+     * @param zipName     original file name (for logging)
+     */
+    public void uploadSkill(String ownerId, Long agentDefId, String skillName,
+                            byte[] zipData, String zipName) {
+        validateSkillName(skillName);
+
+        // skills/ 是 user 级共享,agentDefId 形参保留。
+        Path workspace = workspaceResolver.userRoot(ownerId);
+        Path skillDir = workspace.resolve(SKILLS_DIR).resolve(skillName);
+        try {
+            Files.createDirectories(skillDir);
+
+            // Write zip to temp file
+            Path tempZip = Files.createTempFile("skill-upload-", ".zip");
+            try {
+                Files.write(tempZip, zipData);
+
+                // Extract zip directly into skillDir
+                try (ZipInputStream zis = new ZipInputStream(
+                        new BufferedInputStream(Files.newInputStream(tempZip)))) {
+                    ZipEntry entry;
+                    while ((entry = zis.getNextEntry()) != null) {
+                        if (entry.isDirectory()) {
+                            zis.closeEntry();
+                            continue;
+                        }
+                        String entryName = entry.getName();
+                        // Skip macOS metadata and leading slashes
+                        if (entryName.startsWith("/") || entryName.startsWith("__MACOSX/")) {
+                            zis.closeEntry();
+                            continue;
+                        }
+                        // Security: reject path traversal
+                        if (entryName.contains("..")) {
+                            throw new IllegalArgumentException(
+                                    "zip entry contains path traversal: " + entryName);
+                        }
+                        Path target = skillDir.resolve(entryName).normalize();
+                        if (!target.startsWith(skillDir)) {
+                            throw new IllegalArgumentException(
+                                    "zip entry escapes skill directory: " + entryName);
+                        }
+                        Files.createDirectories(target.getParent());
+                        Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
+                        zis.closeEntry();
+                    }
+                }
+            } finally {
+                Files.deleteIfExists(tempZip);
+            }
+
+            // Verify SKILL.md exists
+            if (!Files.exists(skillDir.resolve("SKILL.md"))) {
+                log.warn("Uploaded skill '{}' has no SKILL.md in {}", skillName, skillDir);
+            }
+
+            log.info("Uploaded skill '{}' from zip '{}' to {}", skillName, zipName, skillDir);
+
+        } catch (IOException e) {
+            throw new RuntimeException("failed to extract skill zip: " + e.getMessage(), e);
+        }
+    }
+
+    private void writeInstallMeta(String ownerId, String skillDir,
+                                   String source, String sourceType, String originalName) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("source", source);
+        meta.put("sourceType", sourceType);
+        meta.put("originalName", originalName);
+        meta.put("installedAt", Instant.now().toString());
+        try {
+            String json = JsonUtil.mapper().writeValueAsString(meta);
+            workspaceService.writeUser(ownerId, skillDir + "/_install.meta.json", json);
+        } catch (Exception e) {
+            log.warn("failed to write install meta for {}", skillDir, e);
+        }
+    }
+
+    private void validateSkillName(String name) {
+        if (name == null || name.isBlank() || !name.matches("[A-Za-z0-9._-]+")) {
+            throw new IllegalArgumentException("invalid skill name: " + name);
+        }
+    }
+
+    private static List<SkillRepoSpec> parseSkillRepoSpecs(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return JsonUtil.mapper().readValue(json, new TypeReference<List<SkillRepoSpec>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException("invalid skill_repositories_json", e);
+        }
+    }
+}

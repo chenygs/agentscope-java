@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.common;
 
-import io.agentscope.builder.saton.agent.AgentType;
-import io.agentscope.builder.saton.agent.dto.AgentVO;
+import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.dto.AgentVO;
 import io.agentscope.builder.saton.common.json.JsonUtil;
 import tools.jackson.core.type.TypeReference;
 

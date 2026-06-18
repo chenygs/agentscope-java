@@ -1,7 +1,7 @@
 package io.agentscope.builder.saton.common;
 
-import io.agentscope.builder.saton.auth.dto.LoginRequest;
-import io.agentscope.builder.saton.auth.dto.LoginResponse;
+import io.agentscope.builder.saton.auth.orm.dto.LoginRequest;
+import io.agentscope.builder.saton.auth.orm.dto.LoginResponse;
 import io.agentscope.builder.saton.common.json.JsonUtil;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
