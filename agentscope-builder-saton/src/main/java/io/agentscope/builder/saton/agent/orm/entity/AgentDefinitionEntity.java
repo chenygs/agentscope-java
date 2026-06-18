@@ -1,5 +1,6 @@
 package io.agentscope.builder.saton.agent.orm.entity;
 
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import jakarta.persistence.*;
 
 import lombok.Getter;

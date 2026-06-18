@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.agent.service.runtime;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
 import io.agentscope.builder.saton.resource.model.orm.entity.ModelProviderEntity;
 import io.agentscope.harness.agent.HarnessAgent;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
-import io.agentscope.builder.saton.agent.service.runtime.AgentBuildOrchestrator;
 
 @SpringBootTest
 class HarnessAgentSwitchTest {

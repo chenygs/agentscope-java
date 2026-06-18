@@ -3,7 +3,7 @@ package io.agentscope.builder.saton.skill.controller;
 import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.agent.service.AgentAccessGuard;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 import io.agentscope.builder.saton.common.R;
 import io.agentscope.builder.saton.skill.orm.dto.InstallFromRepoReq;
 import io.agentscope.builder.saton.skill.orm.dto.MarketplaceInstallReq;

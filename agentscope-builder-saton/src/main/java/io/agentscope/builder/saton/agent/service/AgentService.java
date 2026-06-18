@@ -13,12 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import io.agentscope.builder.saton.agent.orm.entity.AgentShareEntity;
-import io.agentscope.builder.saton.agent.service.runtime.AgentRuntimeResolver;
-import io.agentscope.builder.saton.session.service.SessionService;
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.repository.AgentShareRepository;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
-import io.agentscope.builder.saton.agent.orm.entity.ToolSpec;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
 import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
 

@@ -1,4 +1,4 @@
-package io.agentscope.builder.saton.agent.orm.entity;
+package io.agentscope.builder.saton.agent.orm.enums;
 
 /**
  * Access tier for agent sharing. Ordered by ascending privilege:

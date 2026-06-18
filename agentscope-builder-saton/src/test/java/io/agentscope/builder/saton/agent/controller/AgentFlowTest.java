@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.entity.ToolSpec;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

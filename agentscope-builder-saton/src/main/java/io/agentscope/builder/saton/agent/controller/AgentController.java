@@ -8,7 +8,6 @@ import io.agentscope.builder.saton.agent.orm.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.orm.dto.AgentVO;
 import io.agentscope.builder.saton.agent.orm.dto.CloneReq;
 import io.agentscope.builder.saton.common.R;
-import io.agentscope.builder.saton.common.error.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
@@ -18,7 +17,7 @@ import java.util.List;
 import io.agentscope.builder.saton.agent.orm.repository.AgentShareRepository;
 import io.agentscope.builder.saton.agent.service.AgentService;
 import io.agentscope.builder.saton.agent.service.AgentAccessGuard;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 
 @RestController
 @RequestMapping("/api/agents")

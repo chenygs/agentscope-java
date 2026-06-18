@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.memory.controller;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.orm.dto.AgentVO;
 import io.agentscope.builder.saton.common.R;
@@ -25,7 +25,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import io.agentscope.builder.saton.workspace.service.WorkspacePathResolver;
 import io.agentscope.builder.saton.memory.service.MemoryKind;
-import io.agentscope.builder.saton.memory.controller.MemoryController;
 
 /**
  * 端到端验证 {@link MemoryController}:

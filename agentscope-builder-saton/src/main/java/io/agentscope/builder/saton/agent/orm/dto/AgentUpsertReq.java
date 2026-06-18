@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.agent.orm.dto;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.entity.MiddlewareSpec;
 import io.agentscope.builder.saton.agent.orm.entity.SkillRepoSpec;
 import io.agentscope.builder.saton.agent.orm.entity.ToolSpec;

@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.skill.controller;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.dto.AgentUpsertReq;
 import io.agentscope.builder.saton.agent.orm.dto.AgentVO;
 import io.agentscope.builder.saton.common.R;

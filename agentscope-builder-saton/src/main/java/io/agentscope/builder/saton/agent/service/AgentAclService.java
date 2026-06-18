@@ -2,7 +2,7 @@ package io.agentscope.builder.saton.agent.service;
 
 import org.springframework.stereotype.Service;
 import io.agentscope.builder.saton.agent.orm.repository.AgentShareRepository;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
 
 @Service

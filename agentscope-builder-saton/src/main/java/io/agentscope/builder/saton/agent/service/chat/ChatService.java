@@ -4,7 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import io.agentscope.builder.saton.agent.service.AgentAccessGuard;
 import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
 import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 import io.agentscope.builder.saton.agent.orm.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.orm.dto.ChatSendResp;
 import io.agentscope.builder.saton.agent.service.runtime.AgentRuntimeResolver;

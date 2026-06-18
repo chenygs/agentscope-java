@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.agent.controller.chat;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import io.agentscope.builder.saton.agent.orm.dto.ChatSendReq;
 import io.agentscope.builder.saton.agent.orm.dto.ChatSendResp;
 import io.agentscope.builder.saton.agent.orm.dto.AgentUpsertReq;

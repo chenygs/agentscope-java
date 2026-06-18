@@ -3,7 +3,7 @@ package io.agentscope.builder.saton.agent.service;
 import io.agentscope.builder.saton.common.error.ForbiddenException;
 import io.agentscope.builder.saton.common.error.NotFoundException;
 import org.springframework.stereotype.Component;
-import io.agentscope.builder.saton.agent.orm.entity.Tier;
+import io.agentscope.builder.saton.agent.orm.enums.Tier;
 import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
 import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
 

@@ -1,6 +1,6 @@
 package io.agentscope.builder.saton.agent.orm.repository;
 
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
+import io.agentscope.builder.saton.agent.orm.enums.AgentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import io.agentscope.builder.saton.agent.orm.repository.AgentDefinitionRepository;
+
 import io.agentscope.builder.saton.agent.orm.entity.AgentDefinitionEntity;
 
 @DataJpaTest

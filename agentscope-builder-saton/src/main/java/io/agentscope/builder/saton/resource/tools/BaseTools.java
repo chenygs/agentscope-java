@@ -1,4 +1,4 @@
-package io.agentscope.builder.saton.tools;
+package io.agentscope.builder.saton.resource.tools;
 
 import io.agentscope.core.tool.Tool;
 import io.agentscope.core.tool.ToolParam;

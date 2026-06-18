@@ -1,8 +1,8 @@
-package io.agentscope.builder.saton.tools;
+package io.agentscope.builder.saton.resource.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agentscope.builder.saton.tools.props.ImageSearchProperties;
+import io.agentscope.builder.saton.resource.tools.props.ImageSearchProperties;
 import io.agentscope.core.tool.Tool;
 import io.agentscope.core.tool.ToolParam;
 import org.slf4j.Logger;

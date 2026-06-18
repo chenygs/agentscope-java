@@ -1,5 +1,4 @@
 package io.agentscope.builder.saton.factory.service.core;
-import io.agentscope.builder.saton.agent.orm.entity.AgentType;
 
 /**
  * 所有 SPI 接口（ModelProviderType / 未来的 ToolType / SkillRepoType / MiddlewareType / AgentType）

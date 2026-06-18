@@ -1,4 +1,4 @@
-package io.agentscope.builder.saton.tools.props;
+package io.agentscope.builder.saton.resource.tools.props;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
