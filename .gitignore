@@ -89,3 +89,6 @@ logs/
 .kiro/
 .junie/
 /.codex/
+
+## oh-my-claudecode
+.omc/
