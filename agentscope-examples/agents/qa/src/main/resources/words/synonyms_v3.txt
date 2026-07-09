@@ -1,0 +1,623 @@
+ICAS, 颅内动脉粥样硬化性狭窄
+TIA, 短暂性脑缺血发作
+AANS, aans,美国神经外科医生协会
+ACA, aca, 大脑前动脉
+ACDF, acdf, 椎间盘切除融合术
+AEDS, aeds, 抗癫痫药物, AEDs
+AHA, aha, 美国心脏协会
+AIS, ais, 急性缺血性脑卒中
+ALS, als, 渐冻症
+AO/ASIF, ao/asif, 国际内固定研究学会
+ASA, asa, 阿司匹林
+ASAH, asah, 动脉瘤性蛛网膜下腔出血
+ATRX, atrx, 地中海贫血伴智力低下综合征基因
+AUC, auc, 曲线下面积
+AVF, avf, 动静脉瘘
+AVM, avm, 动静脉畸形
+AVM, avm, 脑动静脉畸形
+BA, ba, 基底动脉
+Babinski, babinski, 巴彬斯基征
+BBA, bba, 颅内血泡样动脉瘤
+BBB, bbb, 血脑屏障
+BNI, BNI, BNI疼痛评分, bni疼痛评分
+BTF, btf, 美国脑外伤基金会
+CAS, cas, 颈动脉支架置入术,颈动脉支架成形术
+CBF, cbf, 脑血流量
+CBV, cbv, 脑血容量
+CCF, ccf, 颈动脉海绵窦瘘
+CCM, ccm, 海绵状血管畸形,海绵状血管瘤
+PCV, pcv, PCV, CCNU-长春新碱方案
+CEA, cea, 颈动脉内膜剥脱
+CEA, cea, 颈动脉内膜切除术
+CFD, cfd, 计算机流体动力学
+CPA, cpa, 小脑桥脑角
+CT, ct, 电子计算机断层扫描,计算机体层成像
+CTA, cta, CT血管造影
+CTP, ctp, CT灌注成像
+CUSA, cusa, 超声吸引装置
+DAVF, davf, 硬脑膜动静脉瘘
+DBS, dbs, 脑深部电刺激,脑起搏器
+DC, dc, 去骨瓣减压术
+DAI, 弥漫性轴索损伤, dai
+DCI, dci, 延迟性脑缺血
+DIPG, dipg, 弥漫性脑桥胶质瘤
+DSA, dsa, 血管造影
+DSA, dsa, 脑血管造影,造影
+DVT, dvt, 深静脉血栓
+DWI, dwi, 扩散加权成像
+Dyna CT, Dyna, dyna, Dyna CT, Dyna, dyna
+ECA, eca, 颈外动脉
+EEA, eea, 扩大经鼻入路
+EEG, eeg, 脑电图
+ERAS, eras, 加速康复外科
+ETV, etv, 内镜下三脑室底造瘘术
+FDA, fda, 美国食品药品监督管理局
+FLAIR, flair, 磁共振成像液体衰减反转恢复序列
+Galen, galen, 大脑大静脉
+GBM, gbm, 胶质母细胞瘤,胶母细胞瘤
+Glasgow, GCS, gcs
+GFAP, gfap, 胶质原纤维酸性蛋白
+GH, gh, 生长激素
+GKS, gks, 伽玛刀
+GPI, gpi, 苍白球内侧部
+GSC, gsc, 胶质瘤干细胞
+GTR, gtr, 全切
+HGG, hgg, 高级别胶质瘤
+HR, hr, 心率
+IA, ia, 动脉瘤
+ICG, icg, 吲哚菁绿-造影剂
+ICU, icu, 重症监护室
+IF, if, 影响因子
+IL-6, il-6, 白细胞介素-, IL-6, il-6
+IVH, ivh, 脑室内出血
+IVT, ivt, 静脉溶栓
+JNS, JNS, J Neurosurg, j neurosurg
+Kaplan Meier, KaplanMeier, kaplanmeier, Kaplan Meier, KaplanMeier, kaplanmeier
+Kaplan-Meier, KaplanMeier, kaplanmeier, Kaplan-Meier, KaplanMeier, kaplanmeier
+KPS, KPS, Karnofsky, karnofsky
+keyhole, 锁孔显微神经外科
+Ki67, ki67, 增殖细胞相关抗原
+leksell, Leksell立体定向手术系统
+LGG, lgg, 低级别胶质瘤
+LVO, lvo, 大血管闭塞
+MCA, mca, 大脑中动脉
+MDT, mdt, 多学科诊疗模式
+MEDTROIC, medtronic, 美敦力, Medtronic
+MicroVention, MV, mv, microvention, 微仙
+MEP, mep, 运动诱发电位
+MMA, mma, 脑膜中动脉
+MMD, mmd, 烟雾病
+MR, mr, 磁共振
+MRA, mra, 磁共振血管造影
+MRI, mri, 核磁共振成像
+MRI, mri, 磁共振成像
+MRS, mrs, 磁共振波谱
+MTICI, mtici, 改良脑梗死溶栓分级, mTICI, mtici
+MTT, mtt, 平均通过时间
+MVD, mvd, 显微血管减压术
+NAA, naa, N-乙酰门冬氨酸
+NCCN, nccn, 美国国家综合癌症网络
+NEXUS, nexus, 美国神经外科学会(CNS)继续教育平台
+NF1, nf1, 神经纤维瘤病1型
+NF, NF-κB, nf-κb
+NIH, nih, 美国国立卫生研究院
+NIHSS, nihss, 美国国立卫生研究院卒中量表
+NPH, nph, 正常压力性脑积水
+OCIN,东方脑血管病介入治疗大会
+OS, os, 总生存期
+P53, p53, 抑癌基因
+PCA, pca, 大脑后动脉
+PCNSL, pcnsl, 原发性中枢神经系统淋巴瘤
+PCOA, pcoa, 后交通动脉
+PCR, pcr, 聚合酶链式反应扩增
+PD-L1, pd-l1, 细胞程序性死亡-配体1
+PED, ped, 血管内栓塞装置
+PET, pet, 正电子发射型计算机断层显像
+PFS, pfs, 无进展生存期
+PI3K, pi3k, 磷酸肌醇-3激酶
+Poppen, poppen, 顶枕开颅经枕下幕上入路
+PTBE, ptbe, 肿瘤周围水肿
+PubMed, pubmed, 文献数据库
+PWI, pwi, 磁共振灌注加权成像
+RANO, rano, 神经肿瘤临床疗效评价
+RCRC, rcrc, “Right Clip,  Right Clipping”精准夹闭大赛
+RCT, rct, 随机对照试验
+Revive-SE, ReviveSE, revivese
+SAH, sah, 蛛网膜下腔出血
+SBP, sbp, 收缩压
+SCA, sca, 小脑上动脉
+SDH, sdh, 硬膜下血肿
+SpetzlerMartin, Spetzler-Martin, spetzler-martin
+SRS, srs, 立体定向放射治疗
+SSI, ssi, 手术部位感染
+STA, sta, 颞浅动脉
+STA-MCA, sta-mca, 颞浅动脉-大脑中动脉
+STN, stn, 丘脑底核
+suzuki, Suzuki, Suzuku分级
+T1WI, t1wi, T1加权像
+T2WI, t2wi, T2加权像
+TBI, tbi, 创伤性脑损伤
+TCD, tcd, 经颅多普勒超声技术
+TIA, tia, 短暂性脑缺血发作
+TICI, tici, 脑梗死溶栓分级
+TN, tn, 三叉神经痛
+TOF, tof, 飞行时间
+TTF, 肿瘤电场治疗
+TTFields, ttfields, 肿瘤电场治疗
+UCLA, ucla, 美国加利福尼亚大学洛杉矶分校
+UCSF, ucsf, 美国旧金山加利福尼亚大学
+UIA, uia, 未破裂颅内动脉瘤
+PDRS, updrs, 帕金森病评定量表
+VEGF, vegf, 血管内皮生长因子
+VNS, vns, 迷走神经刺激术
+VPS, vps, 脑室-腹腔分流术
+VR, vr, 虚拟现实
+VTE, vte, 静脉血栓栓塞
+WHO, who, 世界卫生组织
+AD, ad, AD, 阿尔兹海默症
+老年痴呆, 阿尔兹海默症, 老年痴呆, 阿尔兹海默症
+阿兹海默症, 阿尔兹海默症, 阿兹海默症, 阿尔兹海默症
+BNI, bni, BNI, 巴洛神经外科研究所
+VIM, 波形蛋白, vim
+微管超选介入治疗, 超选,微管超选,微导管超选择
+PTA, pta, 创伤后失忆症
+PA, pa, 垂体腺瘤 ,垂体腺瘤卒中
+PTA, pta, 纯音测听
+PCV, pcv, 大脑前中央静脉
+FAST, fast, 动脉血栓抽吸术
+小儿, 儿童
+放疗, 放射治疗
+支架取栓, 机械取栓
+PTA, pta, 既往动脉瘤治疗史
+AO, ao, 间变性少突胶质细胞瘤
+监测, 检测
+介入, 介入治疗
+PTA, pta, 经皮腔内成形术
+ICA, ICA, 颈内动脉
+临床试验, 临床研究
+ICP, icp, 颅内压
+CPP, cpp, 脉络丛乳头状瘤
+CSDH, csdh, 慢性硬膜下血肿
+慢性硬脑膜下血肿, 慢性硬膜下血肿, 慢性硬脑膜下血肿, 慢性硬膜下血肿
+PA, pa,毛细胞型星形细胞瘤, 认知预后,咽动脉
+CNS, cns, 美国神经外科大会
+ICH, ich, 脑出血,颅内出血
+缺血性卒中, 脑梗死, 缺血性卒中, 脑梗死
+CPP, cpp, 脑灌注压
+CSF, csf,脑脊液
+脑组织, 脑实质
+EVD, evd,脑室外引流
+中枢神经系统肿瘤, 脑肿瘤
+颅内肿瘤, 脑肿瘤
+PTA, pta,颞后动脉
+PTA, pta,凝血酶原活动度
+Parkinson, parkinson, 帕金森病
+PD, pd, 帕金森病
+MAP, map, 平均动脉压
+量表, 评分
+VIM, vim, 丘脑腹内侧核
+RTPA,rtpa, 溶酶原激活剂
+tPA, tpa, 溶酶原激活剂
+NF, nf,神经丝蛋白, 神经纤维瘤病
+VAS, vas,视觉模拟量表
+AR, 双调蛋白, 增强现实
+TMZ, temozolomide, tmz, 替莫唑胺
+外科手术, 外科治疗
+MAP, map, 形态学测量分析程序
+EVT, evt, 血管内治疗
+LP, lp,腰大池-腹腔
+LP, lp,腰椎穿刺
+硬脑膜, 硬膜
+PTA, pta, 原始三叉动脉
+浙医二院, 浙二
+适应症, 指征
+适应征, 指征
+CNS, cns,中枢神经系统
+VAS, vas,椎动脉支架植入术
+STROKE, 卒中, stroke
+FAST, 卒中评估量表, fast
+面臂语言试验, 卒中评估量表
+STRYKER, stryker, 史赛克, Stryker
+CERENOVUS, cerenovus, 强生
+A PEIJIA COMPANY, ACHEVA, 沛嘉加奇, 加奇
+MSD, 默沙东
+ZaiLab, 再鼎
+微创神通, MicroPor, 微创
+balt, BALT, 巴尔特, Balt
+泰杰伟业, tywy medical, TYWY MEDICAL, 泰杰
+维心, VISEE, visee
+雅培, ABBOTT, abbott, Abbott
+心玮医疗, HEARTCARE, heartcare, HeartCare, 心玮
+蔡司, zeiss, ZEISS
+阔然基因, KRGENE
+阿斯利康, AstraZeneca, ASTRAZENECA
+贝朗, BRAUN
+通桥, TONBRIDGE MEDICAL, TonbridgeMendical, 归创通桥
+英特格拉, INTEGRA
+禾木, HEMO, 禾木医疗
+泛生子, GENETRO
+金岱生物, GENDYA, Gendya
+信立泰医疗, SALUBRIS, 信立泰
+Acandis, acandis, ACANDIS
+益普生, IPSEN
+中天医疗, ZENITH VASCULAR, 中天
+赛诺神畅, NEUROVITA, 赛诺
+迈普, MESPRIN
+凯西, CHIESI
+费森尤斯卡比, FRESENIUSKABI
+华科精准, SINOVATION
+先声诊断, Simcere, SIMCERE
+领星医学, GENOMICARE
+美科创新, EDCAR
+美诺微创, Best Medical
+艾柯医疗, ACCUMEDICAL, 艾柯
+Boston Scientific, 波士顿科学, 波科, BostonScientific, bostonscientific, boston scientific, BOSTON SCIENTIFIC, BOSTONSCIENTIFIC
+TERUMO, 泰尔茂, Terumo, terumo
+强联智创, 强联
+谱高医疗, 谱高, 普微森
+健适医疗, 健适
+沃比医疗, 沃比, Wallaby, wallaby, WALLABY
+励楷医疗, 励楷
+心凯诺医疗, 心凯诺
+久事, 久事神康
+脉流, 脉流科技
+GE医疗, GE, ge, Ge
+璞慧医疗, 璞慧
+易介医疗, 易介
+暖阳医疗, 暖阳
+畅医达医疗, 畅医达
+埃普特医疗, 埃普特
+恒瑞医疗, 恒瑞
+普益盛济（华脉集团）, 普益盛济, 华脉
+深瑞达医疗, 深瑞达
+亿科医疗, 亿科
+远大医药, 远大
+Neurotrans, 纽创, neurtrans, NEUROTRANS
+万漉医疗, 万漉
+Cordis, CORDIS, cordis
+安徽省第二人民医院, 安徽省二院
+安徽理工大学第一附属医院, 淮南市第一人民医院
+安徽医科大学第一附属医院, 安医大一附院
+蚌埠市第三人民医院, 蚌埠三院
+解放军总医院, 北京301医院
+北京大学第三医院, 北医三院
+常熟市第一人民医院, 常熟一院
+池州市第二人民医院, 池州二院
+大连市第三人民医院, 大连三院
+南京军区总医院, 东部战区总医院
+复旦大学附属华山医院, 上海华山医院
+复旦大学附属中山医院, 复旦中山医院
+哈尔滨医科大学附属第一医院, 哈医大一院
+海军军医大学第二附属医院, 长征医院
+华中科技大学同济医学院附属同济医院, 武汉同济医院
+华中科技大学同济医学院附属协和医院, 武汉协和医院
+江苏省人民医院, 南京医科大学一附院
+陆军军医大学第一附属医院, 陆军军医大学西南医院
+山东大学齐鲁医院, 齐鲁医院
+上海交通大学医学院附属第九人民医院, 上海九院
+上海交通大学医学院附属瑞金医院, 上海瑞金医院
+首都医科大学宣武医院, 宣武医院
+四川大学华西医院, 华西医院
+无锡市第二人民医院, 无锡二院
+芜湖市第二人民医院, 芜湖二院
+西安交通大学第二附属医院, 交大二附院
+西安交通大学第二附属医院, 交大一附院
+西北大学附属医院, 西安市第三医院
+香港大学深圳医院, 深圳市滨海医院
+徐州医科大学附属医院, 徐州市第二医院
+浙江大学医学院附属第二医院, 浙二医院, 浙大二院, 浙医二院
+首都医科大学附属北京天坛医院, 天坛医院
+听神经瘤, 前庭神经鞘瘤
+成人髓母细胞瘤, MB
+生殖细胞瘤, GCT
+烟雾病, 脑底异常血管网病
+急性缺血性卒中, 脑梗, CIS
+动静脉畸形, AVM
+硬脑膜动静脉瘘, DAVFs
+颈动脉海绵窦痿, CCF
+短暂性脑缺血, TIA
+淀粉样脑血管病, CCA
+小脑扁桃体下疝畸形, ArnoldChiari
+脊髓脊膜膨出, MMC
+天津医科大学总医院, 天总
+动脉瘤辅助球囊封堵导管,封堵球囊导管系统,封堵止血系统,封堵球囊导管
+狭窄扩张支架球囊扩张式,颈动脉支架
+抽吸导管,血栓抽吸导管,血栓抽吸系统,血栓抽吸装置
+球囊扩张导管,球囊导管,快速交换球囊扩张导管
+辅助支撑导管,支撑导管,中间导管
+导引导管,中间导引导管
+缝合器,缝闭合装置
+栓塞保护系统,栓塞保护器
+颅内药物球扩支架,球扩支架
+药物洗脱支架,洗脱支架
+栓塞胶,液态栓塞系统,液态栓塞剂
+血流导向装置,密网支架,FD
+取栓支架,取栓器
+弹簧圈,coil
+瘤内扰流密网支架,动脉瘤栓塞系统
+ACCESSWAY™微导管, ACCESSWAY
+AneuFlow-脑动脉瘤辅助诊断系统, AneuFlow
+Angio-Seal VIP血管闭合装置, Angio Seal VIP, Angio-Seal VIP
+ANGIOGUARD RX 保护伞, ANGIOGUARD RX
+Angiosky™造影导管, Angiosky
+Aperio取栓支架, Aperio
+APEX TRA™远端通路导引导管(桡动脉专用), APEX TRA
+APOLLO®颅内动脉支架系统, APOLLO支架
+Apollo™微导管, Apollo微导管
+AQUATRACK亲水镍钛诺导丝, AQUATRACK
+Armada™35球囊, Armada35, Armada™35
+ASAHI CHIKAI Family 神经血管微导丝, ASAHI CHIKAI, ASAHI导丝
+ATW 可操纵导丝, ATW
+Avenir Plus系列机械解脱弹簧圈, Avenir Plus
+Avenir 超柔系列机械解脱弹簧圈, Avenir超柔
+Avenir™可解脱弹簧圈, Avenir 10, Avenir可解脱弹簧圈, Avenir弹簧圈, 沃比Avenir
+Aviator® Plus球囊扩张导管, AVIATOR PLUS, Aviator® Plus
+Avigo™微导丝, Avigo
+Axium™ Nylon可解脱弹簧圈, Axium Nylon, Axium™ Nylon
+Axium™ PGLA可解脱弹簧圈, Axium PGLA, Axium™ PGLA
+Axium™ Prime ES超柔顺系列可解脱弹簧圈, Axium Prime ES, Axium™ Prime ES
+Axium™ Prime Framing Coil弹簧圈, Axium FC, Axium Prime FC, Axium Prime Framing Coil, Axium™ FC, Axium™ Prime FC, Axium™ Prime Framing Coil
+Axium™ Prime SS柔顺系列可解脱弹簧圈, Axium Prime SS, Axium™ Prime SS
+Axium™ Prime可解脱弹簧圈, Axium Prime, Axium™ Prime
+Axium™ 可解脱弹簧圈, Axium弹簧圈
+Axium™ Half Size弹簧圈, Axium Half Size, Axium™Half Size
+AXS Catalyst™7颅内支持导管, Catalyst 7
+AXS Infinity LS导管鞘, Infinity LS
+AXS Offset递送辅助导管, AXS Offset
+Balloonfish™颅内球囊扩张导管, Balloonfish
+Blackeel® II涂层导丝, Blackeel
+Bonpass颅内球囊扩张导管, Bonpass
+Braidin™ II血管鞘组, Braidin
+Bridge® 椎动脉雷帕霉素靶向洗脱支架系统, Bridge
+Brite tip导引导管, Brite tip
+CAPTOR颅内取栓支架, Captor
+Capway®球囊导引导管套装, Capway
+Carotid Wallstent™ 颈动脉支架, Wallstent
+CASPER™ 颈动脉支架, CASPER
+CATCH+MAXI, CATCH+MAXI
+CATCH+MINI支架, CATCH+MINI
+CATCH+支架, CATCH+
+Catfish®颅内取栓支架, Catfish
+Chaperon™ 导引导管, Chaperon
+Command™导丝, Command
+Connect导丝, Connect
+Cosine™远端通路导管, Cosine
+Cosmos™弹簧圈, Cosmos
+DCwire™微导丝, DCwire
+DIVEER笛薇儿®颅内球囊扩张导管, DIVEER
+Diveroad®颅内球囊扩张导管, Diveroad
+DUO微导管, DUO
+EasyMax™导引鞘, EasyMax
+Easyport™远端通路导管系统, Easyport
+EasyRadial™输送导管, EasyRadial
+Easytork®神经血管导丝, Easytork
+Echelon™ 微导管, Echelon
+EmboCatcher™ 远端栓塞保护系统, EmboCatcher
+Emboshield NAV6 Embolic Protection System, NAV6
+EMBOTRAP® Ⅱ远端闭合双层网篮取栓器, EMBOTRAP
+Emerald诊断导丝, Emerald
+EmPro栓塞保护系统, EmPro
+ENTERPRISE®2 VRD血管重建装置, Enterprise 2, Enterprise II, Enterprise2, EnterpriseII, EP2
+ENVOY®DA XB导引导管, ENVOY DA XB, ENVOY®DA XB
+ENVOY®DA 导引导管, ENVOY DA, ENVOY®DA
+Epath®输送导管系统, Epath
+Esperance®DAC远端通路导管, Esperance
+Excelsior XT-27微导管, XT-27, XT27
+ExPump血栓抽吸系统, ExPump
+EXTRAFLEX远端通路导管, EXTRAFLEX
+Farender™远端通路导管, Farender
+Fastrack™微导管系统, Fastrack
+Fastunnel®输送型球囊扩张导管, Fastunnel
+FilterWire EZ™保护伞, FilterWire EZ
+Flager™神经血管介入导丝, Flager
+FlexPath微导管, FlexPath
+FlexStar球囊导引导管, FlexStar
+FlexTake颅内取栓支架, FlexTake
+FlexWay远端通路导管, FlexWay
+FlowGate2球囊导引导管, FlowGate2
+FlowSky™微导管, FlowSky
+Fluxcap®球囊导引导管, Fluxcap
+FocuStar™神经血管球囊导管, FocuStar
+Freble™ 一次性使用中间导管, Freble
+Frecross™颅内微导管, Frecross
+FRED™血流导向密网支架, FRED
+Frepass®一次性使用介入微导管, Frepass
+Fubuki导引导管, Fubuki导管
+FULLBLOCK封堵球囊导管, FULLBLOCK
+Gateway球囊导管, Gateway
+GHUNTER™颅内取栓支架, GHUNTER
+GUIDEWAY™远端通路导管, GUIDEWAY
+Guiroad导丝, Guiroad
+Headway™微导管, Headway
+Helical弹簧圈, Helical
+Heralder®DA远端通路导管, Heralder DA, Heralder®DA
+Heralder®导引导管, Heralder
+Hybrid微导丝, Hybrid
+Hydropointer®亲水涂层造影导管, Hydropointer
+HydroSoft™3D& HydroSoft™水凝胶栓塞弹簧圈, HydroSoft
+HyperForm封堵球囊导管系统, HyperForm
+HyperGlide封堵球囊导管系统, HyperGlide
+Jasper®SS颅内可电解脱弹簧圈, Jasper SS, Jasper®SS, JasperSS
+Jasper®颅内可电解脱弹簧圈, Jasper弹簧圈
+JRecan™颅内取栓支架, JRecan
+Juewa™OTW颅内球囊扩张导管, Juewa OTW, Juewa™OTW
+Juewa™RX颅内球囊扩张导管, Juewa RX, Juewa™RX
+KangFly™微导丝, KangFly
+Lattice血流导向密网支架, Lattice
+Leo+ & Leo+ Baby自膨式颅内支架, Leo  Baby, Leo+ Baby, Leo+支架, Leo支架
+Locaste™ 071远端通路导引导管, Locaste 071, Locaste™ 071
+Locaste输送导管, Locaste
+LUNAR可塑形微导管, LUNAR
+LVIS™颅内动脉瘤辅助支架, LVIS
+Mach1指引导管, Mach1
+Magic漂浮微导管, Magic
+Marathon™漂浮微导管, Marathon
+Marksman™微导管, Marksman
+Maurora®药物洗脱椎动脉支架系统, Maurora
+Merci球囊导引导管, Merci
+Mercury 0.014"神经血管导丝, Mercury导丝
+MICRUSPHERE®弹簧圈, MICRUSPHERE
+MidAccess™导引导管, MidAccess
+Mirage™ Hydrophilic Guidewire微导丝, Mirage
+Mountix™微导管, Mountix
+MYNXGRIP封堵止血系统, MynxGrip
+Navien™颅内支撑导管, Navien
+NC TREK球囊扩张导管, NC TREK
+Neuro LPS™颅内球囊扩张导管, Neuro LPS
+Neuro RX®颅内球囊扩张导管, Neuro RX
+NeuroEM®颅内球囊扩张导管, NeuroEM
+Neuroform Atlas颅内支架系统, Neuroform Atlas
+Neuroform EZ辅助支架, Neuroform EZ
+NeuroHawk™颅内取栓支架, NeuroHawk
+Neuron™ MAX 088 6F长鞘, Neuron MAX, NeuronMAX
+NEUROSCOUT®可操控导丝, NEUROSCOUT
+NEVIDA®微导管, NEVIDA
+NOVARAIL™远端通路导管, NOVARAIL
+NUMEN Silk®三维电解脱弹簧圈, 3D-Numen, NUMEN Silk, 三维NUMEN
+NUMEN®守护神™弹簧圈栓塞系统, 2D-Numen, NUMEN可解脱栓塞弹簧圈, NUMEN弹簧圈, 二维NUMEN
+Nuva®血流导向密网支架, Nuva
+Omnilink Elite™, Omnilink Elite
+Onyx™液态栓塞系统, Onyx
+OpenVas玮通颅内球囊扩张导管, OpenVas
+ORBIT GALAXY可解脱弹簧圈系统, GALAXY
+PALMAZ BLUE Stent System支架系统, PALMAZ BLUE
+PathGuard®一次性使用栓塞保护伞, PathGuard
+Penumbra血栓抽吸导管系统, 3MAX, 4MAX, 5MAX, MAX抽吸管, MAX泵, MAX集液瓶, PAPS2, penumbra, PMX220, PST2, Pump MAX, Velocity
+Perclose ProGlide缝合器, ProGlide
+Phenom™微导管, Phenom
+PILOT超滑导丝, PILOT
+Pilote"远端通路导管, Pilote
+Pipeline血流导向装置, Pipeline
+pNOVUS™ 17微导管, pNOVUS
+PRECISE PRO RX™颈动脉支架, PRECISE PRO RX
+Presgo®微导丝, Presgo微导丝
+Presgo®微导管, Presgo微导管
+Presgo®机械解脱弹簧圈, Presgo弹簧圈, Presgo机械解脱弹簧圈
+Proender®一次性使用栓塞保护伞, Proender
+PROWLER®微导管, PROWLER
+RAPID AI卒中影像辅助诊断系统, RAPID AI
+RAYLINE™微导管, RAYLINE
+REACT™ 68远端通路导管, REACT 68, REACT™ 68
+REACT™71一次性颅内血栓抽吸导管, REACT 71, REACT™71
+Rebar™ 18微导管, Rebar 18, Rebar™ 18
+RECO®颅内取栓支架, RECO
+Repath®颅内动脉瘤血流导向装置, Repath
+ReVive SE取栓装置, ReVive SE
+RuiFly™神经介入支撑导管, RuiFly
+RX Acculink颈动脉支架系统, RX Acculink
+RX Accunet, RX Accunet
+RX Herculink Elite®支架, RX Herculink Elite
+RX Viatrac® 14Plus球囊, RX Viatrac 14 Plus, RX Viatrac® 14Plus
+SABER球囊导管, SABER
+SacSpeed®球囊扩张导管, SacSpeed
+SailWire™导引鞘（弓上动脉专用）, SailWire
+Scepter C球囊导管, Scepter C
+Sine™微导管, Sine 27, Sine微导管
+SKATHI™远端通路导管, SKATHI
+SkyFlow®取栓装置, SkyFlow
+SkyFlow®X颅内取栓支架, SkyFlow X
+SkyGuard®球囊导引导管, SkyGuard
+SkyKeeper®栓塞保护器, SkyKeeper
+SkyLoach®颅内球囊扩张导管, SkyLoach
+SkySurfer®远端通路导管, SkySurfer
+SkyWay™微导管, SkyWay
+SOFIA™ EX 5F 115cm颅内支撑导管, SOFIA EX, SOFIA™ EX
+SOFIA™ Plus抽吸导管, SOFIA  Plus, SOFIA™ Plus
+SOFIA™中间导管, SOFIA
+SOLAR输送导管, SOLAR
+Solitaire™ AB神经血管重塑装置, Solitaire AB
+Solitaire™ FR 血流重建装置, Solitaire FR, Solitaire™ FR
+Solitaire™ 铂金版支架, Solitaire支架
+Sonic头端可断选择性导管, Sonic
+Spacewin®颅内球囊扩张导管, Spacewin
+Speedflate™颅内球囊扩张导管, Speedflate
+Speedpass™血栓抽吸导管, Speedpass
+STABILIZER导丝, STABILIZER导丝
+STABILIZER导丝支撑型
+Starclose SE闭合器, Starclose SE
+Streamer™颅内球囊扩张导管, Streamer
+Streamplus®远端通路导管, Streamplus
+Supra core导丝, Supra core
+SUPSELEK微导管, SUPSELEK
+Surpass Evolve血流导向密网支架, Surpass Evolve
+Surpass Streamline血流导向栓塞器械, Surpass Streamline
+Swebus®颅内取栓支架, Swebus
+Synchro®导丝, Synchro
+Syphonet®取栓支架, Syphonet
+Tarvos微导丝, Tarvos
+TERUMO血管鞘, 泰尔茂血管鞘
+TERUMO长鞘, 泰尔茂长鞘
+Tethys®中间导引导管, Tethys
+ThruVas玮脉颈动脉球囊扩张导管, ThruVas
+TracLine™远端通路导管, TracLine
+Transend®导丝, Transend
+Traxceed微导丝, Traxceed
+Traxcess™ 微导丝, Traxcess
+Tresfort™ Saga 颈动脉球囊扩张导管, Tresfort Saga, Tresfort™ Saga
+Trevo NXT ProVue 取栓支架, Trevo NXT ProVue
+Trevo Trak 21微导管, Trevo Trak 21
+Trevo XP取栓支架, Trevo XP
+Trevo™ ProVue取栓系统, Trevo ProVue, Trevo™ ProVue
+Tubridge®血流导向密网支架, Tubridge
+U-track™颅内支撑导管系统, U-track
+V-14可控导丝, V-14, V14
+V-18可控导丝, V-18, V18
+Valent®颅内支撑导管, Valent
+Vas-pass™指引导管, Vas-pass
+Velocity输送微导管, Velocity微导管, Velocity输送微导管
+Vestube®微导管, Vestube
+VIA™微导管, VIA微导管
+WEB™动脉瘤栓塞系统, WEB
+Wedge™ 微导管, Wedge
+WILLIS®颅内覆膜支架系统, WILLIS
+Wingspan支架系统, Wingspan
+WISSKY™神经介入微导管, WISSKY
+X-Pedion™ 亲水导丝, X-Pedion, XPedion
+X-track™ 颅内远端导管, X-track
+Xpert Pro支架, Xpert Pro
+YonLeading®微导管, YonLeading
+YonLegend®颅内球囊扩张导管, YonLegend
+YonTrack®远端通路导管, YonTrack
+中天一次性使用吸引连接管, 中天一次性使用吸引连接管
+中天医用负压吸引器, 中天医用负压吸引器
+中天天宓®远端保护器, 天宓
+中天天巡Pro™血栓抽吸导管, “天巡”抽吸导管, 天巡Pro™血栓抽吸导管, 天巡Pro血栓抽吸导管, 天巡抽吸导管, 天巡血栓抽吸导管
+中天天巡™导航微导管（递送辅助微导管）, “天巡”导航微导管, 天巡™导航微导管, 天巡导航微导管
+中天天巡™微导丝, “天巡”微导丝, 天巡™微导丝, 天巡微导丝
+中天天巡™微导管, “天巡”微导管, 天巡™微导管, 天巡微导管
+中天天巡™神经介入专用长鞘, “天巡”长鞘, 天巡™长鞘, 天巡长鞘
+中天天巡™远端通路导管, “天巡”远端通路导管, 天巡™远端通路导管, 天巡远端通路导管
+中天天弋®取栓支架, 天弋
+中天天航™Pro外周血栓抽吸导管 &中天天戟™栓塞分离器, 中天天戟, 中天天航
+中天血栓抽吸装置, 中天血栓抽吸装置
+中天负压吸引用收集装置, 中天负压吸引用收集装置
+伊维尔非粘附性液体栓塞剂, 伊维尔栓塞剂
+加硬交换导丝 Amplatz Extra STIFF, Amplatz Extra STIFF
+华脉·无痕®止血器HEMOSTAT, HEMOSTAT, 华脉·无痕, 华脉止血器
+华脉·无阻®亲水涂层导丝HYDROPHILIC COATING GUIDEWIRE, HYDROPHILIC COATING GUIDEWIRE, 华脉·无阻, 华脉亲水涂层导丝
+华脉·若拙®静脉剥脱导丝VEIN STRIPPING GUIDEWIRE, VEIN STRIPPING GUIDEWIRE, 华脉·若拙, 华脉静脉剥脱导丝
+彩鹬®颅内球囊扩张导管, 彩鹬
+心玮天梯长鞘, 天梯长鞘
+慧畅™微导管, 慧畅
+慧达™微导丝, 慧达
+慧通™支撑导管, 慧通
+抽吸配件, 健适抽吸配件
+水膜加硬导丝STIFF, STIFF
+猛匠®冠脉乳突球囊扩张导管, 猛匠
+璞慧Y型连接器套装, 璞慧Y型连接器套装
+纽创天桥DA®远端通路导管, 纽创天桥DA
+纽创悟空®颅内球囊扩张导管, 纽创悟空
+纽创河豚®球囊导引导管, 纽创河豚
+纽创虹途®远端通路导管, 纽创虹途
+美诺微创Bestpass®微导丝, Bestpass
+美诺微创GoodPass®微导管, GoodPass
+蛇鹈®微导管, 蛇鹈
+赛诺神畅NOVA颅内药物球扩支架, NOVA
+通桥凤®弹簧圈系统, Feng coil, 凤®弹簧圈, 凤弹簧圈
+通桥大禹™球囊导引导管, 大禹
+通桥白驹®颅内球囊扩张导管, 白驹
+通桥蛟龙®取栓支架, 蛟龙
+通桥银蛇®DA远端通路导引导管, 银蛇®DA, 银蛇DA
+通桥银蛇®颅内支持导管, 银蛇
+金球囊Goldballoon, Goldballoon, 金球囊
+鹈鹏封堵球囊导管, 鹈鹏

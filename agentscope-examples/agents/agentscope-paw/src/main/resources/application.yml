@@ -29,8 +29,8 @@ claw:
   # ---- DashScope model (used when no Model Spring bean is present) ----
   # Set DASHSCOPE_API_KEY env var or override api-key below.
   dashscope:
-    api-key: ${DASHSCOPE_API_KEY:}
-    model-name: ${CLAW_MODEL_NAME:qwen-max}
+    api-key: ${DASHSCOPE_API_KEY:568e574a-36bd-43c5-a5da-6f0b0a31ff8c}
+    model-name: ${CLAW_MODEL_NAME:deepseek-v4-pro-260425}
     stream: true
 
   # ---- Default built-in agent (used when auto-generating agentscope.json) ----

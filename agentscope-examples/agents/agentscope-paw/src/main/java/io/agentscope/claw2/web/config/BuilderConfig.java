@@ -22,6 +22,8 @@ import io.agentscope.claw2.web.toolbus.ToolEventBus;
 import io.agentscope.claw2.web.toolbus.ToolNotificationMiddleware;
 import io.agentscope.core.model.Model;
 import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.agentscope.extensions.model.openai.OpenAIChatModel;
+import io.agentscope.extensions.model.openai.formatter.DeepSeekFormatter;
 import io.agentscope.harness.agent.gateway.channel.ChannelConfig;
 import io.agentscope.harness.agent.gateway.channel.DmScope;
 import io.agentscope.harness.agent.gateway.channel.chatui.ChatUiChannel;
@@ -92,10 +94,12 @@ public class BuilderConfig {
     @ConditionalOnExpression("'${claw.dashscope.api-key:}' != ''")
     public Model dashscopeModel() {
         log.info("Building DashScopeChatModel: model={}", dashscopeModelName);
-        return DashScopeChatModel.builder()
+        return OpenAIChatModel.builder()
+                .baseUrl("https://ark.cn-beijing.volces.com/api/v3")
                 .apiKey(dashscopeApiKey)
                 .modelName(dashscopeModelName)
                 .stream(dashscopeStream)
+                .formatter(new DeepSeekFormatter())
                 .build();
     }
 

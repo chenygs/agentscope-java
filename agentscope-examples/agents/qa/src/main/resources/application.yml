@@ -1,0 +1,179 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/brainmed-qa?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+    username: root
+    password: chenygs
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: update           # 不自动建表/改表，schema 完全由 schema.sql 控制
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+    show-sql: false
+#  sql:
+#    init:
+#      mode: always           # ddl-auto=none，由 schema.sql（CREATE TABLE IF NOT EXISTS，幂等）建表
+
+
+
+---
+spring:
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 4
+          retryDelay: !<org.redisson.config.EqualJitterDelay> {baseDelay: PT1S, maxDelay: PT2S}
+          reconnectionDelay: !<org.redisson.config.EqualJitterDelay> {baseDelay: PT0.1S, maxDelay: PT10S}
+          subscriptionsPerConnection: 5
+          clientName: null
+          address: "redis://127.0.0.1:6379"
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 24
+          connectionPoolSize: 64
+          database: 0
+          dnsMonitoringInterval: 5000
+          dnsMonitoringTimes: 1
+        password: null
+        username: null
+        threads: 16
+        nettyThreads: 32
+        codec: !<org.redisson.codec.Kryo5Codec> {}
+        transportMode: "NIO"
+
+
+
+agentscope:
+  agui:
+    path-prefix: /agui
+    cors-enabled: true
+    server-side-memory: true
+    default-agent-id: default
+    enable-reasoning: true       # 开启推理消息；前端 ReasoningIdAgent 给 reasoning 事件独立 messageId，避免与正文冲突
+  studio:
+    enabled: false
+    url: http://localhost:3000
+    project: default
+
+server:
+  port: 8889
+
+
+
+
+
+# 模型配置（主备：参考 mybatis-plus dynamic-datasource，按名声明 + primary/fallback 指针）
+agent:
+  model:
+    primary: deepseek            # 主模型名，指向 models 中的 key
+    fallback: deepseek-flash                    # 备用模型名，留空=不启用回退；填 models 中的 key 即生效
+    models:
+      deepseek:
+        provider: openai
+        api-key: ${DEEPSEEK_API_KEY:}
+        base-url: ${DEEPSEEK_BASE_URL:}
+        endpoint-path: ${DEEPSEEK_ENDPOINT:}
+        model-name: ${DEEPSEEK_DEFAULT_MODEL:}
+        stream: true
+        context-window-size: 65536
+        formatter: deepseek
+      # 备用模型示例（取消注释并填值，再把上面 fallback 改为 doubao 即启用主备回退）：
+      deepseek-flash:
+        provider: openai
+        api-key: ${DEEPSEEK_SLAVE_API_KEY:}
+        base-url: ${DEEPSEEK_SLAVE_BASE_URL:}
+        model-name: ${DEEPSEEK_SLAVE_DEFAULT_MODEL:}
+        stream: true
+        context-window-size: 65536
+        formatter: deepseek
+  # 长期记忆配置（切换 provider 即可更换记忆后端）
+  memory:
+    enabled: true
+    provider: mem0                    # mem0 | viking  —— 切换此项即可更换记忆后端
+
+    # Mem0 长期记忆（兼容开源云端和火山托管）
+    #   开源云端：api-base-url: https://api.mem0.ai
+    #   火山托管：api-base-url: https://<连接地址>:8000
+    #
+    #   use-sdk: false → HTTP 直连（默认，日志完整，user+assistant 完整写入）
+    #   use-sdk: true  → AgentScope SDK 封装（简洁但 retrieve 静默吞错）
+    #   api-type: platform | self_hosted（仅 SDK 模式生效）
+    mem0:
+      api-base-url: https://mem0-cnlfjzigaku8gczkzo.mem0.volces.com:8000
+      api-key: ${MEM0_VLOC_API_KEY:}
+      use-sdk: false
+      api-type: platform
+
+    # Viking 记忆库长期记忆（基于 VikingDB REST API）
+    viking:
+      base-url: https://api-knowledgebase.mlp.cn-beijing.volces.com
+      api-key: ${VIKING_API_KEY:}       # 与知识库共用 Bearer Token
+      collection-name: qa                # 记忆库名称
+      project-name: default              # 项目名称
+      search-limit: 10                   # 检索返回事件记忆条数
+  # 搜索工具配置（通过 Responses API 内置工具实现）
+  search:
+    web:
+      enabled: false                    # 是否注册联网搜索工具
+    knowledge:
+      enabled: false                    # 是否注册知识库搜索工具
+    responses:
+      base-url: ${RESPONSES_BASE_URL:}   # 方舟 API 基础 URL（如 https://ark.cn-beijing.volces.com/api/v3）
+      api-key: ${RESPONSES_API_KEY:}     # 方舟 API Key（Bearer Token 认证）
+      model: ${RESPONSES_MODEL:}         # Responses API 使用的模型名称（仅支持豆包系列）
+      knowledge-base-id: ${KNOWLEDGE_RESOURCE_ID:}  # 方舟知识库 ID（知识库搜索用）
+    viking:
+      enabled: true                    # 是否注册 Viking search_knowledge 知识库检索工具（与 knowledge 并存）
+      base-url: https://api-knowledgebase.mlp.cn-beijing.volces.com
+      api-key: ${VIKING_API_KEY:}      # VIKING_API_KEY（方舟控制台「知识库」页面生成，与方舟 API Key 不同）
+      resource-id: ${KNOWLEDGE_RESOURCE_ID:}  # 知识库 id，与 knowledge-base-id 复用同一值
+      limit: 50                        # 检索返回切片数量 [1, 1000]
+      rerank: true                    # 是否开启 rerank 重排（提升相关性，多一次模型调用）
+    doubao:
+      enabled: true                  # 是否注册豆包搜索 Custom 版联网搜索工具（与 web_search 并存）
+      base-url: https://open.feedcoopapi.com
+      api-key: ${DOUBAO_SEARCH_API_KEY:}  # 联网搜索控制台生成的 API Key（与方舟 API Key 独立）
+      count: 20                       # 返回结果条数 [1, 50]
+      need-summary: true              # 是否返回 Summary（500~1000字，推荐用于大模型）
+      content-formats: markdown       # 正文格式 text / markdown
+      need-content: false             # 是否仅返回有正文的结果
+      need-url: true                  # 是否仅返回有原文链接的结果
+logging:
+  level:
+    com.brainmed.ai.qa.core.memory: DEBUG    # 长期记忆 Provider 调试日志
+    io.agentscope.core.memory: DEBUG    # Mem0 底层调用调试日志
+
+# OpenTelemetry 追踪配置
+otel:
+  enabled: true
+  service:
+    name: ai-qa
+  exporter:
+    # ─────────────────────────────────────────────────────────────────
+    # 三种模式任选其一（优先级：Langfuse > 自定义 headers > 自动检测 gRPC/HTTP）
+    # ─────────────────────────────────────────────────────────────────
+    
+    # 【模式 1】Langfuse（开源 LLM 可观测平台，推荐）
+    #   注册：https://cloud.langfuse.com 免费账号
+    #   获取 API Key：Settings → API Keys → 复制 public key 和 secret key
+    endpoint: https://us.cloud.langfuse.com/api/public/otel/v1/traces
+    langfuse:
+      public-key: ${LANGFUSE_PUBLIC_KEY:}
+      secret-key: ${LANGFUSE_SECRET_KEY:}
+    
+    # 【模式 2】自定义 HTTP headers（适用于需要认证的 OTLP 后端）
+    # headers: "Authorization=Bearer xxx,X-Custom=value"
+    
+    # 【模式 3】本地 Jaeger / Grafana Tempo（无认证）
+    #   启动：docker run -d -p 16686:16686 -p 4317:4317 jaegertracing/all-in-one:latest
+    #   Jaeger UI: http://localhost:16686
+    # endpoint: http://localhost:4317

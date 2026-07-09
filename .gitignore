@@ -88,3 +88,5 @@ logs/
 
 ## oh-my-claudecode
 .omc/
+/z_demo/ppt-agent-ui/node_modules/
+/z_demo/ppt-agent-ui/apps/

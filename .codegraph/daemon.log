@@ -1,0 +1,636 @@
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 12308, v0.9.9). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 227 file(s) changed since last run
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\@core\\ui-kit\\shadcn-ui\\tsconfig.json'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\@core\\ui-kit\\shadcn-ui\\src\\ui\\input\\index.ts'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\constants\\tsconfig.json'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\access\\src\\accessible.ts'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\common-ui\\package.json'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\common-ui\\src\\components\\icon-picker\\index.ts'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\common-ui\\src\\ui\\dashboard\\analysis\\analysis-charts-tabs.vue'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\common-ui\\src\\ui\\fallback\\icons\\icon-404.vue'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\effects\\layouts\\src\\widgets\\notification\\index.ts'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\locales\\src\\langs\\en-US\\preferences.json'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\stores\\package.json'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\packages\\types\\src\\user.ts'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\scripts\\deploy\\build-local-docker-image.sh'"
+}
+[CodeGraph] File watcher error {
+  error: "Error: EBUSY: resource busy or locked, watch 'D:\\GIT\\ownsource\\AI\\AGENT_SCOPE\\agentscope-java\\ppt-agent-ui\\scripts\\vsh\\package.json'"
+}
+[CodeGraph MCP] Auto-synced 741 file(s) in 5198ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 1692ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 545ms
+[CodeGraph daemon] Shutting down (idle timeout; clients=0).
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 36900, v0.9.9). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph daemon] socket error: write EPIPE
+[CodeGraph MCP] Caught up 1937 file(s) changed since last run
+[CodeGraph MCP] Auto-synced 2 file(s) in 1019ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 562ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 549ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 556ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 552ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 551ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 549ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 589ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 602ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 570ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 649ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 557ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 550ms
+[CodeGraph MCP] Auto-synced 22 file(s) in 911ms
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 12612, v0.9.9). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Auto-synced 969 file(s) in 19153ms
+[CodeGraph MCP] Auto-synced 969 file(s) in 11429ms
+[CodeGraph MCP] Auto-synced 23 file(s) in 1822ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 639ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 596ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 620ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 629ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 593ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 623ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 602ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 637ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 650ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 582ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 585ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 602ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 620ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 625ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 635ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 634ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 594ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 644ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 662ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 605ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 642ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 677ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 612ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 611ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 623ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 595ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 603ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 597ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 681ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 649ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 595ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 642ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 680ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 596ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 612ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 605ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 634ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 625ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 614ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 657ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 651ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 619ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 662ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 683ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 642ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 615ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 621ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 642ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 681ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 663ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 688ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 670ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 619ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 605ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 700ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 625ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 666ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 641ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 644ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 631ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 666ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 675ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 681ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 662ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 663ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 615ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 647ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 687ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 618ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 654ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 620ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 633ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 658ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 692ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 618ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 677ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 708ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 721ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 633ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1679ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 660ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 718ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 720ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 709ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 638ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 689ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 709ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 2178ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 3184ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 2743ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 691ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 612ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1644ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 674ms
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 11804, v0.9.9). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 2 file(s) changed since last run
+[CodeGraph MCP] Auto-synced 1 file(s) in 708ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 647ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 649ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 636ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 639ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 660ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 661ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 650ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 652ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 668ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 687ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 749ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 678ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 681ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 679ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 619ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 637ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 635ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 639ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 733ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 642ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 682ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 673ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 651ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 661ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 715ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 632ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 653ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 700ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 661ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 727ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 682ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 636ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 677ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 672ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1120ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 688ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 875ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 662ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 727ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 687ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 692ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 670ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 645ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 643ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 636ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 661ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 796ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 685ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 702ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 817ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 698ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 699ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 650ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 686ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 668ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 677ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 697ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 712ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 708ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 652ms
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 1088, v0.9.9). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 34 file(s) changed since last run
+[CodeGraph MCP] Auto-synced 1 file(s) in 607ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 690ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 584ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 606ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 589ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 611ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 631ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 586ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 581ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 601ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 572ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 571ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 576ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 580ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 597ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 590ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 596ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 605ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 587ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 585ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 583ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 614ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 638ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 609ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 596ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 583ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 601ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 626ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 686ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 655ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1073ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 690ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 714ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 588ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 752ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 710ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 691ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 590ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 582ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 589ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 611ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 588ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 587ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 585ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 576ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 609ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 704ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 682ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 784ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 650ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 736ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 669ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 909ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 613ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 590ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 621ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 578ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 587ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 602ms
+[CodeGraph MCP] Auto-synced 8 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 592ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 597ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 620ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 942ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1124ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 613ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 586ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 620ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 606ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 603ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 586ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 625ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 807ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1117ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 608ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 623ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 622ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 695ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 712ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 615ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 790ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 737ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 630ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 617ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 685ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 688ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 712ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 601ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 691ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 707ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 685ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 592ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 609ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 583ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 591ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 582ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 655ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 626ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1029ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 616ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 587ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 595ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 581ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 586ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 580ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 600ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 873ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 627ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 685ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 602ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 592ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 615ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 641ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 626ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 650ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 634ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 639ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 599ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 601ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 609ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 702ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 597ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 631ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 742ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 633ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 624ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 596ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 631ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 598ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 618ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 637ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 618ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 634ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 604ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 637ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 709ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1142ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 589ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 621ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 615ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 619ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 694ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 669ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 679ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 810ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 606ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 614ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 689ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 603ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1424ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 610ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 601ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 597ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 717ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 618ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 614ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 606ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 607ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 670ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 643ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 645ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1147ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 633ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 623ms
+[CodeGraph MCP] Auto-synced 26 file(s) in 964ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 663ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 654ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 689ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 659ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 700ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 684ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 647ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 674ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 688ms
+[CodeGraph MCP] Auto-synced 5 file(s) in 751ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 668ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 717ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 671ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 634ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 743ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 688ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 779ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 1229ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 667ms
+[CodeGraph MCP] Auto-synced 3 file(s) in 792ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 835ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 648ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 640ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 684ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 721ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 671ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 660ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 643ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 643ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 762ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 656ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 773ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 676ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 654ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 658ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 665ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 669ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 674ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 646ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 669ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 786ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 651ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 653ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 670ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 658ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 643ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 965ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 661ms
+[CodeGraph MCP] Auto-synced 2 file(s) in 681ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 927ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 649ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 665ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 633ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 657ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 639ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 648ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 636ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 714ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 625ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 628ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 631ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 667ms
+[CodeGraph MCP] Auto-synced 9 file(s) in 874ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 667ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 655ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 693ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 657ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 648ms
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 27372, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 43 file(s) changed since last run
+[CodeGraph MCP] Auto-synced 1 file(s) in 757ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 813ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 790ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 741ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 778ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 751ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 799ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 765ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 751ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 765ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 739ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 748ms
+[CodeGraph MCP] Auto-synced 7 file(s) in 1171ms
+[CodeGraph MCP] Auto-synced 7 file(s) in 818ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 864ms
+[CodeGraph MCP] Auto-synced 6 file(s) in 858ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 842ms
+[CodeGraph daemon] Shutting down (inactivity backstop; clients=1).
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 11580, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 33 file(s) changed since last run
+[CodeGraph MCP] Auto-synced 2 file(s) in 781ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 746ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 746ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 767ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 757ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 780ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 798ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 760ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 791ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 759ms
+[CodeGraph MCP] Auto-synced 1 file(s) in 766ms
+[CodeGraph MCP] Auto-synced 4 file(s) in 1051ms
+[CodeGraph daemon] Shutting down (inactivity backstop; clients=1).
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 29412, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 7 file(s) changed since last run
+[CodeGraph daemon] Shutting down (idle timeout; clients=0).
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 32388, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph] Main thread unresponsive for ~60s — killing the wedged process so a fresh one can start (#850). Disable with CODEGRAPH_NO_WATCHDOG=1.
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 8796, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph MCP] Caught up 39 file(s) changed since last run
+[CodeGraph daemon] Shutting down (inactivity backstop; clients=3).
+[CodeGraph daemon] Listening on \\.\pipe\codegraph-44c395d2d620ec83 (pid 25536, v1.0.1). Idle timeout 300000ms.
+[CodeGraph MCP] File watcher active — graph will auto-sync on changes
+[CodeGraph daemon] Another daemon (pid 25536) already holds the lock; exiting.
+[CodeGraph daemon] Another daemon (pid 25536) already holds the lock; exiting.
+[CodeGraph daemon] Another daemon (pid 25536) already holds the lock; exiting.
+[CodeGraph daemon] Shutting down (idle timeout; clients=0).
